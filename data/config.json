@@ -1,0 +1,11 @@
+{
+  "calibreBinPath": "",
+  "calibreLibraryPath": "",
+  "deleteGeneratedFiles": true,
+  "addGeneratedFileAsFormat": false,
+  "annotationSetTitle": "Generated Annotations",
+  "annotationSetDescription": "Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).",
+  "ignoreBookIfMatchingSetExists": false,
+  "logGenerationEvents": true,
+  "xyfirAnnotationsAccessKey": ""
+}

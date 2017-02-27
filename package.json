@@ -1,0 +1,34 @@
+{
+  "name": "auto-annotator",
+  "version": "1.0.0",
+  "description": "Automatically generate annotations for an entire Calibre ebook library via Xyfir Annotations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xyfir/auto-annotator.git"
+  },
+  "keywords": [
+    "xyfir",
+    "annotations",
+    "annotator",
+    "calibre",
+    "ebooks",
+    "library",
+    "cli"
+  ],
+  "author": "Xyfir, LLC <contact@xyfir.com> (https://xyfir.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Xyfir/auto-annotator/issues"
+  },
+  "homepage": "https://github.com/Xyfir/auto-annotator#readme",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "superagent": "^3.5.0",
+    "yargs": "^6.6.0"
+  }
+}
