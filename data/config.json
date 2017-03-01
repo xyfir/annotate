@@ -1,8 +1,8 @@
 {
   "calibreBinPath": "",
   "calibreLibraryPath": "",
-  "deleteGeneratedFiles": true,
-  "addGeneratedFileAsFormat": false,
+  "deleteGeneratedFormat": true,
+  "addGeneratedFormat": false,
   "annotationSetTitle": "Generated Annotations",
   "annotationSetDescription": "Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).",
   "ignoreBookIfMatchingSetExists": false,
