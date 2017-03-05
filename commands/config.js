@@ -17,7 +17,12 @@ module.exports = async function(yargs) {
     // Set value for key
     if (argv.key && argv.value) {
       if (config[argv.key] !== undefined) {
-        config[argv.key] = argv.value;
+        // Convert true/false string to Boolean
+        const value = argv.value == 'true'
+          ? true : argv.value == 'false'
+          ? false : argv.value;
+        
+        config[argv.key] = value;
 
         await setConfig(config);
         console.log('Success');
