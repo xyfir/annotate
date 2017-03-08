@@ -10,11 +10,13 @@ This command loads your Calibre library, loops through the books, and creates an
 
 > auto-annotator config [--key keyName [--value keyValue]]
 
-The config command has three different actions based on what options you provide. Attempting to read or write to a non-existent key will result in an error.
+The config command has three different actions based on what options you provide.
 
 - If you ignore all options, this command will output a table with all of the config keys and a (possibly) shortened version of their values.
 - If you provide only `--key`, the full value for that key will be output to console.
 - If you provide `--key` *and* `--value` a new value will be set for the key.
+
+Attempting to read or write to a non-existent key will result in an error.
 
 ## ignore
 
@@ -38,7 +40,7 @@ Adds a single or multiple book IDs to the ignore list.
 
 > auto-annotator ignore remove --ids ids
 
-Removes a single or multiple book IDs to the ignore list.
+Removes a single or multiple book IDs from the ignore list.
 
 #### Examples
 
@@ -67,30 +69,26 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
   - The path to the Calibre library you wish to generate annotations for.
   - Should contain a metadata.db file and folders for each author.
 - **deleteGeneratedFormat**: *bool*
-  - Default: true
-  - Xyfir Annotations generates annotations from a text file.
-  - If a book does not have a text format, one is generated from the first format available.
-  - If this is true, that generated file is deleted after it is used.
+  - Default: `true`
+  - Xyfir Annotations generates annotations from a text file. If a book does not have a text format, one is generated from the first format available. If this is true, that generated file is deleted after it is used.
 - **addGeneratedFormat**: *bool*
-  - Default: false
+  - Default: `false`
   - If true, the generated text file is added to the book as another format.
   - If true, deleteGeneratedFormat is ignored.
 - **annotationSetTitle**: *string*
-  - Default: Generated Annotations
+  - Default: `"Generated Annotations"`
   - The title for annotation sets.
 - **annotationSetDescription**: *string*
-  - Default: Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with Xyfir Annotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator).
+  - Default: `"Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with Xyfir Annotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator)."`
   - The description for annotation sets.
 - **ignoreBookIfMatchingSetExists**: *bool*
-  - Default: false
-  - If true, a basic search is done with the full book title and authors.
-  - If a set matches that search on Xyfir Annotations, the book is skipped and the set is not created.
+  - Default: `false`
+  - If true, a basic search is done with the full book title and authors. If a set matches that search on Xyfir Annotations, the book is skipped and the set is not created.
 - **logGenerationEvents**: *bool*
-  - Default: true
+  - Default: `true`
   - Lets you know what's going on when you run `auto-annotator generate`.
 - **xyfirAnnotationsAccessKey**: *string*
   - Your Xyfir Annotations access key.
 - **addPrependedSearchAnnotation**: *bool*
-  - Default: true
-  - If true, an extra annotation is added to every annotation set item.
-  - The annotation is a web search of the item, prepended with the book title and potentially author for a more relevant search.
+  - Default: `true`
+  - If true, an extra annotation is added to every annotation set item. The annotation is a web search of the item, prepended with the book title and potentially author name for a more relevant search.

@@ -8,7 +8,8 @@ For now, auto-annotator requires you to have Node and npm installed, and have so
 
 or you can clone this repo and then:
 
-> cd path/to/auto-annotator \
+> cd path/to/auto-annotator
+
 > npm install -g
 
 # Configuration
