@@ -13,9 +13,12 @@ module.exports = async function(yargs) {
   try {
     if (!argv.ids) throw 'Missing values for --ids';
 
-    // ignore duplicate ids
-    const ids = String(argv.ids).split(',');
     let list = await getIgnoreList();
+
+    const ids = String(argv.ids).split(',').filter(id => {
+      return list.indexOf(id) == -1;
+    });
+    
     list = list.concat(ids);
 
     await setIgnoreList(list);
