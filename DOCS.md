@@ -58,7 +58,7 @@ Removes all IDs from the ignore list.
 
 > auto-annotator ignore show
 
-Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its own line.
+Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its own line. The `--sort` option sorts all of the ids in ascending order.
 
 # Config Keys
 

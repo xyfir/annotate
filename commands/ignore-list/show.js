@@ -11,6 +11,8 @@ module.exports = async function(yargs) {
   
   try {
     const list = await getIgnoreList();
+
+    if (argv.sort) list.sort();
     
     if (!list.length)
       console.log('Ignore list is empty');
