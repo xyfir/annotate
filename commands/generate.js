@@ -97,11 +97,15 @@ module.exports = async function(yargs) {
           log(`Generated text file added to book as format`);
         }
         else if (config.deleteGeneratedFormat) {
-          fs.unlink(format, err => {
-            if (err)
-              log(`Could not delete generated text file`);
-            else
-              log(`Generated text file deleted`);
+          await new Promise(resolve => {
+            fs.unlink(format, err => {
+              if (err)
+                log(`Could not delete generated text file`);
+              else
+                log(`Generated text file deleted`);
+              
+              resolve();
+            });
           });
         }
       }
