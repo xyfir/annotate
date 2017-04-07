@@ -50,10 +50,19 @@ module.exports = async function(yargs) {
 
       // Check for similar matching set
       if (
-        config.ignoreBookIfMatchingSetExists
-        && await similarSetsExist(book, config)
+        (
+          config.ignoreBookIfMatchingSetExists ||
+          config.skipBookIfMatchingSetExists
+        ) && await similarSetsExist(book, config)
       ) {
-        log(`Skipping book due to similar matching sets`);
+        if (config.ignoreBookIfMatchingSetExists) {
+          ignoreList.push(book.id.toString());
+          await setIgnoreList(ignoreList);
+          log(`Ignoring book due to similar matching sets`);
+        }
+        else {
+          log(`Skipping book due to similar matching sets`);
+        }
         continue;
       }
       

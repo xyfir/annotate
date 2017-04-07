@@ -81,9 +81,12 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 - **annotationSetDescription**: *string*
   - Default: `"Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with Xyfir Annotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator)."`
   - The description for annotation sets.
+- **skipBookIfMatchingSetExists**: *bool*
+  - Default: `true`
+  - If true, a basic search is done with the full book title and authors. If a set matches that search on Xyfir Annotations, the book is skipped and the set is not created.
 - **ignoreBookIfMatchingSetExists**: *bool*
   - Default: `false`
-  - If true, a basic search is done with the full book title and authors. If a set matches that search on Xyfir Annotations, the book is skipped and the set is not created.
+  - Works the same as `skipBookIfMatchingSetExists` except if any sets match the book the book is also added to the ignore list. Takes precedence over `skipBookIfMatchingSetExists`.
 - **logGenerationEvents**: *bool*
   - Default: `true`
   - Lets you know what's going on when you run `auto-annotator generate`.
