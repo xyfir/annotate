@@ -33,10 +33,12 @@ module.exports = async function(yargs) {
     );
 
     const start = Date.now(), limit = argv.limit;
+    const ids = argv.ids ? argv.ids.split(',') : [];
     let loops = 0;
     
     // Loop through books
     for (book of books) {
+      if (ids.length && ids.indexOf(book.id.toString()) == -1) break;
       if (limit && limit <= loops) break;
 
       log('');

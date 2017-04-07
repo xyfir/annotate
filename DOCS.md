@@ -2,9 +2,17 @@
 
 ## generate
 
-> auto-annotator generate [--limit count]
+> auto-annotator generate [--limit count] [--ids ids]
 
 This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored. Providing the `--limit` option will tell the generator to stop after a provided number of annotation sets are created from your books.
+
+### Examples
+
+> auto-annotator generate # Loop through all books until complete or canceled
+
+> auto-annotator generate --limit 5 # Stop after 5 annotation sets created
+
+> auto-annotator generate --ids 5,10,15 # Ignore all books other than 5, 10, and 15
 
 ## config
 
