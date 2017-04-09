@@ -2,17 +2,23 @@
 
 ## generate
 
-> auto-annotator generate [--limit count] [--ids ids]
+> auto-annotator generate [--limit count] [--ids ids] [--start-at id]
 
-This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored. Providing the `--limit` option will tell the generator to stop after a provided number of annotation sets are created from your books.
+This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored.
 
 ### Examples
 
-> auto-annotator generate # Loop through all books until complete or canceled
+Loop through all books until complete or canceled
+> auto-annotator generate
 
-> auto-annotator generate --limit 5 # Stop after 5 annotation sets created
+Stop after 5 annotation sets created (does not count skipped or ignored books)
+> auto-annotator generate --limit 5
 
-> auto-annotator generate --ids 5,10,15 # Ignore all books other than 5, 10, and 15
+Ignore all books other than those with an id of 5, 10, or 15
+> auto-annotator generate --ids 5,10,15
+
+Skip all books before the book with an id of 7
+> auto-annotator generate --start-at 7
 
 ## config
 
@@ -40,9 +46,11 @@ Adds a single or multiple book IDs to the ignore list.
 
 #### Examples
 
-> auto-annotator ignore add --ids 55 # add book id 55 to the ignore list
+Add book id 55 to the ignore list
+> auto-annotator ignore add --ids 55
 
-> auto-annotator ignore add --ids 1,400,2 # add books 1, 400, and 2 to the ignore list
+Add books 1, 400, and 2 to the ignore list
+> auto-annotator ignore add --ids 1,400,2
 
 ### remove
 
@@ -52,9 +60,11 @@ Removes a single or multiple book IDs from the ignore list.
 
 #### Examples
 
-> auto-annotator ignore remove --ids 55 # remove book 55 from ignore list
+Remove book 55 from ignore list
+> auto-annotator ignore remove --ids 55
 
-> auto-annotator ignore remove --ids 1,400,2 # remove books 1, 400, and 2 from the ignore list
+Remove books 1, 400, and 2 from the ignore list
+> auto-annotator ignore remove --ids 1,400,2
 
 ### reset
 

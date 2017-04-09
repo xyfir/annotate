@@ -24,7 +24,7 @@ module.exports = async function(yargs) {
     });
     
     // Load book list from Calibre
-    const books = JSON.parse(
+    let books = JSON.parse(
       await calibre.run('calibredb list', [], {
         'for-machine': null,
         'fields': 'authors,formats,id,identifiers,pubdate,publisher,series,'
@@ -35,6 +35,19 @@ module.exports = async function(yargs) {
     const start = Date.now(), limit = argv.limit;
     const ids = argv.ids ? argv.ids.split(',') : [];
     let loops = 0;
+
+    // Skip up to book with id of argv.startAt
+    if (argv.startAt) {
+      const index = books.findIndex(b => b.id == argv.startAt);
+
+      if (index == -1) {
+        console.log(`Could not find book with id ${argv.startAt}`.red);
+        return;
+      }
+
+      books = books.slice(index);
+      log(`Skipping ${index + 1} books`);
+    }
     
     // Loop through books
     for (book of books) {
