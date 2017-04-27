@@ -106,8 +106,8 @@ module.exports = async function(yargs) {
 
       // Read file content, generate items, create items
       log(`Generating annotations, this could take a while`);
-      await generateSetItems(setId, book, format, config);
-      log(`Annotations generated`);
+      const items = await generateSetItems(setId, book, format, config);
+      log(`${items} annotations generated`);
       
       // Add book to ignore list
       ignoreList.push(book.id.toString());
