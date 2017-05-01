@@ -8,16 +8,16 @@ yargs
     'generate', 'Generate annotations', commands.generate
   )
   .command(
-    'config', 'Set config property value', commands.config
+    'config', 'Sets or gets config property values', commands.config
   )
   .command('ignore', 'Manipulate ignore list', () => {
     return yargs
       .command(
-        'add', 'Add book id to ignore list',
+        'add', 'Add book id(s) to ignore list',
         commands.addToIgnoreList
       )
       .command(
-        'remove', 'Remove book id from ignore list',
+        'remove', 'Remove book id(s) from ignore list',
         commands.removeFromIgnoreList
       )
       .command(
