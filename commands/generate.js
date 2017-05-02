@@ -19,7 +19,7 @@ module.exports = async function(yargs) {
 
     const calibre = new Calibre({
       library: config.calibreLibraryPath, execOptions: {
-        cwd: (config.calibreBinPath || null)
+        cwd: (config.calibreBinPath || null), maxBuffer: 1000000 * 1024
       }
     });
     
