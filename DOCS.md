@@ -113,3 +113,7 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 - **addPrependedSearchAnnotation**: *bool*
   - Default: `true`
   - If true, an extra annotation is added to every annotation set item. The annotation is a web search of the item, prepended with the book title and potentially author name for a more relevant search.
+
+# User Data
+
+auto-annotator stores the config file and ignore list in `/home/<user>/.auto-annotator` in Unix environments and `%APPDATA%\auto-annotator` on Windows.
