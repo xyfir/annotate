@@ -12,8 +12,8 @@ module.exports = async function(yargs) {
   const argv = yargs.argv;
   
   try {
-    const config = await getConfig();
     const ignoreList = await getIgnoreList();
+    const config = await getConfig();
     
     const log = msg => config.logGenerationEvents && console.log(msg.cyan);
 
@@ -22,46 +22,47 @@ module.exports = async function(yargs) {
         cwd: (config.calibreBinPath || null), maxBuffer: 1000000 * 1024
       }
     });
-    
-    // Load book list from Calibre
-    let books = JSON.parse(
-      await calibre.run('calibredb list', [], {
-        'for-machine': null,
-        'fields': 'authors,formats,id,identifiers,pubdate,publisher,series,'
-          + 'series_index,title'
-      })
-    );
+
+    // Get the id of the last book in the library
+    const lastBookId = +(
+      await calibre.run('calibredb list', [], { fields: 'id' })
+    ).trim().split('\n').slice(-1)[0];
 
     const start = Date.now(), limit = argv.limit;
     const ids = argv.ids ? argv.ids.split(',') : [];
     let loops = 0;
-
-    // Skip up to book with id of argv.startAt
-    if (argv.startAt) {
-      const index = books.findIndex(b => b.id == argv.startAt);
-
-      if (index == -1) {
-        console.log(`Could not find book with id ${argv.startAt}`.red);
-        return;
-      }
-
-      books = books.slice(index);
-      log(`Skipping ${index + 1} books`);
-    }
     
     // Loop through books
-    for (book of books) {
+    for (let i = +argv.startAt || 0; i < lastBookId + 1; i++) {
+      // Check if we need to exit the loop
       if (ids.length && ids.indexOf(book.id.toString()) == -1) break;
       if (limit && limit <= loops) break;
 
-      log('');
-      log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
-
       // Check if book is ignored
-      if (ignoreList.indexOf(book.id.toString()) > -1) {
+      if (ignoreList.indexOf(i.toString()) > -1) {
         log(`Skipping book in ignore list`);
         continue;
       }
+
+      // Load book from Calibre
+      const book = JSON.parse(
+        await calibre.run('calibredb list', [], {
+          'for-machine': null,
+          'fields': 'authors,formats,id,identifiers,pubdate,publisher,series,'
+            + 'series_index,title',
+          'search': 'id:' + i
+        })
+      )[0];
+
+      // Book does not exist with id
+      if (!book) {
+        ignoreList.push(i.toString());
+        await setIgnoreList(ignoreList);
+        continue;
+      }
+
+      log('');
+      log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
       // Check for similar matching set
       if (
