@@ -1,6 +1,6 @@
 {
   "name": "auto-annotator",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Automatically generate annotations for an entire Calibre ebook library via Xyfir Annotations.",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,6 @@
     "colors": "^1.1.2",
     "node-calibre": "^1.0.1",
     "superagent": "^3.5.2",
-    "yargs": "^7.1.0"
+    "yargs": "^8.0.1"
   }
 }
