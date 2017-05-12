@@ -23,14 +23,11 @@ module.exports = async function(yargs) {
       }
     });
 
-    // Get the id of the last book in the library
-    const lastBookId = +(
-      await calibre.run('calibredb list', [], { fields: 'id' })
-    ).trim().split('\n').slice(-1)[0];
+    const lastBookId = +argv.stopAt || 99999999;
 
     const start = Date.now(), limit = argv.limit;
     const ids = argv.ids ? argv.ids.split(',') : [];
-    let loops = 0;
+    let loops = 0, misses = 0;
     
     // Loop through books
     for (let i = +argv.startAt || 0; i < lastBookId + 1; i++) {
@@ -56,9 +53,16 @@ module.exports = async function(yargs) {
 
       // Book does not exist with id
       if (!book) {
+        // Only allow 20 'misses' if stopAt was not provided
+        if (++misses > 20 && !argv.stopAt) break;
+
         ignoreList.push(i.toString());
         await setIgnoreList(ignoreList);
+
         continue;
+      }
+      else {
+        misses = 0;
       }
 
       log('');
