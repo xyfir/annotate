@@ -4,6 +4,8 @@ For now, auto-annotator requires you to have Node and npm installed, and have so
 
 # Install
 
+**Node v8.0.0 or newer required.**
+
 > npm install -g auto-annotator
 
 or you can clone this repo and then:
@@ -33,6 +35,6 @@ Now, there's more configuration you can do, but this is the bare minimum to get 
 
 # Generating Annotations
 
-> auto-annotator generate
+> auto-annotator generate calibre
 
 If everything is set properly, this will generate annotations for every book not in the ignore list. See [here](https://github.com/Xyfir/auto-annotator/blob/master/DOCS.md) for more information.

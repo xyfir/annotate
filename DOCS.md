@@ -1,8 +1,8 @@
 # Commands
 
-## generate
+## generate calibre
 
-> auto-annotator generate
+> auto-annotator generate calibre
 
 This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored.
 
@@ -12,6 +12,24 @@ This command loads your Calibre library, loops through the books, and creates an
 - `--ids: number|string` - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
 - `--start-at: number` - Skip all books before the book with the provided id. Defaults to `0`.
 - `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent auto-annotator from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
+
+## generate libgen
+
+> auto-annotator generate libgen
+
+This command can most likely be ignored. It is used by the AutoAnnotator bot account on xyAnnotations.
+
+This command requires a local copy of the Library Genesis fiction database (taken from [one of these database dumps](http://gen.lib.rus.ec/dbdumps/)). It pulls the needed metadata for books from the LibGen database, downloads a temporary copy of the ebook (directly from LibGen's actual server), generates annotations with that book, and then deletes the book.
+
+### Options
+
+- `--limit: number` - Stop after the specified number of books are pulled from the database. Unlike the `generate calibre` command, books that were skipped are counted towards the limit.
+
+### Notes
+
+- Calibre still needs to be installed because Calibre's `ebook-convert` is used.
+- This command will not interfere with or use your Calibre library.
+- This command uses both the `ignoreBookIfMatchingSetExists` and `skipBookIfMatchingSetExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
 ## config
 
@@ -100,12 +118,30 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
   - Works the same as `skipBookIfMatchingSetExists` except if any sets match the book the book is also added to the ignore list. Takes precedence over `skipBookIfMatchingSetExists`.
 - **logGenerationEvents**: *bool*
   - Default: `true`
-  - Lets you know what's going on when you run `auto-annotator generate`.
+  - Lets you know what's going on when you run one of the `generate` commands.
 - **xyfirAnnotationsAccessKey**: *string*
   - Your Xyfir Annotations access key.
 - **addPrependedSearchAnnotation**: *bool*
   - Default: `true`
   - If true, an extra annotation is added to every annotation set item. The annotation is a web search of the item, prepended with the book title and potentially author name for a more relevant search.
+
+## Library Genesis
+
+- **libgenDatabaseName**: *string*
+  - Default: `"libgen"`
+  - The name of the local LibGen database.
+- **libgenDatabaseHost**: *string*
+  - Default `"localhost"`
+  - The host for the local LibGen database.
+- **libgenDatabaseUser**: *string*
+  - Default `"root"`
+  - Username for the local LibGen database.
+- **libgenDatabasePass**: 
+  - Password for the local LibGen database.
+- **libgenLastId**: *number*
+  - Default `0`
+  - The id of the last book in the LibGen database that was handled in the `generate libgen` command.
+  - Will be updated on its own should be left alone unless you want the command to start at a specific location.
 
 # User Data
 
