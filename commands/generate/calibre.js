@@ -1,11 +1,14 @@
-const similarSetsExist = require('../lib/annotations/similar-sets-exist');
-const generateSetItems = require('../lib/annotations/generate-items');
-const setIgnoreList = require('../lib/ignore-list/set');
-const getIgnoreList = require('../lib/ignore-list/get');
-const createSet = require('../lib/annotations/create-set');
-const getConfig = require('../lib/config/get');
+const similarSetsExist = require('lib/annotations/similar-sets-exist');
+const generateSetItems = require('lib/annotations/generate-items');
+const setIgnoreList = require('lib/ignore-list/set');
+const getIgnoreList = require('lib/ignore-list/get');
+const createSet = require('lib/annotations/create-set');
+const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
+const util = require('util');
 const fs = require('fs');
+
+fs.unlink = util.promisify(fs.unlink);
 
 module.exports = async function(yargs) {
 
@@ -126,16 +129,8 @@ module.exports = async function(yargs) {
           log(`Generated text file added to book as format`);
         }
         else if (config.deleteGeneratedFormat) {
-          await new Promise(resolve => {
-            fs.unlink(format, err => {
-              if (err)
-                log(`Could not delete generated text file`);
-              else
-                log(`Generated text file deleted`);
-              
-              resolve();
-            });
-          });
+          await fs.unlink(format);
+          log(`Generated text file deleted`);
         }
       }
 
