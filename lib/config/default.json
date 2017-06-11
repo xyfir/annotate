@@ -4,10 +4,15 @@
   "deleteGeneratedFormat": true,
   "addGeneratedFormat": false,
   "annotationSetTitle": "Generated Annotations",
-  "annotationSetDescription": "Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with Xyfir Annotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator).",
+  "annotationSetDescription": "Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with xyAnnotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator).",
   "ignoreBookIfMatchingSetExists": false,
   "skipBookIfMatchingSetExists": true,
   "logGenerationEvents": true,
   "xyfirAnnotationsAccessKey": "",
-  "addPrependedSearchAnnotation": true
+  "addPrependedSearchAnnotation": true,
+  "libgenDatabaseName": "libgen",
+  "libgenDatabaseHost": "localhost",
+  "libgenDatabaseUser": "root",
+  "libgenDatabasePass": "",
+  "libgenLastId": 0
 }
