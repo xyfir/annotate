@@ -1,7 +1,7 @@
 {
   "name": "auto-annotator",
-  "version": "2.1.0",
-  "description": "Automatically generate annotations for an entire Calibre ebook library via Xyfir Annotations.",
+  "version": "2.2.0",
+  "description": "Automatically generate ebook annotations for Xyfir Annotations.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -32,10 +32,10 @@
     "app-module-path": "^2.2.0",
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
-    "mysql2": "^1.3.4",
+    "mysql2": "^1.3.5",
     "node-calibre": "^1.0.1",
     "superagent": "^3.5.2",
     "xmldom": "^0.1.27",
-    "yargs": "^8.0.1"
+    "yargs": "^8.0.2"
   }
 }
