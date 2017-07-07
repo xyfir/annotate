@@ -121,9 +121,9 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
   - Lets you know what's going on when you run one of the `generate` commands.
 - **xyfirAnnotationsAccessKey**: *string*
   - Your Xyfir Annotations access key.
-- **addPrependedSearchAnnotation**: *bool*
+- **addSearchAnnotationContext**: *bool*
   - Default: `true`
-  - If true, an extra annotation is added to every annotation set item. The annotation is a web search of the item, prepended with the book title and potentially author name for a more relevant search.
+  - If true, extra context is added to every 'Web Search' annotation that is generated. The context is all or a portion of the book title and potentially the author's name for a more relevant search. See xyAnnotations' user help docs for more on 'Contextual Search Annotations'.
 
 ## Library Genesis
 

@@ -9,7 +9,7 @@
   "skipBookIfMatchingSetExists": true,
   "logGenerationEvents": true,
   "xyfirAnnotationsAccessKey": "",
-  "addPrependedSearchAnnotation": true,
+  "addSearchAnnotationContext": true,
   "libgenDatabaseName": "libgen",
   "libgenDatabaseHost": "localhost",
   "libgenDatabaseUser": "root",
