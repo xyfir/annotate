@@ -1,13 +1,12 @@
 const similarSetsExist = require('lib/annotations/similar-sets-exist');
 const generateSetItems = require('lib/annotations/generate-items');
+const downloadEbook = require('lib/ebooks/download');
 const createSet = require('lib/annotations/create-set');
 const writeFile = require('lib/files/write');
 const getConfig = require('lib/config/get');
 const setConfig = require('lib/config/set');
-const DOMParser = require('xmldom').DOMParser;
 const readFile = require('lib/files/read');
 const Calibre = require('node-calibre');
-const request = require('superagent');
 const mysql = require('mysql2/promise');
 const util = require('util');
 const fs = require('fs');
@@ -54,8 +53,6 @@ module.exports = async function(yargs) {
       database: config.libgenDatabaseName, password: config.libgenDatabasePass
     });
 
-    const domParser = new DOMParser({ errorHandler: () => 1 });
-
     let loops = 0;
 
     while (true) {
@@ -88,24 +85,16 @@ module.exports = async function(yargs) {
           continue;
         }
 
-        let dl;
-        try {
-          // Download the file as a buffer
-          dl = await request
-            .get('http://libgen.io/ads.php?md5=' + book.md5)
-            .buffer(true)
-            .parse(request.parse['application/octet-stream']);
-          log(`Ebook file downloaded. Writing to disk...`);
-        }
-        catch (err) {
-          log(`Could not find book. Skipping...`);
+        let buffer = await downloadEbook(book.md5);
+        if (!buffer) {
+          log(`Could not download book. Skipping...`);
           continue;
         }
 
         // Write temp files to user data directory
-        const file1 = await writeFile(Date.now() + '.' + book.ext, dl.body);
+        const file1 = await writeFile(Date.now() + '.' + book.ext, buffer);
         const file2 = await writeFile(Date.now() + '.txt', '');
-        dl = null;
+        buffer = null;
 
         try {
           // Convert to a text file
