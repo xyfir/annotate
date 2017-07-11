@@ -19,7 +19,7 @@ This command loads your Calibre library, loops through the books, and creates an
 
 This command can most likely be ignored. It is used by the AutoAnnotator bot account on xyAnnotations.
 
-This command requires a local copy of the Library Genesis fiction database (taken from [one of these database dumps](http://gen.lib.rus.ec/dbdumps/)). It pulls the needed metadata for books from the LibGen database, downloads a temporary copy of the ebook (directly from LibGen's actual server), generates annotations with that book, and then deletes the book.
+This command requires a local copy of the Library Genesis database (libgen_YYYY-MM-DD.rar) taken from [LibGen's database dumps](http://gen.lib.rus.ec/dbdumps/)). Only the `updated_edited` table is used. It pulls the needed metadata for books from the LibGen database, downloads a temporary copy of the ebook (directly from LibGen's actual server), generates annotations with that book, and then deletes the book.
 
 ### Options
 
