@@ -28,20 +28,15 @@ module.exports = async function(yargs) {
 
   const sql = `
     SELECT
-      Title AS title, Series1 AS series,
-      ID AS id, MD5 AS md5, Extension AS ext,
-      AuthorFamily1 AS authorLast1, AuthorName1 AS authorFirst1,
-      AuthorFamily2 AS authorLast2, AuthorName2 AS authorFirst2,
-      AuthorFamily3 AS authorLast3, AuthorName3 AS authorFirst3,
-      AuthorFamily4 AS authorLast4, AuthorName4 AS authorFirst4
-    FROM main
+      id, title, author AS authors, series, md5, extension AS ext
+    FROM updated_edited
     WHERE
-      ID > ? AND
-      Filesize < 10000001 AND
-      Extension IN ('epub', 'mobi') AND
-      AuthorFamily1 != '' AND AuthorName1 != '' AND
+      id > ? AND
+      filesize < 100000001 AND
+      author != '' AND title != '' AND
+      extension IN ('epub', 'mobi') AND
       Language REGEXP '[[:<:]](English)|(english)|(eng)|(en)[[:>:]]'
-    ORDER BY ID ASC
+    ORDER BY id ASC
     LIMIT 100
   `;
   
@@ -74,15 +69,6 @@ module.exports = async function(yargs) {
         if (argv.limit && loops >= argv.limit) throw 'Limit reached';
         loops++;
 
-        // Build 'authors' prop
-        book.authors = [];
-        for (let i = 1; i < 5; i++) {
-          book.authors.push(
-            (book['authorFirst' + i] + ' ' + book['authorLast' + i]).trim()
-          );
-        }
-        book.authors = book.authors.filter(a => !!a).join(' & ');
-
         log(``);
         log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
@@ -102,31 +88,36 @@ module.exports = async function(yargs) {
           continue;
         }
 
-        // Download page from LibGen that will give us the actual download link
-        let dl = await request
-          .get('http://libgen.io/foreignfiction/ads.php?md5=' + book.md5);
-        log(`Finding download link from LibGen`);
-        
-        // Download the actual file as a buffer
-        dl = await request
-          .get(
-            domParser
-              .parseFromString(dl.text)
-              .getElementsByTagName('a')[1]
-              .attributes[0]
-              .value
-          )
-          .buffer(true)
-          .parse(request.parse['application/octet-stream']);
-        log(`Ebook file downloaded. Writing to disk...`);
+        let dl;
+        try {
+          // Download the file as a buffer
+          dl = await request
+            .get('http://libgen.io/ads.php?md5=' + book.md5)
+            .buffer(true)
+            .parse(request.parse['application/octet-stream']);
+          log(`Ebook file downloaded. Writing to disk...`);
+        }
+        catch (err) {
+          log(`Could not find book. Skipping...`);
+          continue;
+        }
 
         // Write temp files to user data directory
         const file1 = await writeFile(Date.now() + '.' + book.ext, dl.body);
         const file2 = await writeFile(Date.now() + '.txt', '');
+        dl = null;
 
-        // Convert to a text file
-        await calibre.run('ebook-convert', [file1, file2]);
-        log(`Ebook converted to a text file`);
+        try {
+          // Convert to a text file
+          await calibre.run('ebook-convert', [file1, file2]);
+          log(`Ebook converted to a text file`);
+        }
+        catch (err) {
+          log(`Could not convert ebook`);
+          await fs.unlink(file1);
+          await fs.unlink(file2);
+          continue;
+        }
 
         // Create annotation set with book and config info
         const setId = await createSet(book, config);
