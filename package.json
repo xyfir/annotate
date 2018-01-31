@@ -1,6 +1,6 @@
 {
   "name": "auto-annotator",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Automatically generate ebook annotations for Xyfir Annotations.",
   "main": "index.js",
   "scripts": {
@@ -33,9 +33,9 @@
     "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "mysql2": "^1.5.1",
-    "node-calibre": "^1.1.0",
+    "node-calibre": "^1.2.0",
     "superagent": "^3.8.2",
     "xmldom": "^0.1.27",
-    "yargs": "^10.0.3"
+    "yargs": "^11.0.0"
   }
 }
