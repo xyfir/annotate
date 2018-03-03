@@ -17,7 +17,7 @@ or you can clone this repo and then:
 Before generating annotations, there's a few things you must do first:
 
 - Generate an access key for your Xyfir Annotations account and save it to auto-annotator's config.
-  - Go to Xyfir Annotations' [access keys section](https://annotations.xyfir.com/#/account/access-keys).
+  - Go to Xyfir Annotations [access keys section](https://annotations.xyfir.com/account/access-keys).
   - Generate a new key, and copy that key.
   - Run the following command: `auto-annotator config --key xyfirAnnotationsAccessKey --value "ACCESS_KEY"`. `ACCESS_KEY` should be replaced with the key you copied.
 - Save your Calibre ebook library path to config.
