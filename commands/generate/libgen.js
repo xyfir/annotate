@@ -1,4 +1,4 @@
-const similarSetsExist = require('lib/annotations/similar-sets-exist');
+const similarBooksExist = require('lib/annotations/similar-books-exist');
 const generateSetItems = require('lib/annotations/generate-items');
 const downloadEbook = require('lib/ebooks/download');
 const createSet = require('lib/annotations/create-set');
@@ -14,8 +14,8 @@ const fs = require('fs');
 fs.unlink = util.promisify(fs.unlink);
 
 /**
- * Using a local Library Genesis database, download books from LibGen.io and 
- * generate annotations for the downloaded book. 
+ * Using a local Library Genesis database, download books from LibGen.io and
+ * generate annotations for the downloaded book.
  * Currently only supports LibGen's fiction database.
  * @param {object} yargs
  * @param {object} yargs.argv
@@ -38,10 +38,10 @@ module.exports = async function(yargs) {
     ORDER BY id ASC
     LIMIT 100
   `;
-  
+
   try {
     const config = await getConfig();
-    
+
     const log = msg => config.logGenerationEvents && console.log(msg.cyan);
 
     const calibre = new Calibre({
@@ -73,15 +73,12 @@ module.exports = async function(yargs) {
         config.libgenLastId = book.id;
         await setConfig(config);
 
-        // Check if similar set exists
+        // Check if similar book exists
         if (
-          (
-            config.ignoreBookIfMatchingSetExists ||
-            config.skipBookIfMatchingSetExists
-          ) &&
-          await similarSetsExist(book, config)
+          (config.ignoreBookIfMatchExists || config.skipBookIfMatchExists) &&
+          await similarBooksExist(book, config)
         ) {
-          log(`Skipping book due to similar matching sets`);
+          log(`Skipping book due to similar matching book(s)`);
           continue;
         }
 
@@ -116,7 +113,7 @@ module.exports = async function(yargs) {
         log(`Generating annotations, this could take a while`);
         const items = await generateSetItems(setId, book, file2, config);
         log(`${items} annotations generated`);
-        
+
         // Delete files
         await fs.unlink(file1);
         await fs.unlink(file2);

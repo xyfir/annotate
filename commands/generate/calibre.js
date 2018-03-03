@@ -1,4 +1,4 @@
-const similarSetsExist = require('lib/annotations/similar-sets-exist');
+const similarBooksExist = require('lib/annotations/similar-books-exist');
 const generateSetItems = require('lib/annotations/generate-items');
 const setIgnoreList = require('lib/ignore-list/set');
 const getIgnoreList = require('lib/ignore-list/get');
@@ -13,11 +13,11 @@ fs.unlink = util.promisify(fs.unlink);
 module.exports = async function(yargs) {
 
   const argv = yargs.argv;
-  
+
   try {
     const ignoreList = await getIgnoreList();
     const config = await getConfig();
-    
+
     const log = msg => config.logGenerationEvents && console.log(msg.cyan);
 
     const calibre = new Calibre({
@@ -31,7 +31,7 @@ module.exports = async function(yargs) {
     const start = Date.now(), limit = argv.limit;
     const ids = argv.ids ? argv.ids.split(',') : [];
     let loops = 0, misses = 0;
-    
+
     // Loop through books
     for (let i = +argv.startAt || 0; i < lastBookId + 1; i++) {
       // Check if we need to exit the loop
@@ -71,34 +71,32 @@ module.exports = async function(yargs) {
       log('');
       log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
-      // Check for similar matching set
+      // Check for similar matching book
       if (
-        (
-          config.ignoreBookIfMatchingSetExists ||
-          config.skipBookIfMatchingSetExists
-        ) && await similarSetsExist(book, config)
+        (config.ignoreBookIfMatchExists || config.skipBookIfMatchExists) &&
+        await similarBooksExist(book, config)
       ) {
-        if (config.ignoreBookIfMatchingSetExists) {
+        if (config.ignoreBookIfMatchExists) {
           ignoreList.push(book.id.toString());
           await setIgnoreList(ignoreList);
-          log(`Ignoring book due to similar matching sets`);
+          log(`Ignoring book due to similar matching book(s)`);
         }
         else {
-          log(`Skipping book due to similar matching sets`);
+          log(`Skipping book due to similar matching book(s)`);
         }
         continue;
       }
-      
+
       let format = book.formats.find(f => f.split('.').slice(-1) == 'txt');
       let formatGenerated = false;
-      
+
       // Generate text format
       if (!format) {
         log(`Generating text file`);
         format = book.formats[0];
 
         if (!format) continue;
-        
+
         let newFormat = format.split('.');
         newFormat[newFormat.length - 1] = 'txt';
         newFormat = newFormat.join('.');
@@ -107,7 +105,7 @@ module.exports = async function(yargs) {
         format = newFormat, formatGenerated = true;
         log(`Text file generated`);
       }
-      
+
       // Create annotation set with book and config info
       const setId = await createSet(book, config);
       log(`Annotation set ${setId} created`);
@@ -116,7 +114,7 @@ module.exports = async function(yargs) {
       log(`Generating annotations, this could take a while`);
       const items = await generateSetItems(setId, book, format, config);
       log(`${items} annotations generated`);
-      
+
       // Add book to ignore list
       ignoreList.push(book.id.toString());
       await setIgnoreList(ignoreList);
