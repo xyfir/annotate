@@ -1,7 +1,7 @@
 const similarBooksExist = require('lib/annotations/similar-books-exist');
 const generateSetItems = require('lib/annotations/generate-items');
+const createObjects = require('lib/annotations/create-objects');
 const downloadEbook = require('lib/ebooks/download');
-const createSet = require('lib/annotations/create-set');
 const writeFile = require('lib/files/write');
 const getConfig = require('lib/config/get');
 const setConfig = require('lib/config/set');
@@ -106,7 +106,7 @@ module.exports = async function(yargs) {
         }
 
         // Create annotation set with book and config info
-        const setId = await createSet(book, config);
+        const setId = await createObjects(book, config);
         log(`Annotation set ${setId} created`);
 
         // Read file content, generate items, create items

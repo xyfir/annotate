@@ -1,8 +1,8 @@
 const similarBooksExist = require('lib/annotations/similar-books-exist');
 const generateSetItems = require('lib/annotations/generate-items');
+const createObjects = require('lib/annotations/create-objects');
 const setIgnoreList = require('lib/ignore-list/set');
 const getIgnoreList = require('lib/ignore-list/get');
-const createSet = require('lib/annotations/create-set');
 const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
 const util = require('util');
@@ -107,7 +107,7 @@ module.exports = async function(yargs) {
       }
 
       // Create annotation set with book and config info
-      const setId = await createSet(book, config);
+      const setId = await createObjects(book, config);
       log(`Annotation set ${setId} created`);
 
       // Read file content, generate items, create items
