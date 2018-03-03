@@ -29,7 +29,7 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 
 - Calibre still needs to be installed because Calibre's `ebook-convert` is used.
 - This command will not interfere with or use your Calibre library.
-- This command uses both the `ignoreBookIfMatchingSetExists` and `skipBookIfMatchingSetExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
+- This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
 ## config
 
@@ -110,12 +110,12 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 - **annotationSetDescription**: *string*
   - Default: `"Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with Xyfir Annotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator)."`
   - The description for annotation sets.
-- **skipBookIfMatchingSetExists**: *bool*
+- **skipBookIfMatchExists**: *bool*
   - Default: `true`
-  - If true, a basic search is done with the full book title and authors. If a set matches that search on Xyfir Annotations, the book is skipped and the set is not created.
-- **ignoreBookIfMatchingSetExists**: *bool*
+  - If true, a basic search is done with the full book title and authors. If a book matches that search on xyAnnotations, the book is skipped and nothing is created on xyAnnotations for that book or its content.
+- **ignoreBookIfMatchExists**: *bool*
   - Default: `false`
-  - Works the same as `skipBookIfMatchingSetExists` except if any sets match the book the book is also added to the ignore list. Takes precedence over `skipBookIfMatchingSetExists`.
+  - Works the same as `skipBookIfMatchExists` except if any books match on xyAnnotations match the local book, the book is also added to the ignore list. Takes precedence over `skipBookIfMatchExists`.
 - **logGenerationEvents**: *bool*
   - Default: `true`
   - Lets you know what's going on when you run one of the `generate` commands.
@@ -136,7 +136,7 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 - **libgenDatabaseUser**: *string*
   - Default `"root"`
   - Username for the local LibGen database.
-- **libgenDatabasePass**: 
+- **libgenDatabasePass**:
   - Password for the local LibGen database.
 - **libgenLastId**: *number*
   - Default `0`
