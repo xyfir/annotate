@@ -3,8 +3,6 @@
   "calibreLibraryPath": "",
   "deleteGeneratedFormat": true,
   "addGeneratedFormat": false,
-  "annotationSetTitle": "Generated Annotations",
-  "annotationSetDescription": "Automatically generated 'Web Search' annotations; mostly proper nouns (characters, locations, etc).\n\nAnnotations are generated with xyAnnotations' item generator and [auto-annotator](https://github.com/Xyfir/auto-annotator).",
   "ignoreBookIfMatchExists": false,
   "skipBookIfMatchExists": true,
   "logGenerationEvents": true,
