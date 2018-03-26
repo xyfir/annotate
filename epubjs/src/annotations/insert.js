@@ -1,10 +1,8 @@
+import annotateHTML from 'repo/html';
 import escapeRegex from 'escape-string-regexp';
 
 // Modules
-import buildSearchOrder from 'annotations/build-search-order';
-import findMatchIndexes from 'matches/find-indexes';
 import findMarkers from 'annotations/find-markers';
-import wrapMatches from 'matches/wrap';
 
 /**
  * @typedef {object} AnnotationSet
@@ -21,7 +19,7 @@ import wrapMatches from 'matches/wrap';
 export default async function(book, set) {
 
   // Create a flat, sorted array of all searches in all items
-  const searchOrder = buildSearchOrder(set.items);
+  const searchOrder = annotateHTML.buildSearchOrder(set.items);
 
   // Find markers for all Before and After subsearches
   const markers = await findMarkers(book, set.items);
@@ -57,7 +55,7 @@ export default async function(book, set) {
     }
 
     // Get start/end string indexes for each match
-    let matches = findMatchIndexes(needle, html);
+    let matches = annotateHTML.findMatchIndexes(needle, html);
 
     if (search.before || search.after) {
       // Filter out invalid matches based on before|after
@@ -99,7 +97,7 @@ export default async function(book, set) {
       });
     }
 
-    const wrapped = wrapMatches(
+    const wrapped = annotateHTML.wrapMatches(
       matches, html, 'annotation', `${set.id}-${item.id}`
     );
 

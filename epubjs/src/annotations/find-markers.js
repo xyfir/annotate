@@ -1,4 +1,4 @@
-import findMatchIndexes from 'matches/find-indexes';
+import annotateHTML from 'repo/html';
 import escapeRegex from 'escape-string-regexp';
 
 /**
@@ -61,7 +61,7 @@ export default async function(book, items) {
 
         if (search.before) {
           // Before subsearches are assumed unique with only a single match
-          const [match] = findMatchIndexes(
+          const [match] = annotateHTML.findMatchIndexes(
             new RegExp(
               search.regex ? search.before : escapeRegex(search.before), 'g'
             ),
@@ -76,7 +76,7 @@ export default async function(book, items) {
 
         if (search.after) {
           // After subsearches are assumed unique with only a single match
-          const [match] = findMatchIndexes(
+          const [match] = annotateHTML.findMatchIndexes(
             new RegExp(
               search.regex ? search.after : escapeRegex(search.after), 'g'
             ),
