@@ -51,6 +51,24 @@ window.annotationSets = annotationSets;
       annotate.insertAnnotations(book, annotationSets)
     );
 
+    /** @type {Document} */
+    const fdocument = book.rendition.getContents()[0].document;
+    const oghtml = fdocument.body.innerHTML;
+    let set = -1;
+
+    // Button controls
+    document.getElementById('prev').addEventListener('click', () => {
+      book.rendition.prev();
+    });
+    document.getElementById('next').addEventListener('click', () => {
+      book.rendition.next();
+    });
+    document.getElementById('cycleSets').addEventListener('click', () => {
+      set = annotationSets[set + 1] == undefined ? 0 : set + 1;
+      fdocument.body.innerHTML = oghtml;
+      annotate.insertAnnotations(book, annotationSets[set]);
+    });
+
     /**
      * ---------- ----- ----------
      * ---------- TESTS ----------
@@ -61,11 +79,6 @@ window.annotationSets = annotationSets;
      * @todo Validate clicks on highlights
      * @todo Validate total number of nodes/elements in document.body
      */
-
-    /** @type {Document} */
-    const fdocument = book.rendition.getContents()[0].document;
-    const oghtml = fdocument.body.innerHTML;
-
     for (let set of annotationSets) {
       console.log('Inserting and validating set #', set.id);
       await annotate.insertAnnotations(book, set)
