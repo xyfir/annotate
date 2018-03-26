@@ -1,0 +1,1 @@
+Libraries for annotating content in various formats using data from [xyAnnotations](annotations.xyfir.com).
