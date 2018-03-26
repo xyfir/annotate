@@ -18,6 +18,7 @@ module.exports = {
   entry: './src/index.js',
 
   output: {
+    libraryTarget: 'umd',
     filename: 'index.js',
     library: 'XyfirAnnotateEPUBJS',
     path: path.resolve(__dirname, 'dist')
