@@ -1,0 +1,27 @@
+{
+  "name": "@xyfir/annotate-epubjs",
+  "version": "0.1.0",
+  "description": "Annotate EPUB files using Epub.js and xyAnnotations.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ebooks",
+    "annotate",
+    "annotations",
+    "xyfir",
+    "xyannotations",
+    "epubjs",
+    "epub"
+  ],
+  "author": "Xyfir, LLC <contact@xyfir.com> (https://xyfir.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "escape-string-regexp": "^1.0.5",
+    "webpack": "^4.2.0"
+  }
+}
