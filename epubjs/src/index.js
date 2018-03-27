@@ -1,15 +1,11 @@
-import {
-  buildSearchOrder, findMatchIndexes, wrapMatches
-} from 'repo/html';
 import insertAnnotations from './insert';
 import unwrapMatches from './unwrap';
+import annotateHTML from 'repo/html';
 import findMarkers from './find-markers';
 
 export default {
+  ...annotateHTML,
   insertAnnotations,
-  buildSearchOrder,
-  findMatchIndexes,
   unwrapMatches,
-  findMarkers,
-  wrapMatches
+  findMarkers
 };
