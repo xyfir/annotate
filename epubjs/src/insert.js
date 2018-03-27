@@ -1,5 +1,4 @@
 import annotateHTML from 'repo/html';
-import escapeRegex from 'escape-string-regexp';
 
 // Modules
 import findMarkers from './find-markers';
