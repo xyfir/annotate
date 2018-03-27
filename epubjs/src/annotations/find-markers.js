@@ -1,5 +1,4 @@
 import annotateHTML from 'repo/html';
-import escapeRegex from 'escape-string-regexp';
 
 /**
  * @typedef {object} AnnotationMarker
@@ -17,8 +16,8 @@ import escapeRegex from 'escape-string-regexp';
  * 2 for an 'after' marker.
  */
 /**
- * Finds instances of 'before' and 'after' searches within an annotation set's
- * item's searches.
+ * Finds locations of Before and After subsearch matches from an annotation
+ *  set's item's searches within the book's chapters.
  * @async
  * @param {object} book - EPUBJS book
  * @param {object[]} items - Annotation set items
@@ -46,49 +45,16 @@ export default async function(book, items) {
     if (!file) continue;
 
     /** @type {string} */
-    const html = await file.async('string');
+    let html = await file.async('string');
 
     // Convert file content into html string
     iframe.contentDocument.documentElement.innerHTML = html,
     html = iframe.contentDocument.body.innerHTML;
 
-    // Loop through all items in annotation set
-    items.forEach(item =>
-      // Loop through all search queries in item
-      item.searches.forEach((search, searchIndex) => {
-        // If search query is global, it doesn't have a before or after
-        if (!search.before && !search.after) return;
-
-        if (search.before) {
-          // Before subsearches are assumed unique with only a single match
-          const [match] = annotateHTML.findMatchIndexes(
-            new RegExp(
-              search.regex ? search.before : escapeRegex(search.before), 'g'
-            ),
-            html
-          );
-
-          if (match) {
-            match.chapter = spineItem.index,
-            markers[`${item.id}-${searchIndex}-1`] = match;
-          }
-        }
-
-        if (search.after) {
-          // After subsearches are assumed unique with only a single match
-          const [match] = annotateHTML.findMatchIndexes(
-            new RegExp(
-              search.regex ? search.after : escapeRegex(search.after), 'g'
-            ),
-            html
-          );
-
-          if (match) {
-            match.chapter = spineItem.index,
-            markers[`${item.id}-${searchIndex}-2`] = match;
-          }
-        }
-      })
+    // Find markers within the chapter's HTML
+    Object.assign(
+      markers,
+      annotateHTML.findMarkers(html, spineItem.index, items)
     );
   }
 
