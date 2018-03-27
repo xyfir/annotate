@@ -5,6 +5,16 @@ import findMarkers from './find-markers';
 import wrapMatches from './wrap';
 
 /**
+ * @type {object} InsertAnnotationsIntoHTMLOptions
+ * @prop {string} html - The HTML string to insert annotations into.
+ * @prop {AnnotationMarkers} markers - An annotation set
+ * @prop {number} chapter - Index of the chapter in the book.
+ * @prop {AnnotationSet} set - An annotation set
+ * @prop {function} onclick - This is a TEMPLATE function that takes two
+ *  parameters, `type` and `key`, and returns a string that will be used for
+ *  the highlight elements' `onclick` attribute.
+ */
+/**
  * @typedef {object} AnnotationSet
  * @prop {number} id
  * @prop {object[]} items
@@ -12,13 +22,13 @@ import wrapMatches from './wrap';
 /**
  * Finds and highlights an annotation set's items within the ebook's rendered
  * HTML.
- * @param {string} html - The HTML string to insert annotations into.
- * @param {AnnotationMarkers} markers - An annotation set
- * @param {number} chapter - Index of the chapter in the book.
- * @param {AnnotationSet} set - An annotation set
+ * @param {InsertAnnotationsIntoHTMLOptions} opt
  * @return {string} The modified HTML.
  */
-export default function(html, chapter, markers, set) {
+export default function(opt) {
+
+  const {chapter, markers, set, onclick} = opt;
+  let {html} = opt;
 
   // Create a flat, sorted array of all searches in all items
   const searchOrder = buildSearchOrder(set.items);
@@ -88,9 +98,13 @@ export default function(html, chapter, markers, set) {
       });
     }
 
-    const wrapped = wrapMatches(
-      matches, html, 'annotation', `${set.id}-${item.id}`
-    );
+    const wrapped = wrapMatches({
+      key: `${set.id}-${item.id}`,
+      html,
+      type: 'annotation',
+      matches,
+      onclick
+    });
 
     html = wrapped.html;
 
