@@ -28,7 +28,14 @@ export default async function(book, set) {
   // Get current chapter index to compare with chapter in markers
   const chapter = +book.rendition.location.start.index;
 
-  document.body.innerHTML =
-    annotateHTML.insertAnnotations(html, chapter, markers, set);
+  document.body.innerHTML = annotateHTML.insertAnnotations({
+    set,
+    html,
+    chapter,
+    markers,
+    onclick: (t, k) =>
+    `!event.stopPropagation() && ` +
+    `parent.postMessage({type: '${t}', key: '${k}', epubjs: true}, '*')`
+  });
 
 }
