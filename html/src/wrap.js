@@ -1,4 +1,15 @@
 /**
+ * @typedef {object} WrapOptions
+ * @prop {MatchIndex[]} matches
+ * @prop {string} html - The HTML book content to manipulate.
+ * @prop {string} type - The type of item. Also used for class name.
+ * @prop {string|number} key - Used in onclick to determine which item is
+ *  clicked.
+ * @prop {function} onclick - This is a TEMPLATE function that takes two
+ *  parameters, `type` and `key`, and returns a string that will be used for
+ *  the highlight elements' `onclick` attribute.
+ */
+/**
  * @typedef {object} WrapInfo
  * @prop {string} html - The modified HTML string.
  * @prop {number[]} inserts - The indexes within the modified `html` where
@@ -9,21 +20,16 @@
 /**
  * Wraps strings within a book's HTML content with a `span` element with
  * `class` and `onclick` attributes.
- * @param {MatchIndex[]} matches
- * @param {string} html - The HTML book content to manipulate.
- * @param {string} type - The type of item. Also used for class name.
- * @param {string} key - Used in onclick to determine which item is clicked.
+ * @param {WrapOptions} opt
  * @return {WrapInfo}
  */
-export default function(matches, html, type, key) {
+export default function(opt) {
+
+  const {onclick, matches, type, key} = opt;
+  let {html} = opt;
 
   const wrap = [
-    `<span ` +
-      `class="${type}" ` +
-      `onclick="!event.stopPropagation() && parent.postMessage(` +
-        `{type: '${type}', key: '${key}', epubjs: true}, '*'` +
-      `)"` +
-    `>`,
+    `<span class="${type}" onclick="${onclick(type, key)}">`,
     `</span>`
   ],
   wrapLength = wrap[0].length + wrap[1].length,
