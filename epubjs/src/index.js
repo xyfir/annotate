@@ -1,9 +1,9 @@
 import {
   buildSearchOrder, findMatchIndexes, wrapMatches
 } from 'repo/html';
-import insertAnnotations from 'annotations/insert';
-import unwrapMatches from 'matches/unwrap';
-import findMarkers from 'annotations/find-markers';
+import insertAnnotations from './insert';
+import unwrapMatches from './unwrap';
+import findMarkers from './find-markers';
 
 export default {
   insertAnnotations,

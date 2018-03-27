@@ -2,7 +2,7 @@ import annotateHTML from 'repo/html';
 import escapeRegex from 'escape-string-regexp';
 
 // Modules
-import findMarkers from 'annotations/find-markers';
+import findMarkers from './find-markers';
 
 /**
  * @typedef {object} AnnotationSet
