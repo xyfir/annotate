@@ -19,7 +19,7 @@ The main methods you'll probably need are briefly described below.
 - `items`: *object[]* - The annotation set items to search
 - `markers`: *object* - Markers that point to matches for Before and After subsearches within the chapter
 
-## [insertAnnotations()](https://github.com/Xyfir/annotate/tree/master/html/src/insert-annotations.js)
+## [insertAnnotations()](https://github.com/Xyfir/annotate/tree/master/html/src/insert.js)
 
 ```js
  const newHTML = AnnotateHTML.findMarkers({

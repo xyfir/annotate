@@ -1,6 +1,6 @@
 View annotations inserted into content from [xyAnnotations](annotations.xyfir.com) using React components.
 
-In its current format, this package requires [react-md](https://github.com/mlaursen/react-md). This means there are additional things you will need to import and build in order for this to work properly. You must import: 1) the react-md styles; 2) the Material Icons font; 3) The Roboto font; 4) this package (`@xyfir/annotate-react`). See the [examples](#examples) for more info.
+In its current form, this package requires [react-md](https://github.com/mlaursen/react-md). This means there are additional things you will need to import and build in order for this to work properly. You must import: 1) the react-md styles; 2) the Material Icons font; 3) The Roboto font; 4) this package (`@xyfir/annotate-react`). See the [examples](#examples) for more info.
 
 # API
 
@@ -16,4 +16,4 @@ All of the other exported components (`Document`, `Link`, `Search`, `Image`, `Vi
 
 # Examples
 
-Check the source code for [tests](https://github.com/Xyfir/annotate/tree/master/tests).
+Check the source code for [tests](https://github.com/Xyfir/annotate/tree/master/tests/src).
