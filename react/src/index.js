@@ -1,3 +1,5 @@
+import 'styles.scss';
+
 import ViewAnnotations from './ViewAnnotations';
 import Document from './types/Document';
 import Search from './types/Search';
