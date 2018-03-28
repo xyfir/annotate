@@ -18,6 +18,18 @@ class AnnotateTests extends React.Component {
 
   constructor(props) {
     super(props);
+
+    /** @type {number} */
+    this.set = null;
+
+    /** @type {EPUBJS.Book} */
+    this.book = null;
+
+    /** @type {string} */
+    this.oghtml = null;
+
+    /** @type {Document} */
+    this.fdocument = null;
   }
 
   async componentDidMount() {
@@ -49,7 +61,6 @@ class AnnotateTests extends React.Component {
       // Listen for clicks on a highlight within the book's iframe
       window.addEventListener('message', e => this.onHighlightClick(e));
 
-      /** @type {Document} */
       this.fdocument = this.book.rendition.getContents()[0].document;
       this.oghtml = this.fdocument.body.innerHTML;
       this.set = -1;
