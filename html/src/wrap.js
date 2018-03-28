@@ -2,7 +2,9 @@
  * @typedef {object} WrapOptions
  * @prop {MatchIndex[]} matches
  * @prop {string} html - The HTML book content to manipulate.
- * @prop {string} type - The type of item. Also used for class name.
+ * @prop {string} [type=annotation] - The type of highlight. Also used for
+ *  class name. This can be ignored, and is mainly used for other purposes
+ *  in xyBooks.
  * @prop {string|number} key - Used in onclick to determine which item is
  *  clicked.
  * @prop {function} onclick - This is a TEMPLATE function that takes two
@@ -25,7 +27,7 @@
  */
 export default function(opt) {
 
-  const {onclick, matches, type, key} = opt;
+  const {onclick, matches, type = 'annotation', key} = opt;
   let {html} = opt;
 
   const wrap = [

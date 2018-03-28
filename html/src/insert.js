@@ -101,7 +101,6 @@ export default function(opt) {
     const wrapped = wrapMatches({
       key: `${set.id}-${item.id}`,
       html,
-      type: 'annotation',
       matches,
       onclick
     });
