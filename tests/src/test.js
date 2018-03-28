@@ -46,15 +46,19 @@ window.annotationSets = annotationSets;
       console.log('Click', item);
     });
 
-    // Insert annotations when a new chapter is rendered
-    book.rendition.on('rendered', () =>
-      AnnotateEPUBJS.insertAnnotations(book, annotationSets)
-    );
-
     /** @type {Document} */
-    const fdocument = book.rendition.getContents()[0].document;
-    const oghtml = fdocument.body.innerHTML;
+    let fdocument = book.rendition.getContents()[0].document;
+    let oghtml = fdocument.body.innerHTML;
     let set = -1;
+
+    // Insert annotations, update vars when a new chapter is rendered
+    book.rendition.on('rendered', () => {
+      fdocument = book.rendition.getContents()[0].document,
+      oghtml = fdocument.body.innerHTML;
+
+      if (set > -1)
+        AnnotateEPUBJS.insertAnnotations(book, annotationSets[set]);
+    });
 
     // Button controls
     document.getElementById('prev').addEventListener('click', () => {
