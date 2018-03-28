@@ -14,109 +14,142 @@ window.AnnotateReact = AnnotateReact,
 window.AnnotateEPUBJS = AnnotateEPUBJS,
 window.annotationSets = annotationSets;
 
-(async function() {
+class AnnotateTests extends React.Component {
 
-  // Book setup
-  const book = new EPUB('/src/book.epub', {});
-  window.book = book;
-  const bookView = document.getElementById('bookView');
+  constructor(props) {
+    super(props);
+  }
 
-  // Render book to `div#bookView`
-  book.renderTo(bookView, {
-    height: window.getComputedStyle(bookView).height,
-    width: window.innerWidth
-  });
+  async componentDidMount() {
+    // Book setup
+    window.book = this.book = new EPUB('/src/book.epub', {});
+    const bookView = document.getElementById('bookView');
 
-  try {
-    // More book setup
-    await book.ready;
-    await book.rendition.display();
-    await book.locations.generate(1000);
-
-    // Add styles for highlights within book
-    book.rendition.themes.default({
-      'span.annotation': {
-        'background-color': '#85C1E9',
-        'cursor': 'pointer'
-      }
-    });
-    book.rendition.themes.update('default');
-
-    // Listen for clicks on a highlight within the book's iframe
-    window.addEventListener('message', e => {
-      if (!e.data.epubjs) return;
-
-      const [setId, itemId] = event.data.key.split('-');
-      const set  = annotationSets.find(s => s.id == setId);
-      const item = set.items.find(i => i.id == itemId);
-
-      render(
-        <AnnotateReact.ViewAnnotations annotations={item.annotations} />,
-        document.getElementById('viewAnnotations')
-      );
+    // Render book to `div#bookView`
+    this.book.renderTo(bookView, {
+      height: window.getComputedStyle(bookView).height,
+      width: window.innerWidth
     });
 
-    /** @type {Document} */
-    let fdocument = book.rendition.getContents()[0].document;
-    let oghtml = fdocument.body.innerHTML;
-    let set = -1;
+    try {
+      // More book setup
+      await this.book.ready;
+      await this.book.rendition.display();
+      await this.book.locations.generate(1000);
 
-    // Insert annotations, update vars when a new chapter is rendered
-    book.rendition.on('rendered', () => {
-      fdocument = book.rendition.getContents()[0].document,
-      oghtml = fdocument.body.innerHTML;
+      // Add styles for highlights within book
+      this.book.rendition.themes.default({
+        'span.annotation': {
+          'background-color': '#85C1E9',
+          'cursor': 'pointer'
+        }
+      });
+      this.book.rendition.themes.update('default');
 
-      if (set > -1)
-        AnnotateEPUBJS.insertAnnotations(book, annotationSets[set]);
-    });
+      // Listen for clicks on a highlight within the book's iframe
+      window.addEventListener('message', e => this.onHighlightClick(e));
 
-    // Button controls
-    document.getElementById('prev').addEventListener('click', () => {
-      book.rendition.prev();
-    });
-    document.getElementById('next').addEventListener('click', () => {
-      book.rendition.next();
-    });
-    document.getElementById('cycleSets').addEventListener('click', () => {
-      set = annotationSets[set + 1] == undefined ? 0 : set + 1;
-      fdocument.body.innerHTML = oghtml;
-      AnnotateEPUBJS.insertAnnotations(book, annotationSets[set]);
-    });
+      /** @type {Document} */
+      this.fdocument = this.book.rendition.getContents()[0].document;
+      this.oghtml = this.fdocument.body.innerHTML;
+      this.set = -1;
 
-    /**
-     * ---------- ----- ----------
-     * ---------- TESTS ----------
-     * ---------- ----- ----------
-     * These tests are highly flawed and entirely dependent on the book and the
-     *  annotation sets. They're better than nothing, but don't assume a pass
-     *  here means everything is working perfectly.
-     * @todo Validate clicks on highlights
-     * @todo Validate total number of nodes/elements in document.body
-     */
-    for (let set of annotationSets) {
-      console.log('Inserting and validating set #', set.id);
-      await AnnotateEPUBJS.insertAnnotations(book, set);
+      // Insert annotations, update vars when a new chapter is rendered
+      this.book.rendition.on('rendered', () => {
+        this.fdocument = this.book.rendition.getContents()[0].document,
+        this.oghtml = this.fdocument.body.innerHTML;
 
-      const ans = fdocument.querySelectorAll('span.annotation');
-
-      // Validate the number of `span.annotation` elements created
-      if (ans.length != set.elements)
-        throw `Bad element count ${ans.length}`;
-
-      // Validate the text content of all highlights
-      for (let el of ans) {
-        if (set.matches.findIndex(m => m == el.textContent) == -1)
-          throw `Bad element content ${el.textContent}`;
-      }
-
-      // Reset book's html
-      fdocument.body.innerHTML = oghtml;
+        if (this.set > -1) {
+          AnnotateEPUBJS.insertAnnotations(
+            this.book, annotationSets[this.set]
+          );
+        }
+      });
+    }
+    catch (err) {
+      console.error('Setup error', err);
     }
 
-    console.log('All tests passed');
-  }
-  catch (err) {
-    console.error(err);
+    this._runTests();
   }
 
-})();
+  onPrevPage() {
+    this.book.rendition.prev();
+  }
+
+  onNextPage() {
+    this.book.rendition.next();
+  }
+
+  onCycleSets() {
+    this.set = annotationSets[this.set + 1] == undefined
+      ? 0
+      : this.set + 1;
+    this.fdocument.body.innerHTML = this.oghtml;
+    AnnotateEPUBJS.insertAnnotations(this.book, annotationSets[this.set]);
+  }
+
+  onHighlightClick(e) {
+    if (!e.data.epubjs) return;
+
+    const [setId, itemId] = event.data.key.split('-');
+    const set  = annotationSets.find(s => s.id == setId);
+    const item = set.items.find(i => i.id == itemId);
+
+    render(
+      <AnnotateReact.ViewAnnotations annotations={item.annotations} />,
+      document.getElementById('viewAnnotations')
+    );
+  }
+
+  /**
+   * These tests are highly flawed and entirely dependent on the book and the
+   *  annotation sets. They're better than nothing, but don't assume a pass
+   *  here means everything is working perfectly.
+   * @todo Validate clicks on highlights
+   * @todo Validate total number of nodes/elements in document.body
+   */
+  async _runTests() {
+    try {
+      for (let set of annotationSets) {
+        console.log('Inserting and validating set #', set.id);
+        await AnnotateEPUBJS.insertAnnotations(this.book, set);
+
+        const ans = this.fdocument.querySelectorAll('span.annotation');
+
+        // Validate the number of `span.annotation` elements created
+        if (ans.length != set.elements)
+          throw `Bad element count ${ans.length}`;
+
+        // Validate the text content of all highlights
+        for (let el of ans) {
+          if (set.matches.findIndex(m => m == el.textContent) == -1)
+            throw `Bad element content ${el.textContent}`;
+        }
+
+        // Reset book's html
+        this.fdocument.body.innerHTML = this.oghtml;
+      }
+
+      console.log('All tests passed');
+    }
+    catch (err) {
+      console.error('Test error', err);
+    }
+  }
+
+  render() {
+    return (<React.Fragment>
+      <div id='bookView' />
+      <div id='controls'>
+        <button onClick={() => this.onPrevPage()}>previous</button>
+        <button onClick={() => this.onNextPage()}>next</button>
+        <button onClick={() => this.onCycleSets()}>cycle sets</button>
+      </div>
+      <div id='viewAnnotations' />
+    </React.Fragment>);
+  }
+
+}
+
+render(<AnnotateTests />, document.getElementById('content'));
