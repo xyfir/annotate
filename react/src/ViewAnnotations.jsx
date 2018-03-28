@@ -56,15 +56,7 @@ export default class ViewAnnotations extends React.Component {
         case 2: return <Link annotation={annotation} />
         case 3: return <Search annotation={annotation} />
         case 4: return <Image annotation={annotation} />
-        case 5:
-          /** @todo Support multiple videos */
-          return (
-            <Video link={
-              Array.isArray(annotation.value)
-                ? annotation.value[0]
-                : annotation.value
-            } />
-          )
+        case 5: return <Video annotation={annotation} />
         case 6: return <Audio annotation={annotation} />
         case 7: return <Map annotation={annotation} />
       }
