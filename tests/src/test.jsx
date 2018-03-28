@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 
-import annotationSets from 'mocks/annotation-sets';
+import { DialogContainer, Button } from 'react-md';
+import annotationSets from './annotation-sets';
 import AnnotateEPUBJS from 'repo/epubjs';
 import AnnotateReact from 'repo/react';
 import { render } from 'react-dom';
@@ -19,17 +20,35 @@ class AnnotateTests extends React.Component {
   constructor(props) {
     super(props);
 
-    /** @type {number} */
+    /**
+     * @type {number}
+     * The index of the annotation set that is currently being viewed.
+     */
     this.set = null;
 
     /** @type {EPUBJS.Book} */
     this.book = null;
 
-    /** @type {string} */
+    /**
+     * @type {string}
+     * The original HTML of the book document's body before the annotations
+     *  were inserted.
+     */
     this.oghtml = null;
 
-    /** @type {Document} */
+    /**
+     * @type {Document}
+     * The document of the ebook's iframe.
+     */
     this.fdocument = null;
+
+    this.state = {
+      /**
+       * @type {object}
+       * The annotation set item being viewed.
+       */
+      item: null
+    };
   }
 
   async componentDidMount() {
@@ -104,13 +123,9 @@ class AnnotateTests extends React.Component {
     if (!e.data.epubjs) return;
 
     const [setId, itemId] = event.data.key.split('-');
-    const set  = annotationSets.find(s => s.id == setId);
-    const item = set.items.find(i => i.id == itemId);
+    const set = annotationSets.find(s => s.id == setId);
 
-    render(
-      <AnnotateReact.ViewAnnotations annotations={item.annotations} />,
-      document.getElementById('viewAnnotations')
-    );
+    this.setState({ item: set.items.find(i => i.id == itemId) });
   }
 
   /**
@@ -150,14 +165,39 @@ class AnnotateTests extends React.Component {
   }
 
   render() {
+    const {item} = this.state;
+
     return (<React.Fragment>
       <div id='bookView' />
+
       <div id='controls'>
         <button onClick={() => this.onPrevPage()}>previous</button>
         <button onClick={() => this.onNextPage()}>next</button>
         <button onClick={() => this.onCycleSets()}>cycle sets</button>
       </div>
-      <div id='viewAnnotations' />
+
+      <DialogContainer
+        fullPage
+        id='view-annotations-dialog'
+        onHide={() => this.setState({ item: null })}
+        visible={item !== null}
+        className='view-annotations-dialog'
+        aria-label='view-annotations-dialog'
+        focusOnMount={false}
+      >
+        {item ? (
+          <AnnotateReact.ViewAnnotations annotations={item.annotations} />
+        ) : null}
+
+        <Button
+          floating fixed primary
+          tooltipPosition='left'
+          fixedPosition='br'
+          tooltipLabel='Close'
+          iconChildren='close'
+          onClick={() => this.setState({ item: null })}
+        />
+      </DialogContainer>
     </React.Fragment>);
   }
 
