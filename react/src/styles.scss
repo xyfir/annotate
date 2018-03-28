@@ -1,0 +1,44 @@
+div.xyfir-annotate-react.view-annotations {
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+
+  >div.content, >div.content > div {
+    flex-flow: column;
+    display: flex;
+    height: 100%;
+
+    /* allow scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+
+    >iframe {
+      flex: 1 1 auto;
+      border: none;
+    }
+  }
+
+  >div.content {
+    >div.document-annotation {
+      padding: 1em;
+
+      p {
+        font-size: 100%;
+      }
+    }
+
+    >div.audio-annotation > audio {
+      width: 100%;
+    }
+
+    >div.image-annotation > a {
+      padding: 1em;
+
+      >img {
+        max-height: 100%;
+        max-width: 100%;
+      }
+    }
+  }
+}
