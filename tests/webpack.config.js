@@ -15,7 +15,7 @@ module.exports = {
 
   mode: MODE,
 
-  entry: './src/test.js',
+  entry: './src/test.jsx',
 
   output: {
     filename: 'test.js',
@@ -30,19 +30,19 @@ module.exports = {
     alias: {
       repo: path.resolve(__dirname, '../')
     },
-    extensions: ['.js']
+    extensions: ['.js', '.jsx']
   },
 
   module: {
     rules: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       loader: 'babel-loader',
       include: [
         __dirname
       ],
       exclude: /node_modules/,
       options: {
-        presets: ['env']
+        presets: ['env', 'react']
       }
     }]
   },

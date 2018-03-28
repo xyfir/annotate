@@ -2,11 +2,15 @@ import 'babel-polyfill';
 
 import annotationSets from 'mocks/annotation-sets';
 import AnnotateEPUBJS from 'repo/epubjs';
+import AnnotateReact from 'repo/react';
+import { render } from 'react-dom';
+import React from 'react';
 import EPUB from 'epubjs';
 
 // This is required for Epub.js to work
 window.ePub = EPUB;
 // These are just for testing
+window.AnnotateReact = AnnotateReact,
 window.AnnotateEPUBJS = AnnotateEPUBJS,
 window.annotationSets = annotationSets;
 
@@ -42,8 +46,14 @@ window.annotationSets = annotationSets;
     window.addEventListener('message', e => {
       if (!e.data.epubjs) return;
 
-      const [set, item] = event.data.key.split('-');
-      console.log('Click', item);
+      const [setId, itemId] = event.data.key.split('-');
+      const set  = annotationSets.find(s => s.id == setId);
+      const item = set.items.find(i => i.id == itemId);
+
+      render(
+        <AnnotateReact.ViewAnnotations annotations={item.annotations} />,
+        document.getElementById('viewAnnotations')
+      );
     });
 
     /** @type {Document} */
