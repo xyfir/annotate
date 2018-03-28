@@ -1,4 +1,4 @@
-import annotateHTML from 'repo/html';
+import AnnotateHTML from 'repo/html';
 
 /**
  * @typedef {object} AnnotationMarker
@@ -54,7 +54,7 @@ export default async function(book, items) {
     // Find markers within the chapter's HTML
     Object.assign(
       markers,
-      annotateHTML.findMarkers(html, spineItem.index, items)
+      AnnotateHTML.findMarkers(html, spineItem.index, items)
     );
   }
 

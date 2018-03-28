@@ -1,13 +1,13 @@
 import 'babel-polyfill';
 
 import annotationSets from 'mocks/annotation-sets';
-import annotate from 'repo/epubjs';
+import AnnotateEPUBJS from 'repo/epubjs';
 import EPUB from 'epubjs';
 
 // This is required for Epub.js to work
 window.ePub = EPUB;
 // These are just for testing
-window.annotate = annotate,
+window.AnnotateEPUBJS = AnnotateEPUBJS,
 window.annotationSets = annotationSets;
 
 (async function() {
@@ -48,7 +48,7 @@ window.annotationSets = annotationSets;
 
     // Insert annotations when a new chapter is rendered
     book.rendition.on('rendered', () =>
-      annotate.insertAnnotations(book, annotationSets)
+      AnnotateEPUBJS.insertAnnotations(book, annotationSets)
     );
 
     /** @type {Document} */
@@ -66,7 +66,7 @@ window.annotationSets = annotationSets;
     document.getElementById('cycleSets').addEventListener('click', () => {
       set = annotationSets[set + 1] == undefined ? 0 : set + 1;
       fdocument.body.innerHTML = oghtml;
-      annotate.insertAnnotations(book, annotationSets[set]);
+      AnnotateEPUBJS.insertAnnotations(book, annotationSets[set]);
     });
 
     /**
@@ -81,8 +81,7 @@ window.annotationSets = annotationSets;
      */
     for (let set of annotationSets) {
       console.log('Inserting and validating set #', set.id);
-      await annotate.insertAnnotations(book, set)
-      // await new Promise(r => setTimeout(r, 5000));
+      await AnnotateEPUBJS.insertAnnotations(book, set);
 
       const ans = fdocument.querySelectorAll('span.annotation');
 

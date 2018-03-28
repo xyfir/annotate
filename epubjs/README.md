@@ -3,7 +3,7 @@ Annotate [EPUB](http://idpf.org/epub) books using [Epub.js](https://github.com/f
 # Usage
 
 ```js
-import annotate from '@xyfir/annotate-epubjs';
+import AnnotateEPUBJS from '@xyfir/annotate-epubjs';
 import EPUB from 'epubjs';
 
 /**
@@ -18,13 +18,13 @@ const settings = {/* settings for Epub.js */};
 const book = new EPUB(bookFile, settings);
 
 // Insert annotation set's items into the book's HTML
-annotate.insertAnnotations(book, annotationSet);
+AnnotateEPUBJS.insertAnnotations(book, annotationSet);
 
 const [{document}] = book.rendition.getContents();
 
 // Remove inserted annotations from book's HTML
 // This must be done before inserting a different annotation set!
-annotate.unwrapMatches(document, 'annotation');
+AnnotateEPUBJS.unwrapMatches(document, 'annotation');
 
 /**
  * Triggered when highlighted text within the book's content is clicked.

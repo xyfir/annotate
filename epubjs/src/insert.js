@@ -1,4 +1,4 @@
-import annotateHTML from 'repo/html';
+import AnnotateHTML from 'repo/html';
 
 // Modules
 import findMarkers from './find-markers';
@@ -27,7 +27,7 @@ export default async function(book, set) {
   // Get current chapter index to compare with chapter in markers
   const chapter = +book.rendition.location.start.index;
 
-  document.body.innerHTML = annotateHTML.insertAnnotations({
+  document.body.innerHTML = AnnotateHTML.insertAnnotations({
     set,
     html,
     chapter,
