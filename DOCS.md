@@ -8,10 +8,10 @@ This command loads your Calibre library, loops through the books, and creates an
 
 ### Options
 
-- `--limit: number` - Stop after the specified number of annotation sets are created. Ignored or skipped books do not count.
-- `--ids: number|string` - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
-- `--start-at: number` - Skip all books before the book with the provided id. Defaults to `0`.
-- `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent auto-annotator from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
+* `--limit: number` - Stop after the specified number of annotation sets are created. Ignored or skipped books do not count.
+* `--ids: number|string` - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
+* `--start-at: number` - Skip all books before the book with the provided id. Defaults to `0`.
+* `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent auto-annotator from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
 
 ## generate libgen
 
@@ -23,13 +23,13 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 
 ### Options
 
-- `--limit: number` - Stop after the specified number of books are pulled from the database. Unlike the `generate calibre` command, books that were skipped are counted towards the limit.
+* `--limit: number` - Stop after the specified number of books are pulled from the database. Unlike the `generate calibre` command, books that were skipped are counted towards the limit.
 
 ### Notes
 
-- Calibre still needs to be installed because Calibre's `ebook-convert` is used.
-- This command will not interfere with or use your Calibre library.
-- This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
+* Calibre still needs to be installed because Calibre's `ebook-convert` is used.
+* This command will not interfere with or use your Calibre library.
+* This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
 ## config
 
@@ -37,9 +37,9 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 
 The config command has three different actions based on what options you provide.
 
-- If you ignore all options, this command will output a table with all of the config keys and a (possibly) shortened version of their values.
-- If you provide only `--key`, the full value for that key will be output to console.
-- If you provide `--key` *and* `--value` a new value will be set for the key.
+* If you ignore all options, this command will output a table with all of the config keys and a (possibly) shortened version of their values.
+* If you provide only `--key`, the full value for that key will be output to console.
+* If you provide `--key` _and_ `--value` a new value will be set for the key.
 
 Attempting to read or write to a non-existent key will result in an error.
 
@@ -58,9 +58,11 @@ Adds a single or multiple book IDs to the ignore list.
 #### Examples
 
 Add book id 55 to the ignore list
+
 > auto-annotator ignore add --ids 55
 
 Add books 1, 400, and 2 to the ignore list
+
 > auto-annotator ignore add --ids 1,400,2
 
 ### remove
@@ -72,9 +74,11 @@ Removes a single or multiple book IDs from the ignore list.
 #### Examples
 
 Remove book 55 from ignore list
+
 > auto-annotator ignore remove --ids 55
 
 Remove books 1, 400, and 2 from the ignore list
+
 > auto-annotator ignore remove --ids 1,400,2
 
 ### reset
@@ -91,51 +95,48 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 
 # Config Keys
 
-- **calibreBinPath**: *string*
-  - The path to Calibre's binaries.
-  - Can be left empty if this path is in your system's PATH.
-- **calibreLibraryPath**: *string*
-  - The path to the Calibre library you wish to generate annotations for.
-  - Should contain a metadata.db file and folders for each author.
-- **deleteGeneratedFormat**: *bool*
-  - Default: `true`
-  - Xyfir Annotations generates annotations from a text file. If a book does not have a text format, one is generated from the first format available. If this is true, that generated file is deleted after it is used.
-- **addGeneratedFormat**: *bool*
-  - Default: `false`
-  - If true, the generated text file is added to the book as another format.
-  - If true, deleteGeneratedFormat is ignored.
-- **skipBookIfMatchExists**: *bool*
-  - Default: `true`
-  - If true, a basic search is done with the full book title and authors. If a book matches that search on xyAnnotations, the book is skipped and nothing is created on xyAnnotations for that book or its content.
-- **ignoreBookIfMatchExists**: *bool*
-  - Default: `false`
-  - Works the same as `skipBookIfMatchExists` except if any books match on xyAnnotations match the local book, the book is also added to the ignore list. Takes precedence over `skipBookIfMatchExists`.
-- **logGenerationEvents**: *bool*
-  - Default: `true`
-  - Lets you know what's going on when you run one of the `generate` commands.
-- **xyfirAnnotationsAccessKey**: *string*
-  - Your Xyfir Annotations access key.
-- **addSearchAnnotationContext**: *bool*
-  - Default: `true`
-  - If true, extra context is added to every 'Web Search' annotation that is generated. The context is all or a portion of the book title and potentially the author's name for a more relevant search. See xyAnnotations' user help docs for more on 'Contextual Search Annotations'.
+* **calibreBinPath**: _string_
+  * The path to Calibre's binaries.
+  * Can be left empty if this path is in your system's PATH.
+* **calibreLibraryPath**: _string_
+  * The path to the Calibre library you wish to generate annotations for.
+  * Should contain a metadata.db file and folders for each author.
+* **deleteGeneratedFormat**: _bool_
+  * Default: `true`
+  * Xyfir Annotations generates annotations from a text file. If a book does not have a text format, one is generated from the first format available. If this is true, that generated file is deleted after it is used.
+* **addGeneratedFormat**: _bool_
+  * Default: `false`
+  * If true, the generated text file is added to the book as another format.
+  * If true, deleteGeneratedFormat is ignored.
+* **skipBookIfMatchExists**: _bool_
+  * Default: `true`
+  * If true, a basic search is done with the full book title and authors. If a book matches that search on xyAnnotations, the book is skipped and nothing is created on xyAnnotations for that book or its content.
+* **ignoreBookIfMatchExists**: _bool_
+  * Default: `false`
+  * Works the same as `skipBookIfMatchExists` except if any books match on xyAnnotations match the local book, the book is also added to the ignore list. Takes precedence over `skipBookIfMatchExists`.
+* **logGenerationEvents**: _bool_
+  * Default: `true`
+  * Lets you know what's going on when you run one of the `generate` commands.
+* **xyfirAnnotationsAccessKey**: _string_
+  * Your Xyfir Annotations access key.
 
 ## Library Genesis
 
-- **libgenDatabaseName**: *string*
-  - Default: `"libgen"`
-  - The name of the local LibGen database.
-- **libgenDatabaseHost**: *string*
-  - Default `"localhost"`
-  - The host for the local LibGen database.
-- **libgenDatabaseUser**: *string*
-  - Default `"root"`
-  - Username for the local LibGen database.
-- **libgenDatabasePass**:
-  - Password for the local LibGen database.
-- **libgenLastId**: *number*
-  - Default `0`
-  - The id of the last book in the LibGen database that was handled in the `generate libgen` command.
-  - Will be updated on its own should be left alone unless you want the command to start at a specific location.
+* **libgenDatabaseName**: _string_
+  * Default: `"libgen"`
+  * The name of the local LibGen database.
+* **libgenDatabaseHost**: _string_
+  * Default `"localhost"`
+  * The host for the local LibGen database.
+* **libgenDatabaseUser**: _string_
+  * Default `"root"`
+  * Username for the local LibGen database.
+* **libgenDatabasePass**:
+  * Password for the local LibGen database.
+* **libgenLastId**: _number_
+  * Default `0`
+  * The id of the last book in the LibGen database that was handled in the `generate libgen` command.
+  * Will be updated on its own should be left alone unless you want the command to start at a specific location.
 
 # User Data
 
