@@ -22,7 +22,6 @@ fs.unlink = util.promisify(fs.unlink);
  * @param {number} [yargs.argv.limit]
  */
 module.exports = async function(yargs) {
-
   const argv = yargs.argv;
 
   const sql = `
@@ -49,8 +48,10 @@ module.exports = async function(yargs) {
     });
 
     const cn = await mysql.createConnection({
-      host: config.libgenDatabaseHost, user: config.libgenDatabaseUser,
-      database: config.libgenDatabaseName, password: config.libgenDatabasePass
+      host: config.libgenDatabaseHost,
+      user: config.libgenDatabaseUser,
+      database: config.libgenDatabaseName,
+      password: config.libgenDatabasePass
     });
 
     let loops = 0;
@@ -76,7 +77,7 @@ module.exports = async function(yargs) {
         // Check if similar book exists
         if (
           (config.ignoreBookIfMatchExists || config.skipBookIfMatchExists) &&
-          await similarBooksExist(book, config)
+          (await similarBooksExist(book, config))
         ) {
           log(`Skipping book due to similar matching book(s)`);
           continue;
@@ -97,8 +98,7 @@ module.exports = async function(yargs) {
           // Convert to a text file
           await calibre.run('ebook-convert', [file1, file2]);
           log(`Ebook converted to a text file`);
-        }
-        catch (err) {
+        } catch (err) {
           log(`Could not convert ebook`);
           await fs.unlink(file1);
           await fs.unlink(file2);
@@ -122,9 +122,7 @@ module.exports = async function(yargs) {
         log(`Book (${book.id}) finished`);
       }
     }
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.toString().red);
   }
-
-}
+};

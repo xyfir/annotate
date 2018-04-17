@@ -6,9 +6,8 @@ const fs = require('fs');
  * @param {yargs} yargs
  */
 module.exports = async function(yargs) {
-
   const argv = yargs.argv;
-  
+
   try {
     let list = await getIgnoreList();
 
@@ -19,16 +18,11 @@ module.exports = async function(yargs) {
         return 0;
       });
     }
-    
-    if (!list.length)
-      console.log('Ignore list is empty');
-    else if (argv.multiline)
-      list.forEach(id => console.log(id));
-    else
-      console.log(list.join(', '));
-  }
-  catch (e) {
+
+    if (!list.length) console.log('Ignore list is empty');
+    else if (argv.multiline) list.forEach(id => console.log(id));
+    else console.log(list.join(', '));
+  } catch (e) {
     console.log(e.toString().red);
   }
-
-}
+};

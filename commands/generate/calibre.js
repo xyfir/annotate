@@ -11,7 +11,6 @@ const fs = require('fs');
 fs.unlink = util.promisify(fs.unlink);
 
 module.exports = async function(yargs) {
-
   const argv = yargs.argv;
 
   try {
@@ -21,16 +20,20 @@ module.exports = async function(yargs) {
     const log = msg => config.logGenerationEvents && console.log(msg.cyan);
 
     const calibre = new Calibre({
-      library: config.calibreLibraryPath, execOptions: {
-        cwd: (config.calibreBinPath || null), maxBuffer: 1000000 * 1024
+      library: config.calibreLibraryPath,
+      execOptions: {
+        cwd: config.calibreBinPath || null,
+        maxBuffer: 1000000 * 1024
       }
     });
 
     const lastBookId = +argv.stopAt || 99999999;
 
-    const start = Date.now(), limit = argv.limit;
+    const start = Date.now(),
+      limit = argv.limit;
     const ids = argv.ids ? argv.ids.split(',') : [];
-    let loops = 0, misses = 0;
+    let loops = 0,
+      misses = 0;
 
     // Loop through books
     for (let i = +argv.startAt || 0; i < lastBookId + 1; i++) {
@@ -48,9 +51,10 @@ module.exports = async function(yargs) {
       const book = JSON.parse(
         await calibre.run('calibredb list', [], {
           'for-machine': null,
-          'fields': 'authors,formats,id,identifiers,pubdate,publisher,series,'
-            + 'series_index,title',
-          'search': 'id:' + i
+          fields:
+            'authors,formats,id,identifiers,pubdate,publisher,series,' +
+            'series_index,title',
+          search: 'id:' + i
         })
       )[0];
 
@@ -63,8 +67,7 @@ module.exports = async function(yargs) {
         await setIgnoreList(ignoreList);
 
         continue;
-      }
-      else {
+      } else {
         misses = 0;
       }
 
@@ -74,14 +77,13 @@ module.exports = async function(yargs) {
       // Check for similar matching book
       if (
         (config.ignoreBookIfMatchExists || config.skipBookIfMatchExists) &&
-        await similarBooksExist(book, config)
+        (await similarBooksExist(book, config))
       ) {
         if (config.ignoreBookIfMatchExists) {
           ignoreList.push(book.id.toString());
           await setIgnoreList(ignoreList);
           log(`Ignoring book due to similar matching book(s)`);
-        }
-        else {
+        } else {
           log(`Skipping book due to similar matching book(s)`);
         }
         continue;
@@ -102,7 +104,7 @@ module.exports = async function(yargs) {
         newFormat = newFormat.join('.');
 
         await calibre.run('ebook-convert', [format, newFormat]);
-        format = newFormat, formatGenerated = true;
+        (format = newFormat), (formatGenerated = true);
         log(`Text file generated`);
       }
 
@@ -125,8 +127,7 @@ module.exports = async function(yargs) {
         if (config.addGeneratedFormat) {
           await calibre.run('calibredb add_format', [book.id, format]);
           log(`Generated text file added to book as format`);
-        }
-        else if (config.deleteGeneratedFormat) {
+        } else if (config.deleteGeneratedFormat) {
           await fs.unlink(format);
           log(`Generated text file deleted`);
         }
@@ -137,13 +138,11 @@ module.exports = async function(yargs) {
     }
 
     log(
-      `Generation for ${loops} books complete in ${
-        Math.round((Date.now() - start) / 1000)
-      } seconds.`
+      `Generation for ${loops} books complete in ${Math.round(
+        (Date.now() - start) / 1000
+      )} seconds.`
     );
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.toString().red);
   }
-
-}
+};

@@ -7,7 +7,6 @@ const fs = require('fs');
  * @param {yargs} yargs
  */
 module.exports = async function(yargs) {
-
   const argv = yargs.argv;
 
   try {
@@ -19,9 +18,7 @@ module.exports = async function(yargs) {
 
     await setIgnoreList(list);
     console.log('Success'.green);
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.toString().red);
   }
-
-}
+};

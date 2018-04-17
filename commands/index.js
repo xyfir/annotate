@@ -6,4 +6,4 @@ module.exports = {
   showIgnoreList: require('./ignore-list/show'),
   generateLibGen: require('./generate/libgen'),
   config: require('./config')
-}
+};
