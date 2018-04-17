@@ -1,6 +1,6 @@
 import buildSearchOrder from './build-search-order';
 import findMatchIndexes from './find-indexes';
-import escapeRegex from 'escape-string-regexp';
+import AnnotateCore from 'repo/core';
 import findMarkers from './find-markers';
 import wrapMatches from './wrap';
 
@@ -26,9 +26,8 @@ import wrapMatches from './wrap';
  * @return {string} The modified HTML.
  */
 export default function(opt) {
-
-  const {chapter, markers, set, onclick} = opt;
-  let {html} = opt;
+  const { chapter, markers, set, onclick } = opt;
+  let { html } = opt;
 
   // Create a flat, sorted array of all searches in all items
   const searchOrder = buildSearchOrder(set.items);
@@ -42,15 +41,14 @@ export default function(opt) {
     let needle;
     if (search.regex) {
       needle = new RegExp(search.main, 'g');
-    }
-    else {
+    } else {
       // If not regex, escape regex characters and wrap in \b
       // Add \b to start/end of regex if start/end is a non-word character
       // Prevents words from being highlighted within longer words
       needle = new RegExp(
         (wordChar.test(search.main[0]) ? '\\b' : '') +
-        escapeRegex(search.main) +
-        (wordChar.test(search.main[search.main.length - 1]) ? '\\b' : ''),
+          AnnotateCore.escapeRegex(search.main) +
+          (wordChar.test(search.main[search.main.length - 1]) ? '\\b' : ''),
         'g'
       );
     }
@@ -65,18 +63,16 @@ export default function(opt) {
         // Each object contains chapter index and string index
         // of where marker occured in book
         const before = markers[`${item.id}-${o.search}-1`];
-        const after  = markers[`${item.id}-${o.search}-2`];
+        const after = markers[`${item.id}-${o.search}-2`];
 
         // In book's content, where a search has before/after
         // :before: ... :main: ... :after:
 
         if (search.before) {
           // Marker could not be found
-          if (before === undefined)
-            return false;
+          if (before === undefined) return false;
           // User has yet to reach chapter where marker occurs
-          else if (before.chapter > chapter)
-            return false;
+          else if (before.chapter > chapter) return false;
           // Match has yet to reach index in chapter where marker occurs
           else if (before.chapter == chapter && before.start > match.start)
             return false;
@@ -84,11 +80,9 @@ export default function(opt) {
 
         if (search.after) {
           // Marker could not be found
-          if (after === undefined)
-            return false;
+          if (after === undefined) return false;
           // User has passed chapter where marker occurs
-          else if (after.chapter < chapter)
-            return false;
+          else if (after.chapter < chapter) return false;
           // Match has passed index within chapter where marker occurs
           else if (after.chapter == chapter && after.end < match.end)
             return false;
@@ -108,15 +102,14 @@ export default function(opt) {
     html = wrapped.html;
 
     // Update string indexes for current chapter's markers
-    Object
-      .keys(markers)
+    Object.keys(markers)
       .filter(marker => marker.chapter == chapter)
       .map(marker =>
         // Increase marker's string index by the wrapper's length every time
         // an annotation was inserted before the marker
         wrapped.inserts.map(index => {
           if (markers[marker].end > index) {
-            markers[marker].end += wrapped.wrapLength,
+            markers[marker].end += wrapped.wrapLength;
             markers[marker].start += wrapped.wrapLength;
           }
         })
@@ -124,5 +117,4 @@ export default function(opt) {
   });
 
   return html;
-
 }
