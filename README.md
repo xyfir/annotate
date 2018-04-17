@@ -1,10 +1,11 @@
 A collection of libraries for annotating content in various formats using data from [xyAnnotations](annotations.xyfir.com).
 
-- [Epub.js](https://github.com/Xyfir/annotate/tree/master/epubjs): **Insert** annotations into EPUB books rendered with Epub.js v0.3.
-- [HTML](https://github.com/Xyfir/annotate/tree/master/html): **Insert** annotations into HTML strings. Allows you to annotate books or just about anything that renders to HTML.
-- [DOM](https://github.com/Xyfir/annotate/tree/master/dom): **Insert** annotations into the HTML DOM. *(abandoned / incomplete)*
-- [React](https://github.com/Xyfir/annotate/tree/master/react): **View** annotations using React components.
-- [Tests](https://github.com/Xyfir/annotate/tree/master/tests): Tests and examples for the rest of the packages.
+* [Epub.js](https://github.com/Xyfir/annotate/tree/master/epubjs): **Insert** annotations into EPUB books rendered with Epub.js v0.3.
+* [HTML](https://github.com/Xyfir/annotate/tree/master/html): **Insert** annotations into HTML strings. Allows you to annotate books or just about anything that renders to HTML.
+* [DOM](https://github.com/Xyfir/annotate/tree/master/dom): **Insert** annotations into the HTML DOM. _(abandoned / incomplete)_
+* [React](https://github.com/Xyfir/annotate/tree/master/react): **View** annotations using React components.
+* [Tests](https://github.com/Xyfir/annotate/tree/master/tests): Tests and examples for the rest of the packages.
+* [Core](https://github.com/Xyfir/annotate/tree/master/core): Core utilities used by other packages.
 
 These packages assume you already have access to the xyAnnotations API and can download annotation sets which need to be inserted into some content (probably an ebook). If you're not at that point yet you should probably start [here](https://annotations.xyfir.com/affiliate) or [here](https://annotations.xyfir.com/forums/6/103.developers). Feel free to submit an issue or [send us a message](https://www.xyfir.com/#/contact) if you're confused!
 
