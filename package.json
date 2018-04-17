@@ -1,6 +1,6 @@
 {
   "name": "auto-annotator",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Automatically generate ebook annotations for Xyfir Annotations.",
   "main": "index.js",
   "scripts": {
@@ -28,14 +28,20 @@
     "url": "https://github.com/Xyfir/auto-annotator/issues"
   },
   "homepage": "https://github.com/Xyfir/auto-annotator#readme",
+  "prettier": {
+    "singleQuote": true
+  },
   "dependencies": {
     "app-module-path": "^2.2.0",
     "cli-table": "^0.3.1",
     "colors": "^1.2.1",
-    "mysql2": "^1.5.2",
+    "mysql2": "^1.5.3",
     "node-calibre": "^1.2.0",
     "superagent": "^3.8.2",
     "xmldom": "^0.1.27",
     "yargs": "^11.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^1.12.1"
   }
 }
