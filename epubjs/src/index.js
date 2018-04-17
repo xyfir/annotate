@@ -1,9 +1,9 @@
 import insertAnnotations from './insert';
-import annotateHTML from 'repo/html';
+import AnnotateHTML from 'repo/html';
 import findMarkers from './find-markers';
 
 export default {
-  ...annotateHTML,
+  ...AnnotateHTML,
   insertAnnotations,
   findMarkers
 };
