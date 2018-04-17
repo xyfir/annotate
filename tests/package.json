@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-tests",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "For testing @xyfir/annotate-* libraries.",
   "main": "",
   "scripts": {
@@ -8,6 +8,9 @@
   },
   "author": "Xyfir, LLC <contact@xyfir.com> (https://xyfir.com/)",
   "license": "MIT",
+  "prettier": {
+    "singleQuote": true
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
@@ -16,9 +19,10 @@
     "babel-preset-react": "^6.24.1",
     "epubjs": "^0.3.58",
     "express": "^4.16.3",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "prettier": "^1.12.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-md": "^1.2.13",
-    "webpack": "^4.2.0"
+    "webpack": "^4.6.0"
   }
 }
