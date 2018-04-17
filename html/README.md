@@ -11,31 +11,31 @@ The main methods you'll probably need are briefly described below.
 ## [findMarkers()](https://github.com/Xyfir/annotate/tree/master/html/src/find-markers.js)
 
 ```js
- const markers = AnnotateHTML.findMarkers(html, chapter, items)
+const markers = AnnotateHTML.findMarkers(html, chapter, items);
 ```
 
-- `html`: *string* - The HTML string to search for markers in
-- `chapter`: *number* - The index of the chapter within the book
-- `items`: *object[]* - The annotation set items to search
-- `markers`: *object* - Markers that point to matches for Before and After subsearches within the chapter
+* `html`: _string_ - The HTML string to search for markers in
+* `chapter`: _number_ - The index of the chapter within the book
+* `items`: _object[]_ - The annotation set items to search
+* `markers`: _object_ - Markers that point to matches for Before and After subsearches within the chapter
 
 ## [insertAnnotations()](https://github.com/Xyfir/annotate/tree/master/html/src/insert.js)
 
 ```js
- const newHTML = AnnotateHTML.findMarkers({
-    set,
-    html,
-    chapter,
-    markers,
-    onclick: (type, key) => `...`
- })
+const newHTML = AnnotateHTML.insertAnnotations({
+  set,
+  html,
+  chapter,
+  markers,
+  onclick: (type, key) => `...`
+});
 ```
 
-- `set`: *object* - The annotation set to insert
-- `html`: *string* - The HTML string to insert annotations into
-- `chapter`: *number* - The index of the chapter within the book
-- `markers`: *object* - Markers that point to matches for Before and After subsearches within the book
-- `onclick`: *function* - A template function that returns a string that will be used in the `onclick="..."` attribute for each highlight element inserted into the HTML. `type` is the type of highlight (should always be `annotation` unless you have some custom setup). `key` identifies the item being clicked with the following format: `'setId-itemId'`.
+* `set`: _object_ - The annotation set to insert
+* `html`: _string_ - The HTML string to insert annotations into
+* `chapter`: _number_ - The index of the chapter within the book
+* `markers`: _object_ - Markers that point to matches for Before and After subsearches within the book
+* `onclick`: _function_ - A template function that returns a string that will be used in the `onclick="..."` attribute for each highlight element inserted into the HTML. `type` is the type of highlight (should always be `annotation` unless you have some custom setup). `key` identifies the item being clicked with the following format: `'setId-itemId'`.
 
 ##
 
