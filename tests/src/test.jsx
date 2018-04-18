@@ -11,12 +11,11 @@ import EPUB from 'epubjs';
 // This is required for Epub.js to work
 window.ePub = EPUB;
 // These are just for testing
-window.AnnotateReact = AnnotateReact,
-window.AnnotateEPUBJS = AnnotateEPUBJS,
+window.AnnotateReact = AnnotateReact;
+window.AnnotateEPUBJS = AnnotateEPUBJS;
 window.annotationSets = annotationSets;
 
 class AnnotateTests extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -72,7 +71,7 @@ class AnnotateTests extends React.Component {
       this.book.rendition.themes.default({
         'span.annotation': {
           'background-color': '#85C1E9',
-          'cursor': 'pointer'
+          cursor: 'pointer'
         }
       });
       this.book.rendition.themes.update('default');
@@ -86,17 +85,14 @@ class AnnotateTests extends React.Component {
 
       // Insert annotations, update vars when a new chapter is rendered
       this.book.rendition.on('rendered', () => {
-        this.fdocument = this.book.rendition.getContents()[0].document,
+        this.fdocument = this.book.rendition.getContents()[0].document;
         this.oghtml = this.fdocument.body.innerHTML;
 
         if (this.set > -1) {
-          AnnotateEPUBJS.insertAnnotations(
-            this.book, annotationSets[this.set]
-          );
+          AnnotateEPUBJS.insertAnnotations(this.book, annotationSets[this.set]);
         }
       });
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Setup error', err);
     }
 
@@ -112,9 +108,7 @@ class AnnotateTests extends React.Component {
   }
 
   onCycleSets() {
-    this.set = annotationSets[this.set + 1] == undefined
-      ? 0
-      : this.set + 1;
+    this.set = annotationSets[this.set + 1] == undefined ? 0 : this.set + 1;
     this.fdocument.body.innerHTML = this.oghtml;
     AnnotateEPUBJS.insertAnnotations(this.book, annotationSets[this.set]);
   }
@@ -144,8 +138,7 @@ class AnnotateTests extends React.Component {
         const ans = this.fdocument.querySelectorAll('span.annotation');
 
         // Validate the number of `span.annotation` elements created
-        if (ans.length != set.elements)
-          throw `Bad element count ${ans.length}`;
+        if (ans.length != set.elements) throw `Bad element count ${ans.length}`;
 
         // Validate the text content of all highlights
         for (let el of ans) {
@@ -158,49 +151,57 @@ class AnnotateTests extends React.Component {
       }
 
       console.log('All tests passed');
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Test error', err);
     }
   }
 
   render() {
-    const {item} = this.state;
+    const { item } = this.state;
 
-    return (<React.Fragment>
-      <div id='bookView' />
+    return (
+      <React.Fragment>
+        <div id="bookView" />
 
-      <div id='controls'>
-        <button onClick={() => this.onPrevPage()}>previous</button>
-        <button onClick={() => this.onNextPage()}>next</button>
-        <button onClick={() => this.onCycleSets()}>cycle sets</button>
-      </div>
+        <div id="controls">
+          <button onClick={() => this.onPrevPage()}>previous</button>
+          <button onClick={() => this.onNextPage()}>next</button>
+          <button onClick={() => this.onCycleSets()}>cycle sets</button>
+        </div>
 
-      <DialogContainer
-        fullPage
-        id='view-annotations-dialog'
-        onHide={() => this.setState({ item: null })}
-        visible={item !== null}
-        className='view-annotations-dialog'
-        aria-label='view-annotations-dialog'
-        focusOnMount={false}
-      >
-        {item ? (
-          <AnnotateReact.ViewAnnotations annotations={item.annotations} />
-        ) : null}
+        <DialogContainer
+          fullPage
+          id="view-annotations-dialog"
+          onHide={() => this.setState({ item: null })}
+          visible={item !== null}
+          className="view-annotations-dialog"
+          aria-label="view-annotations-dialog"
+          focusOnMount={false}
+        >
+          {item ? (
+            <AnnotateReact.ViewAnnotations
+              annotations={item.annotations}
+              book={{
+                title: 'The Autobiography of Benjamin Franklin',
+                authors: 'Benjamin Franklin'
+              }}
+            />
+          ) : null}
 
-        <Button
-          floating fixed primary
-          tooltipPosition='left'
-          fixedPosition='br'
-          tooltipLabel='Close'
-          iconChildren='close'
-          onClick={() => this.setState({ item: null })}
-        />
-      </DialogContainer>
-    </React.Fragment>);
+          <Button
+            floating
+            fixed
+            primary
+            tooltipPosition="left"
+            fixedPosition="br"
+            tooltipLabel="Close"
+            iconChildren="close"
+            onClick={() => this.setState({ item: null })}
+          />
+        </DialogContainer>
+      </React.Fragment>
+    );
   }
-
 }
 
 render(<AnnotateTests />, document.getElementById('content'));
