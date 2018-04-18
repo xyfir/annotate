@@ -21,7 +21,6 @@ const ANNOTATION_TYPES = {
 };
 
 export default class ViewAnnotations extends React.Component {
-
   /**
    * @typedef {object} ViewAnnotationsProps
    * @prop {object[]} annotations
@@ -47,23 +46,30 @@ export default class ViewAnnotations extends React.Component {
   }
 
   render() {
-    const {annotations, drawer, index} = this.state;
+    const { annotations, drawer, index } = this.state;
     const annotation = annotations[index];
 
     const view = (() => {
       switch (annotation.type) {
-        case 1: return <Document annotation={annotation} />
-        case 2: return <Link annotation={annotation} />
-        case 3: return <Search annotation={annotation} />
-        case 4: return <Image annotation={annotation} />
-        case 5: return <Video annotation={annotation} />
-        case 6: return <Audio annotation={annotation} />
-        case 7: return <Map annotation={annotation} />
+        case 1:
+          return <Document annotation={annotation} />;
+        case 2:
+          return <Link annotation={annotation} />;
+        case 3:
+          return <Search annotation={annotation} book={this.props.book} />;
+        case 4:
+          return <Image annotation={annotation} />;
+        case 5:
+          return <Video annotation={annotation} />;
+        case 6:
+          return <Audio annotation={annotation} />;
+        case 7:
+          return <Map annotation={annotation} />;
       }
     })();
 
     return (
-      <div className='xyfir-annotate-react view-annotations'>
+      <div className="xyfir-annotate-react view-annotations">
         <Toolbar
           colored
           title={annotation.name}
@@ -71,7 +77,7 @@ export default class ViewAnnotations extends React.Component {
             <Button
               icon
               onClick={() => this.setState({ drawer: true })}
-              iconChildren='menu'
+              iconChildren="menu"
             />
           }
         />
@@ -79,19 +85,15 @@ export default class ViewAnnotations extends React.Component {
         <Drawer
           onVisibilityChange={v => this.setState({ drawer: v })}
           autoclose={true}
-          navItems={
-            annotations.map((a, index) =>
-              <ListItem
-                key={a.id}
-                onClick={() => this.setState({ index })}
-                leftIcon={
-                  <FontIcon>{ANNOTATION_TYPES[a.type].icon}</FontIcon>
-                }
-                primaryText={a.name}
-                secondaryText={ANNOTATION_TYPES[a.type].name}
-              />
-            )
-          }
+          navItems={annotations.map((a, index) => (
+            <ListItem
+              key={a.id}
+              onClick={() => this.setState({ index })}
+              leftIcon={<FontIcon>{ANNOTATION_TYPES[a.type].icon}</FontIcon>}
+              primaryText={a.name}
+              secondaryText={ANNOTATION_TYPES[a.type].name}
+            />
+          ))}
           visible={drawer}
           header={
             <Toolbar
@@ -100,7 +102,7 @@ export default class ViewAnnotations extends React.Component {
                 <Button
                   icon
                   onClick={() => this.setState({ drawer: false })}
-                  iconChildren='arrow_back'
+                  iconChildren="arrow_back"
                 />
               }
             />
@@ -108,9 +110,8 @@ export default class ViewAnnotations extends React.Component {
           type={Drawer.DrawerTypes.TEMPORARY}
         />
 
-        <div className='content'>{view}</div>
+        <div className="content">{view}</div>
       </div>
-    )
+    );
   }
-
 }

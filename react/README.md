@@ -8,11 +8,16 @@ This package exports an object containing the following React components.
 
 ## `<ViewAnnotations />`
 
-This is the main one you should be concerned with. If this is the component you use then you can safely ignore the rest because this one will load the others as needed. The only prop it accepts is `annotations` and this should be an object array of an annotation set item's annotations.
+This is the main one you should be concerned with. If this is the component you use then you can safely ignore the rest because this one will load the others as needed.
+
+**Props:**
+
+* `annotations: object[]` _required_ - An annotation set item's annotations
+* `book: { title: string, authors: string }` _optional_ - Information for the book being viewed
 
 ## Others
 
-All of the other exported components (`Document`, `Link`, `Search`, `Image`, `Video`, `Audio`, and `Map`) render a single annotation of the appropriate type. They all accept a single `annotation` prop that is a single annotation within an annotation set item.
+All of the other exported components (`Document`, `Link`, `Search`, `Image`, `Video`, `Audio`, and `Map`) render a single annotation of the appropriate type. They all accept a single `annotation` prop that is a single annotation within an annotation set item. `<Search>` also accepts the same `book` prop as `<ViewAnnotations>`.
 
 # Examples
 

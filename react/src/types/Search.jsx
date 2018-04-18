@@ -1,40 +1,46 @@
 import { Button } from 'react-md';
+import Annotate from 'repo/core';
 import React from 'react';
 
 export default class WebSearchAnnotation extends React.Component {
-
   constructor(props) {
     super(props);
 
-    this.state = { context: false };
+    this.state = { useContext: false };
   }
 
   render() {
-    const {annotation} = this.props;
+    const { annotation, book } = this.props;
+    const { useContext } = this.state;
+    const contextValue =
+      book && !annotation.context
+        ? Annotate.generateWebSearchContext(book.title, book.authors)
+        : annotation.context;
 
     return (
-      <div className='web-search-annotation'>
-        {annotation.context ? (
+      <div className="web-search-annotation">
+        {contextValue ? (
           <Button
-            floating fixed secondary
-            tooltipPosition='right'
-            fixedPosition='bl'
-            tooltipLabel={(this.state.context ? 'Remove' : 'Add') + ' context'}
-            iconChildren='search'
-            onClick={() => this.setState({ context: !this.state.context })}
+            floating
+            fixed
+            secondary
+            tooltipPosition="right"
+            fixedPosition="bl"
+            tooltipLabel={(useContext ? 'Remove' : 'Add') + ' context'}
+            iconChildren="search"
+            onClick={() => this.setState({ useContext: !useContext })}
           />
         ) : null}
 
         <iframe
           src={
             '//www.bing.com/search?q=' +
-            (this.state.context ? annotation.context + ' ' : '') +
+            (useContext ? contextValue + ' ' : '') +
             annotation.value
           }
-          className='search'
+          className="search"
         />
       </div>
     );
   }
-
 }
