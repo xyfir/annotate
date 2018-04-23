@@ -1,6 +1,6 @@
 {
   "name": "auto-annotator",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Automatically generate ebook annotations for Xyfir Annotations.",
   "main": "index.js",
   "scripts": {
