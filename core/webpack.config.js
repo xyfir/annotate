@@ -10,6 +10,7 @@ module.exports = {
 
   output: {
     libraryTarget: 'umd',
+    globalObject: 'this',
     filename: 'index.js',
     library: 'XyfirAnnotateCore',
     path: path.resolve(__dirname, 'dist')

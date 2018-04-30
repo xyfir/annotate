@@ -3,16 +3,7 @@ const path = require('path');
 
 const MODE = 'production';
 
-const plugins = MODE == 'production' ? [
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: JSON.stringify('production')
-    }
-  })
-] : [];
-
 module.exports = {
-
   mode: MODE,
 
   entry: './src/test.jsx',
@@ -23,10 +14,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: [
-      path.resolve(__dirname, 'src'),
-      'node_modules'
-    ],
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     alias: {
       repo: path.resolve(__dirname, '../')
     },
@@ -34,19 +22,24 @@ module.exports = {
   },
 
   module: {
-    rules: [{
-      test: /\.jsx?$/,
-      loader: 'babel-loader',
-      include: [
-        __dirname
-      ],
-      exclude: /node_modules/,
-      options: {
-        presets: ['env', 'react']
+    rules: [
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        include: [__dirname],
+        exclude: /node_modules/,
+        options: {
+          presets: ['env', 'react']
+        }
       }
-    }]
+    ]
   },
 
-  plugins
-
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(MODE)
+      }
+    })
+  ]
 };
