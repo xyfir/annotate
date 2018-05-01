@@ -16,7 +16,6 @@ import findMarkers from './find-markers';
  * @param {AnnotationSet} set - An annotation set
  */
 export default async function(book, set) {
-
   // Find markers for all Before and After subsearches
   const markers = await findMarkers(book, set.items);
 
@@ -30,11 +29,11 @@ export default async function(book, set) {
   document.body.innerHTML = AnnotateHTML.insertAnnotations({
     set,
     html,
+    mode: 'normal',
+    action: (t, k) =>
+      `!event.stopPropagation() && ` +
+      `parent.postMessage({type: '${t}', key: '${k}', epubjs: true}, '*')`,
     chapter,
-    markers,
-    onclick: (t, k) =>
-    `!event.stopPropagation() && ` +
-    `parent.postMessage({type: '${t}', key: '${k}', epubjs: true}, '*')`
+    markers
   });
-
 }

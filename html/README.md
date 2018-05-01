@@ -25,17 +25,19 @@ const markers = AnnotateHTML.findMarkers(html, chapter, items);
 const newHTML = AnnotateHTML.insertAnnotations({
   set,
   html,
+  mode,
+  action: (type, key) => `...`,
   chapter,
-  markers,
-  onclick: (type, key) => `...`
+  markers
 });
 ```
 
 * `set`: _object_ - The annotation set to insert
 * `html`: _string_ - The HTML string to insert annotations into
+* `mode`: _string_ - When `normal`, the matches are wrapped in a `span` element with an `onclick` attribute. When `link`, the matches are wrapped in a `<a>` element with an `href` attribute.
+* `action`: _function_ - A template function that returns a string that will be used in the element's attribute (`onclick` or `href`) for each highlight element inserted into the HTML. `type` is the type of highlight (should always be `annotation` unless you have some custom setup). `key` identifies the item being clicked with the following format: `'setId-itemId'`.
 * `chapter`: _number_ - The index of the chapter within the book
 * `markers`: _object_ - Markers that point to matches for Before and After subsearches within the book
-* `onclick`: _function_ - A template function that returns a string that will be used in the `onclick="..."` attribute for each highlight element inserted into the HTML. `type` is the type of highlight (should always be `annotation` unless you have some custom setup). `key` identifies the item being clicked with the following format: `'setId-itemId'`.
 
 ##
 

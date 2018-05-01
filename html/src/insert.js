@@ -10,9 +10,13 @@ import wrapMatches from './wrap';
  * @prop {AnnotationMarkers} markers - An annotation set
  * @prop {number} chapter - Index of the chapter in the book.
  * @prop {AnnotationSet} set - An annotation set
- * @prop {function} onclick - This is a TEMPLATE function that takes two
+ * @prop {string} mode - `'normal|link'` - When `normal`, the matches are
+ *  wrapped in a `span` element with an `onclick` attribute. When `link`, the
+ *  matches are wrapped in a `<a>` element with an `href` attribute.
+ * @prop {function} action - This is a template function that takes two
  *  parameters, `type` and `key`, and returns a string that will be used for
- *  the highlight elements' `onclick` attribute.
+ *  the `onclick` attribute if `mode == 'normal'` and the `href` attribute if
+ *  `mode == 'link'`.
  */
 /**
  * @typedef {object} AnnotationSet
@@ -26,7 +30,7 @@ import wrapMatches from './wrap';
  * @return {string} The modified HTML.
  */
 export default function(opt) {
-  const { chapter, markers, set, onclick } = opt;
+  const { chapter, markers, set, action, mode } = opt;
   let { html } = opt;
 
   // Create a flat, sorted array of all searches in all items
@@ -95,8 +99,9 @@ export default function(opt) {
     const wrapped = wrapMatches({
       key: `${set.id}-${item.id}`,
       html,
-      matches,
-      onclick
+      mode,
+      action,
+      matches
     });
 
     html = wrapped.html;
