@@ -1,8 +1,25 @@
 # Commands
 
-## generate calibre
+## `insert`
 
-> auto-annotator generate calibre
+```
+auto-annotator insert --file /path/to/file.epub --set 1234
+```
+
+Creates a copy of the epub file and inserts links to view annotations for matches of searches within items in the provided annotation set. This should allow you to view annotations from within any ebook reader that supports epub, regardless of whether that reader supports xyAnnotations.
+
+**Note**: A xyAnnotations subscription and the `xyfirAnnotationsSubscriptionKey` config key are required. If you don't have a subscription, try out [xyBooks](https://books.xyfir.com/). New users receive a free month subscription. You can find your key in the _Reader Settings_ section.
+
+### Options
+
+* `--file: string` - An absolute path to an epub file. A modified copy will be created next to this file.
+* `--set: number` - The id of the annotation set to insert into the ebook.
+
+## `generate calibre`
+
+```
+auto-annotator generate calibre
+```
 
 This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored.
 
@@ -13,9 +30,11 @@ This command loads your Calibre library, loops through the books, and creates an
 * `--start-at: number` - Skip all books before the book with the provided id. Defaults to `0`.
 * `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent auto-annotator from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
 
-## generate libgen
+## `generate libgen`
 
-> auto-annotator generate libgen
+```
+auto-annotator generate libgen
+```
 
 This command can most likely be ignored. It is used by the AutoAnnotator bot account on xyAnnotations.
 
@@ -31,9 +50,11 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 * This command will not interfere with or use your Calibre library.
 * This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
-## config
+## `config`
 
-> auto-annotator config [--key keyName [--value keyValue]]
+```
+auto-annotator config [--key keyName [--value keyValue]]
+```
 
 The config command has three different actions based on what options you provide.
 
@@ -43,15 +64,17 @@ The config command has three different actions based on what options you provide
 
 Attempting to read or write to a non-existent key will result in an error.
 
-## ignore
+## `ignore`
 
 The ignore command has multiple sub-commands that allow you to work with auto-annotator's ignore list. The ignore list is a list of your Calibre library's book IDs that auto-annotator will skip annotation generation for. The IDs have either been added to the ignore list via `auto-annotator ignore add` or automatically because an annotation set was created for that book.
 
 The ignore list is global, and not specific to a certain library. If you change your library path or replace the library at the same location with another, you should run `auto-annotator ignore reset` so that you're not unknowingly ignoring books that you shouldn't be.
 
-### add
+### `add`
 
-> auto-annotator ignore add --ids ids
+```
+auto-annotator ignore add --ids ids
+```
 
 Adds a single or multiple book IDs to the ignore list.
 
@@ -59,15 +82,21 @@ Adds a single or multiple book IDs to the ignore list.
 
 Add book id 55 to the ignore list
 
-> auto-annotator ignore add --ids 55
+```
+auto-annotator ignore add --ids 55
+```
 
 Add books 1, 400, and 2 to the ignore list
 
-> auto-annotator ignore add --ids 1,400,2
+```
+auto-annotator ignore add --ids 1,400,2
+```
 
-### remove
+### `remove`
 
-> auto-annotator ignore remove --ids ids
+```
+auto-annotator ignore remove --ids ids
+```
 
 Removes a single or multiple book IDs from the ignore list.
 
@@ -75,21 +104,29 @@ Removes a single or multiple book IDs from the ignore list.
 
 Remove book 55 from ignore list
 
-> auto-annotator ignore remove --ids 55
+```
+auto-annotator ignore remove --ids 55
+```
 
 Remove books 1, 400, and 2 from the ignore list
 
-> auto-annotator ignore remove --ids 1,400,2
+```
+auto-annotator ignore remove --ids 1,400,2
+```
 
-### reset
+### `reset`
 
-> auto-annotator ignore reset
+```
+auto-annotator ignore reset
+```
 
 Removes all IDs from the ignore list.
 
-### show
+### `show`
 
-> auto-annotator ignore show
+```
+auto-annotator ignore show
+```
 
 Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its own line. The `--sort` option sorts all of the ids in ascending order.
 
