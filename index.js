@@ -20,16 +20,17 @@ yargs
       )
   )
   .command('config', 'Sets or gets config property values', commands.config)
+  .command('insert', 'Insert annotations into an epub file', commands.insert)
   .command('ignore', 'Manipulate ignore list', () =>
     yargs
       .command('add', 'Add books to ignore list', commands.addToIgnoreList)
+      .command('show', 'Shows contents of list', commands.showIgnoreList)
+      .command('reset', 'Clear ignore list', commands.resetIgnoreList)
       .command(
         'remove',
         'Remove book id(s) from ignore list',
         commands.removeFromIgnoreList
       )
-      .command('reset', 'Clear ignore list', commands.resetIgnoreList)
-      .command('show', 'Shows contents of list', commands.showIgnoreList)
   )
   .help('h')
   .alias('h', 'help').argv;

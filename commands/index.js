@@ -5,5 +5,6 @@ module.exports = {
   generateCalibre: require('./generate/calibre'),
   showIgnoreList: require('./ignore-list/show'),
   generateLibGen: require('./generate/libgen'),
-  config: require('./config')
+  config: require('./config'),
+  insert: require('./insert')
 };
