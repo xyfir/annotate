@@ -119,6 +119,8 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
   * Lets you know what's going on when you run one of the `generate` commands.
 * **xyfirAnnotationsAccessKey**: _string_
   * Your Xyfir Annotations access key.
+* **xyfirAnnotationsSubscriptionKey**: _string_
+  * Your Xyfir Annotations subscription key.
 
 ## Library Genesis
 
