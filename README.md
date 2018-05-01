@@ -26,3 +26,9 @@ $ cd ../tests
 $ webpack-cli # update tests to use new epubjs (and html) build
 $ node src/server
 ```
+
+The full build command, called from the root repo directory:
+
+```bash
+$ cd core && webpack-cli && cd ../html && webpack-cli && cd ../epubjs && webpack-cli && cd ../react && webpack-cli && cd ../tests && webpack-cli && cd ../ && node tests/src/server
+```
