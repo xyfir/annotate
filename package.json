@@ -1,7 +1,7 @@
 {
   "name": "auto-annotator",
-  "version": "4.0.3",
-  "description": "Automatically generate ebook annotations for Xyfir Annotations.",
+  "version": "4.1.0",
+  "description": "Automatically generate and insert ebook annotations using xyAnnotations.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -32,14 +32,19 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@xyfir/annotate-html": "^1.2.0",
     "app-module-path": "^2.2.0",
+    "archiver": "^2.1.1",
     "cli-table": "^0.3.1",
-    "colors": "^1.2.1",
+    "colors": "^1.2.3",
+    "fs-extra": "^6.0.0",
+    "glob": "^7.1.2",
     "mysql2": "^1.5.3",
     "node-calibre": "^1.2.0",
-    "superagent": "^3.8.2",
+    "superagent": "^3.8.3",
+    "unzipper": "^0.8.13",
     "xmldom": "^0.1.27",
-    "yargs": "^11.0.0"
+    "yargs": "^11.1.0"
   },
   "devDependencies": {
     "prettier": "^1.12.1"
