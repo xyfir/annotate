@@ -2,15 +2,20 @@ auto-annotator is a command line tool that allows you to automatically generate 
 
 For now, auto-annotator requires you to have Node and npm installed, and have some familiarity with using the command line. In the future, an optional GUI bundled in an installer may exist.
 
+auto-annotator offers a lot more than the basic, common use-case described below. See the [docs](https://github.com/Xyfir/auto-annotator/blob/master/DOCS.md) for more information.
+
 # Install
 
-> npm install -g auto-annotator
+```
+npm install -g auto-annotator
+```
 
 or you can clone this repo and then:
 
-> cd path/to/auto-annotator
-
-> npm install -g
+```
+cd path/to/auto-annotator
+npm install -g
+```
 
 # Configuration
 
@@ -33,6 +38,8 @@ Now, there's more configuration you can do, but this is the bare minimum to get 
 
 # Generating Annotations
 
-> auto-annotator generate calibre
+```
+auto-annotator generate calibre
+```
 
-If everything is set properly, this will generate annotations for every book not in the ignore list. See [here](https://github.com/Xyfir/auto-annotator/blob/master/DOCS.md) for more information.
+If everything is set properly, this will generate annotations for every book not in the ignore list.
