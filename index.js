@@ -20,7 +20,13 @@ yargs
       )
   )
   .command('config', 'Sets or gets config property values', commands.config)
-  .command('insert', 'Insert annotations into an epub file', commands.insert)
+  .command('insert', 'Insert annotations into ebooks', () =>
+    yargs.command(
+      'file',
+      'Insert annotations into local epub files',
+      commands.insert
+    )
+  )
   .command('ignore', 'Manipulate ignore list', () =>
     yargs
       .command('add', 'Add books to ignore list', commands.addToIgnoreList)
