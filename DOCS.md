@@ -179,4 +179,4 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 
 # User Data
 
-auto-annotator stores the config file and ignore list in `/home/<user>/.auto-annotator` in Unix environments and `%APPDATA%\auto-annotator` on Windows.
+auto-annotator stores the config file and ignore list in `/home/<user>/.xyfir/auto-annotator` in Unix environments and `%APPDATA%\xyfir\auto-annotator` on Windows.

@@ -59,7 +59,7 @@ module.exports = async function(yargs) {
       // Ignore non-html files
       if (!/\html$/.test(file)) continue;
 
-      const html = await readFile(file, true);
+      const html = await readFile(file);
 
       // Get markers for chapter
       Object.assign(markers, Annotate.findMarkers(html, i, set.items));
@@ -72,7 +72,7 @@ module.exports = async function(yargs) {
       // Ignore non-html files
       if (!/\html$/.test(file)) continue;
 
-      const html = await readFile(file, true);
+      const html = await readFile(file);
 
       await writeFile(
         file,
@@ -86,8 +86,7 @@ module.exports = async function(yargs) {
             }?view=true`,
           markers,
           chapter: i
-        }),
-        true
+        })
       );
     }
 
