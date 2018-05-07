@@ -14,6 +14,8 @@ Creates a copy of the epub file and inserts links to view annotations for matche
 
 * `--file: string` - An absolute path to an epub file. A modified copy will be created next to this file.
 * `--set: number` - The id of the annotation set to insert into the ebook.
+* `--delete-source: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
+* `--convert: boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it.
 
 ## `generate calibre`
 
@@ -179,4 +181,4 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 
 # User Data
 
-auto-annotator stores the config file and ignore list in `/home/<user>/.xyfir/auto-annotator` in Unix environments and `%APPDATA%\xyfir\auto-annotator` on Windows.
+auto-annotator stores the config file and other data in `/home/<user>/.xyfir/auto-annotator` in Unix environments and `%APPDATA%\xyfir\auto-annotator` on Windows.

@@ -1,29 +1,50 @@
-const getConfig = require('../lib/config/get');
+const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
 const constants = require('../constants');
 const Annotate = require('@xyfir/annotate-html').default;
 const readFile = require('lib/files/read');
 const unzipper = require('unzipper');
 const archiver = require('archiver');
+const Calibre = require('node-calibre');
 const request = require('superagent');
 const util = require('util');
 const glob = util.promisify(require('glob'));
 const fs = require('fs-extra');
 
 /**
+ * @typedef {object} InsertFileArguments
+ * @prop {boolean} [deleteSource]
+ * @prop {boolean} [convert]
+ * @prop {string} file
+ * @prop {number} set
+ */
+/**
  * Based on the options provided, gets or sets config values.
- * @param {yargs} yargs
+ * @param {object} yargs
+ * @param {InsertFileArguments} yargs.argv
  */
 module.exports = async function(yargs) {
-  /** @type {string} */
-  const file = yargs.argv.file;
-  /** @type {number} */
-  const setId = yargs.argv.set;
+  const { deleteSource, convert, set: setId } = yargs.argv;
+  let { file } = yargs.argv;
 
   try {
-    if (!setId) throw 'Missing `--set`';
-    if (!file) throw 'Missing `--file`';
-    if (!/\.epub$/.test(file)) throw 'Only `.epub` files supported';
+    const isEPUB = /\.epub$/.test(file);
+
+    if (!setId) throw 'Missing `--set <id>`';
+    if (!file) throw 'Missing `--file <path>`';
+    if (!isEPUB && !convert)
+      throw 'Only `.epub` files are supported without the `--convert` option';
+
+    // Convert non-epub file to epub
+    let ogFile = '';
+    if (!isEPUB) {
+      const calibre = new Calibre({});
+
+      ogFile = file;
+      file += '.epub';
+
+      await calibre.run('ebook-convert', [ogFile, file]);
+    }
 
     const config = await getConfig();
 
@@ -37,6 +58,7 @@ module.exports = async function(yargs) {
     const path =
       file.substr(0, file.length - 5) +
       ` - Annotated with xyAnnotations (Set #${set.id} v${set.version})`;
+    console.log(path);
 
     // Extract ebook file
     await new Promise((resolve, reject) =>
@@ -106,6 +128,12 @@ module.exports = async function(yargs) {
 
     // Delete directory
     await fs.remove(path);
+
+    // Delete source files
+    if (deleteSource) {
+      await fs.remove(file);
+      !isEPUB && (await fs.remove(ogFile));
+    }
 
     console.log(path + '.epub');
   } catch (e) {
