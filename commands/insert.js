@@ -19,7 +19,8 @@ const fs = require('fs-extra');
  * @prop {number} set
  */
 /**
- * Based on the options provided, gets or sets config values.
+ * Insert annotations into an ebook file using links wrapped around search
+ *  matches that point to the xyAnnotations item viewer.
  * @param {object} yargs
  * @param {InsertFileArguments} yargs.argv
  */
