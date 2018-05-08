@@ -18,6 +18,11 @@ yargs
         'Generate annotations using books from Library Genesis',
         commands.generateLibGen
       )
+      .command(
+        'wikia',
+        'Generate annotations using a Wikia.com XML dump',
+        commands.generateWikia
+      )
   )
   .command('config', 'Sets or gets config property values', commands.config)
   .command('insert', 'Insert annotations into ebooks', () =>
