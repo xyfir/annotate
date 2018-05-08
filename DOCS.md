@@ -12,10 +12,10 @@ Creates a copy of the epub file and inserts links to view annotations for matche
 
 ### Options
 
-* `--file: string` - An absolute path to an epub file. A modified copy will be created next to this file.
 * `--set: number` - The id of the annotation set to insert into the ebook.
+* `--file: string` - An absolute path to an epub file. A modified copy will be created next to this file.
+* `--convert: boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
 * `--delete-source: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
-* `--convert: boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it.
 
 ## `generate calibre`
 
@@ -24,6 +24,8 @@ auto-annotator generate calibre
 ```
 
 This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored.
+
+**Note:** You will need Calibre installed and its binaries available to the command line for this to work.
 
 ### Options
 
@@ -52,6 +54,20 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 * This command will not interfere with or use your Calibre library.
 * This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
+## `generate wikia`
+
+```
+auto-annotator generate --set 123 --dump /path/to/wikia-dump.xml --url http://name.wikia.com
+```
+
+Creates, updates, and deletes items in the specified annotation set using the pages in the Wikia dump file. Dumps can be found at [http://community.wikia.com/wiki/Special:Statistics](http://community.wikia.com/wiki/Special:Statistics) where `community` is replaced with the name of the Wikia site you wish to download data from.
+
+### Options
+
+* `--set: number` - ID of an annotation set you are a moderator of.
+* `--dump: string` - An absolute path to an XML Wikia-community dump file. You must extract the XML file out of the zip file. Use the _Current pages_ dump and not the _Current pages and history_ dump.
+* `--url: string` - The base URL (no trailing slash) of the Wikia community that the dump file came from.
+
 ## `config`
 
 ```
@@ -66,13 +82,13 @@ The config command has three different actions based on what options you provide
 
 Attempting to read or write to a non-existent key will result in an error.
 
-## `ignore`
+## Ignore Commands
 
-The ignore command has multiple sub-commands that allow you to work with auto-annotator's ignore list. The ignore list is a list of your Calibre library's book IDs that auto-annotator will skip annotation generation for. The IDs have either been added to the ignore list via `auto-annotator ignore add` or automatically because an annotation set was created for that book.
+The `ignore` command has multiple sub-commands that allow you to work with auto-annotator's ignore list. The ignore list is a list of your Calibre library's book IDs that auto-annotator will skip annotation generation for. The IDs have either been added to the ignore list via `auto-annotator ignore add` or automatically because an annotation set was created for that book.
 
 The ignore list is global, and not specific to a certain library. If you change your library path or replace the library at the same location with another, you should run `auto-annotator ignore reset` so that you're not unknowingly ignoring books that you shouldn't be.
 
-### `add`
+### `ignore add`
 
 ```
 auto-annotator ignore add --ids ids
@@ -94,7 +110,7 @@ Add books 1, 400, and 2 to the ignore list
 auto-annotator ignore add --ids 1,400,2
 ```
 
-### `remove`
+### `ignore remove`
 
 ```
 auto-annotator ignore remove --ids ids
@@ -116,7 +132,7 @@ Remove books 1, 400, and 2 from the ignore list
 auto-annotator ignore remove --ids 1,400,2
 ```
 
-### `reset`
+### `ignore reset`
 
 ```
 auto-annotator ignore reset
@@ -124,7 +140,7 @@ auto-annotator ignore reset
 
 Removes all IDs from the ignore list.
 
-### `show`
+### `ignore show`
 
 ```
 auto-annotator ignore show
