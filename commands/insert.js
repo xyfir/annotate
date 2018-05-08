@@ -59,7 +59,6 @@ module.exports = async function(yargs) {
     const path =
       file.substr(0, file.length - 5) +
       ` - Annotated with xyAnnotations (Set #${set.id} v${set.version})`;
-    console.log(path);
 
     // Extract ebook file
     await new Promise((resolve, reject) =>
