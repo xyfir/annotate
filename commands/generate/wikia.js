@@ -26,7 +26,7 @@ module.exports = async function(yargs) {
 
     // Download annotation set
     console.log('Downloading set');
-    const res = await request
+    let res = await request
       .get(`${constants.XYANNOTATIONS}sets/${setId}/download`)
       .query({ subscriptionKey: config.xyfirAnnotationsSubscriptionKey });
     const { set } = res.body;
@@ -73,17 +73,65 @@ module.exports = async function(yargs) {
       let text = '';
 
       // Convert MediaWiki to HTML to Markdown via Pandoc
-      // Direct MediaWiki to Markdown will not work as well as going through HTML
       try {
         text = await new Promise((resolve, reject) => {
           const toHTML = spawn('pandoc', ['-f', 'mediawiki', '-t', 'html']);
           const toMD = spawn('pandoc', ['-f', 'html', '-t', 'markdown']);
-          let markdown = '';
+          let html = '',
+            markdown = '';
 
           // Take MediaWiki to HTML output and pass to HTML to Markdown
-          toHTML.stdout.on('data', data => toMD.stdin.write(data));
+          toHTML.stdout.on('data', data => (html += data.toString()));
           toHTML.stderr.on('data', reject);
-          toHTML.on('close', code => (code == 0 ? toMD.stdin.end() : null));
+          toHTML.on('close', async code => {
+            if (code != 0) return;
+
+            // Parse via xmldom
+            const dom = new DOMParser().parseFromString(html);
+
+            // Fix links
+            for (let a of Array.from(dom.getElementsByTagName('a'))) {
+              const href = a.getAttribute('href');
+
+              // Absolute url to Wikia page
+              if (!/^https?:\/\//.test(href))
+                a.setAttribute('href', `${url}/wiki/${href}`);
+
+              // Remove all non-href elements
+              Array.from(a.attributes).forEach(
+                attr => attr.name != 'href' && a.removeAttribute(attr.name)
+              );
+            }
+
+            // Fix images
+            for (let img of Array.from(dom.getElementsByTagName('img'))) {
+              let src = img.getAttribute('src');
+
+              try {
+                // Get the actual file link
+                res = await request.get(
+                  `http://lotr.wikia.com/wiki/File:${src}`
+                );
+                src = new DOMParser()
+                  .parseFromString(res.text)
+                  .getElementById('file')
+                  .getElementsByTagName('a')[0]
+                  .getAttribute('href');
+                img.setAttribute('src', src);
+
+                // Remove all non-src elements
+                Array.from(img.attributes).forEach(
+                  attr => attr.name != 'src' && img.removeAttribute(attr.name)
+                );
+              } catch (err) {
+                console.error(err);
+                img.parentNode.removeChild(img);
+              }
+            }
+
+            toMD.stdin.write(dom.toString());
+            toMD.stdin.end();
+          });
 
           // Build HTML to Markdown output until finished, then resolve
           toMD.stdout.on('data', data => (markdown += data.toString()));
