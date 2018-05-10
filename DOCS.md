@@ -57,16 +57,45 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 ## `generate wikia`
 
 ```
-auto-annotator generate --set 123 --dump /path/to/wikia-dump.xml --url http://name.wikia.com
+auto-annotator generate wikia --config /path/to/config.json
 ```
 
 Creates, updates, and deletes items in the specified annotation set using the pages in the Wikia dump file. Dumps can be found at [http://community.wikia.com/wiki/Special:Statistics](http://community.wikia.com/wiki/Special:Statistics) where `community` is replaced with the name of the Wikia site you wish to download data from.
 
 ### Options
 
-* `--set: number` - ID of an annotation set you are a moderator of.
-* `--dump: string` - An absolute path to an XML Wikia-community dump file. You must extract the XML file out of the zip file. Use the _Current pages_ dump and not the _Current pages and history_ dump.
-* `--url: string` - The base URL (no trailing slash) of the Wikia community that the dump file came from.
+This command takes a single option, `--config: string`, that is an absolute path to a JSON file that contains the actual options for the command. The contents of that JSON file will look something like:
+
+```js
+{
+  // The id of the annotation set
+  // Your account should be the creator or have moderator access
+  "set": 123,
+  // The base url to the Wikia community the dump matches
+  // No trailing slash!
+  "url": "http://lotr.wikia.com",
+  // A path to the extracted XML dump file for the community
+  // Should *not* be the full dump that contains revisions
+  "dump": "/path/to/lotr_pages_current.xml",
+  // Ignore pages and their sections
+  // If search is contained within "/" characters it will be treated as a regular expression
+  "ignore": {
+    "titles": [
+      "Main Page"
+    ],
+    "sections": [
+      "References",
+      "/\blinks$/"
+    ]
+  },
+  // The namespaces to pull pages from
+  "namespaces": [
+    0
+  ]
+}
+```
+
+Note that there are no default values. You must provide all of the config keys.
 
 ## `config`
 
