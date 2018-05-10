@@ -2,10 +2,23 @@ const { DOMParser } = require('xmldom');
 const getConfig = require('lib/config/get');
 const { spawn } = require('child_process');
 const constants = require('../../constants');
-const puppeteer = require('puppeteer');
 const readFile = require('lib/files/read');
 const request = require('superagent');
 const fs = require('fs-extra');
+
+/**
+ * @param {object[]} elements
+ * @param {number} level
+ * @return {string}
+ */
+const LIST = (elements, level) =>
+  elements
+    .map(
+      element =>
+        `${'  '.repeat(level)}- ${element.text}\n` +
+        LIST(element.elements, level + 1)
+    )
+    .join('');
 
 /**
  * @typedef {object} GenerateWikiaArguments
@@ -39,11 +52,15 @@ module.exports = async function(yargs) {
         .parseFromString(await readFile(dump))
         .getElementsByTagName('mediawiki')[0]
         .getElementsByTagName('page')
-    );
+    )
+      // Ignore all pages with a namespace
+      .filter(p => p.getElementsByTagName('ns')[0].textContent == '0')
+      // Convert pages to array of titles and ids
+      .map(p => ({
+        title: p.getElementsByTagName('title')[0].textContent,
+        id: +p.getElementsByTagName('id')[0].textContent
+      }));
     console.log(`Loaded ${pages.length} pages`);
-
-    const browser = await puppeteer.launch();
-    const puppet = await browser.newPage();
 
     let nextStats = Date.now() + 20 * 1000,
       pageErrors = 0,
@@ -67,71 +84,47 @@ module.exports = async function(yargs) {
 
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
-
-      // Ignore all pages with a namespace
-      if (page.getElementsByTagName('ns')[0].textContent != '0') continue;
-
       logStats(i + 1);
 
-      const title = page.getElementsByTagName('title')[0].textContent;
-      let text = '';
+      // Load simple JSON for page
+      res = await request
+        .get(`${url}/api/v1/Articles/AsSimpleJson`)
+        .query({ id: page.id });
+      const { sections } = res.body;
 
-      // Free up some memory eventually
-      delete page[i];
-
-      // Load page in puppeteer
-      await puppet.goto(`${url}/wiki/${title.replace(/ /g, '_')}`);
-      const dom = await puppet.$('#WikiaMainContent');
-
-      await puppet.evaluate(url => {
-        const aside = document.querySelector('aside');
-        aside && aside.remove();
-
-        for (let e of Array.from(document.querySelectorAll('.editsection'))) {
-          e.remove();
-        }
-
-        for (let a of Array.from(document.getElementsByTagName('a'))) {
-          const href = a.getAttribute('href');
-
-          // Absolute url to Wikia page
-          if (!/^https?:\/\//.test(href)) a.setAttribute('href', url + href);
-        }
-
-        for (let e of document.querySelectorAll('*')) {
-          // Remove all non-href/src attributes
-          Array.from(e.attributes).forEach(
-            attr =>
-              attr.name != 'href' &&
-              attr.name != 'src' &&
-              e.removeAttribute(attr.name)
-          );
-        }
-      }, url);
-
-      // Convert HTML to Markdown via Pandoc
-      try {
-        text = await new Promise(async (resolve, reject) => {
-          const pandoc = spawn('pandoc', ['-f', 'html', '-t', 'markdown']);
-          let markdown = '';
-
-          // Build HTML to Markdown output until finished, then resolve
-          pandoc.stdout.on('data', data => (markdown += data.toString()));
-          pandoc.stderr.on('data', data => reject);
-          pandoc.on('close', code => (code == 0 ? resolve(markdown) : null));
-
-          pandoc.stdin.write(await puppet.evaluate(e => e.innerHTML, dom));
-          pandoc.stdin.end();
-        });
-        text = text.replace(/<\/?\w+>/g, '');
-      } catch (err) {
-        pageErrors++;
+      // Page redirects to another
+      if (
+        sections.length == 1 &&
+        sections[0].content.length == 1 &&
+        sections[0].content[0].type == 'list' &&
+        sections[0].content[0].elements.length == 1 &&
+        sections[0].content[0].elements[0].text.startsWith('REDIRECT: ')
+      )
         continue;
+
+      let text = '';
+      for (let section of sections) {
+        text += `${'#'.repeat(section.level)} ${section.title}\n\n`;
+
+        for (let img of section.images) {
+          text += `![${img.caption}](${img.src})\n\n`;
+        }
+
+        for (let content of section.content) {
+          switch (content.type) {
+            case 'paragraph':
+              text += `${content.text}\n\n`;
+              break;
+            case 'list':
+              text += LIST(content.elements, 0);
+              text += '\n';
+          }
+        }
       }
 
       const item = {
-        title,
-        searches: [title],
+        title: page.title,
+        searches: [page.title],
         annotations: [
           {
             type: 1,
@@ -140,6 +133,7 @@ module.exports = async function(yargs) {
           }
         ]
       };
+      delete page[i];
 
       // Create or update items
       try {
@@ -171,8 +165,6 @@ module.exports = async function(yargs) {
         itemErrors++;
       }
     }
-
-    await browser.close();
 
     // Delete items in set that don't exist in dump
     try {
