@@ -21,10 +21,22 @@ const LIST = (elements, level) =>
     .join('');
 
 /**
- * @typedef {object} GenerateWikiaArguments
- * @prop {string} dump - An absolute path to the XML dump file
+ * @typedef {object} CommandConfig
  * @prop {number} set - Id of an annotation set the user is a moderator of
  * @prop {string} url - The base url for the wiki: `http://name.wikia.com`
+ * @prop {string} dump - An absolute path to the XML dump file
+ * @prop {Ignore} ignore
+ * @prop {number[]} namespaces - A whitelist of namespaces
+ */
+/**
+ * @typedef {object} Ignore
+ * @prop {string[]} titles
+ * @prop {string[]} sections
+ */
+/**
+ * @typedef {object} GenerateWikiaArguments
+ * @prop {string} config - An absolute path to a config file containing the
+ *  actual arguments for the command.
  */
 /**
  * Add, remove, and update items within an annotation set using data from a
@@ -33,33 +45,56 @@ const LIST = (elements, level) =>
  * @param {GenerateWikiaArguments} yargs.argv
  */
 module.exports = async function(yargs) {
-  const { dump, set: setId, url } = yargs.argv;
-
   try {
-    const config = await getConfig();
+    /** @type {CommandConfig} */
+    const config = JSON.parse(await readFile(yargs.argv.config));
+
+    const {
+      xyfirAnnotationsSubscriptionKey,
+      xyfirAnnotationsAccessKey
+    } = await getConfig();
 
     // Download annotation set
     console.log('Downloading set');
     let res = await request
-      .get(`${constants.XYANNOTATIONS}sets/${setId}/download`)
-      .query({ subscriptionKey: config.xyfirAnnotationsSubscriptionKey });
+      .get(`${constants.XYANNOTATIONS}sets/${config.set}/download`)
+      .query({ subscriptionKey: xyfirAnnotationsSubscriptionKey });
     const { set } = res.body;
 
     // Load all <page> elements
     console.log('Loading pages');
     const pages = Array.from(
       new DOMParser()
-        .parseFromString(await readFile(dump))
+        .parseFromString(await readFile(config.dump))
         .getElementsByTagName('mediawiki')[0]
         .getElementsByTagName('page')
     )
-      // Ignore all pages with a namespace
-      .filter(p => p.getElementsByTagName('ns')[0].textContent == '0')
+      // Get pages in provided namespace(s)
+      .filter(
+        p =>
+          config.namespaces.indexOf(
+            +p.getElementsByTagName('ns')[0].textContent
+          ) > -1
+      )
       // Convert pages to array of titles and ids
       .map(p => ({
         title: p.getElementsByTagName('title')[0].textContent,
         id: +p.getElementsByTagName('id')[0].textContent
-      }));
+      }))
+      // Ignore by title
+      .filter(p => {
+        for (let t of config.ignore.titles) {
+          // Regex
+          if (t.startsWith('/') && t.endsWith('/')) {
+            if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
+              return false;
+          }
+          // Contains
+          else if (p.title.indexOf(t) > -1) return false;
+        }
+
+        return true;
+      });
     console.log(`Loaded ${pages.length} pages`);
 
     let nextStats = Date.now() + 20 * 1000,
@@ -87,9 +122,14 @@ module.exports = async function(yargs) {
       logStats(i + 1);
 
       // Load simple JSON for page
-      res = await request
-        .get(`${url}/api/v1/Articles/AsSimpleJson`)
-        .query({ id: page.id });
+      try {
+        res = await request
+          .get(`${config.url}/api/v1/Articles/AsSimpleJson`)
+          .query({ id: page.id });
+      } catch (err) {
+        pageErrors++;
+        continue;
+      }
       const { sections } = res.body;
 
       // Page redirects to another
@@ -103,13 +143,27 @@ module.exports = async function(yargs) {
         continue;
 
       let text = '';
-      for (let section of sections) {
+      sectionloop: for (let section of sections) {
+        // Ignore sections by their title
+        for (let s of config.ignore.sections) {
+          // Regex
+          if (s.startsWith('/') && s.endsWith('/')) {
+            if (new RegExp(s.substr(1, s.length - 2)).test(section.title))
+              continue sectionloop;
+          }
+          // Contains
+          else if (section.title.indexOf(s) > -1) continue sectionloop;
+        }
+
+        // Build # Heading
         text += `${'#'.repeat(section.level)} ${section.title}\n\n`;
 
+        // Build images
         for (let img of section.images) {
           text += `![${img.caption}](${img.src})\n\n`;
         }
 
+        // Build paragraphs or lists
         for (let content of section.content) {
           switch (content.type) {
             case 'paragraph':
@@ -143,16 +197,18 @@ module.exports = async function(yargs) {
         // Create new item if it has no match in `set.items`
         if (ogItem === undefined) {
           await request
-            .post(`${constants.XYANNOTATIONS}sets/${setId}/items`)
-            .query({ accessKey: config.xyfirAnnotationsAccessKey })
+            .post(`${constants.XYANNOTATIONS}sets/${config.set}/items`)
+            .query({ accessKey: xyfirAnnotationsAccessKey })
             .send({ ...item });
           created++;
         }
         // Update item in set with new item from dump
         else if (JSON.stringify(ogItem) != JSON.stringify(item)) {
           await request
-            .put(`${constants.XYANNOTATIONS}sets/${setId}/items/${ogItem.id}`)
-            .query({ accessKey: config.xyfirAnnotationsAccessKey })
+            .put(
+              `${constants.XYANNOTATIONS}sets/${config.set}/items/${ogItem.id}`
+            )
+            .query({ accessKey: xyfirAnnotationsAccessKey })
             .send({ ...item });
           updated++;
 
@@ -170,8 +226,10 @@ module.exports = async function(yargs) {
     try {
       for (let item of set.items) {
         await request
-          .delete(`${constants.XYANNOTATIONS}sets/${setId}/items/${item.id}`)
-          .query({ accessKey: config.xyfirAnnotationsAccessKey });
+          .delete(
+            `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
+          )
+          .query({ accessKey: xyfirAnnotationsAccessKey });
         deleted++;
       }
     } catch (err) {
