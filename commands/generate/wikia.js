@@ -2,6 +2,7 @@ const { DOMParser } = require('xmldom');
 const getConfig = require('lib/config/get');
 const { spawn } = require('child_process');
 const constants = require('../../constants');
+const puppeteer = require('puppeteer');
 const readFile = require('lib/files/read');
 const request = require('superagent');
 const fs = require('fs-extra');
@@ -41,6 +42,9 @@ module.exports = async function(yargs) {
     );
     console.log(`Loaded ${pages.length} pages`);
 
+    const browser = await puppeteer.launch();
+    const puppet = await browser.newPage();
+
     let nextStats = Date.now() + 20 * 1000,
       pageErrors = 0,
       itemErrors = 0,
@@ -72,87 +76,58 @@ module.exports = async function(yargs) {
       const title = page.getElementsByTagName('title')[0].textContent;
       let text = '';
 
-      // Convert MediaWiki to HTML to Markdown via Pandoc
+      // Free up some memory eventually
+      delete page[i];
+
+      // Load page in puppeteer
+      await puppet.goto(`${url}/wiki/${title.replace(/ /g, '_')}`);
+      const dom = await puppet.$('#WikiaMainContent');
+
+      await puppet.evaluate(url => {
+        const aside = document.querySelector('aside');
+        aside && aside.remove();
+
+        for (let e of Array.from(document.querySelectorAll('.editsection'))) {
+          e.remove();
+        }
+
+        for (let a of Array.from(document.getElementsByTagName('a'))) {
+          const href = a.getAttribute('href');
+
+          // Absolute url to Wikia page
+          if (!/^https?:\/\//.test(href)) a.setAttribute('href', url + href);
+        }
+
+        for (let e of document.querySelectorAll('*')) {
+          // Remove all non-href/src attributes
+          Array.from(e.attributes).forEach(
+            attr =>
+              attr.name != 'href' &&
+              attr.name != 'src' &&
+              e.removeAttribute(attr.name)
+          );
+        }
+      }, url);
+
+      // Convert HTML to Markdown via Pandoc
       try {
-        text = await new Promise((resolve, reject) => {
-          const toHTML = spawn('pandoc', ['-f', 'mediawiki', '-t', 'html']);
-          const toMD = spawn('pandoc', ['-f', 'html', '-t', 'markdown']);
-          let html = '',
-            markdown = '';
-
-          // Take MediaWiki to HTML output and pass to HTML to Markdown
-          toHTML.stdout.on('data', data => (html += data.toString()));
-          toHTML.stderr.on('data', reject);
-          toHTML.on('close', async code => {
-            if (code != 0) return;
-
-            // Parse via xmldom
-            const dom = new DOMParser().parseFromString(html);
-
-            // Fix links
-            for (let a of Array.from(dom.getElementsByTagName('a'))) {
-              const href = a.getAttribute('href');
-
-              // Absolute url to Wikia page
-              if (!/^https?:\/\//.test(href))
-                a.setAttribute('href', `${url}/wiki/${href}`);
-
-              // Remove all non-href elements
-              Array.from(a.attributes).forEach(
-                attr => attr.name != 'href' && a.removeAttribute(attr.name)
-              );
-            }
-
-            // Fix images
-            for (let img of Array.from(dom.getElementsByTagName('img'))) {
-              let src = img.getAttribute('src');
-
-              try {
-                // Get the actual file link
-                res = await request.get(
-                  `http://lotr.wikia.com/wiki/File:${src}`
-                );
-                src = new DOMParser()
-                  .parseFromString(res.text)
-                  .getElementById('file')
-                  .getElementsByTagName('a')[0]
-                  .getAttribute('href');
-                img.setAttribute('src', src);
-
-                // Remove all non-src elements
-                Array.from(img.attributes).forEach(
-                  attr => attr.name != 'src' && img.removeAttribute(attr.name)
-                );
-              } catch (err) {
-                console.error(err);
-                img.parentNode.removeChild(img);
-              }
-            }
-
-            toMD.stdin.write(dom.toString());
-            toMD.stdin.end();
-          });
+        text = await new Promise(async (resolve, reject) => {
+          const pandoc = spawn('pandoc', ['-f', 'html', '-t', 'markdown']);
+          let markdown = '';
 
           // Build HTML to Markdown output until finished, then resolve
-          toMD.stdout.on('data', data => (markdown += data.toString()));
-          toMD.stderr.on('data', data => reject);
-          toMD.on('close', code => (code == 0 ? resolve(markdown) : null));
+          pandoc.stdout.on('data', data => (markdown += data.toString()));
+          pandoc.stderr.on('data', data => reject);
+          pandoc.on('close', code => (code == 0 ? resolve(markdown) : null));
 
-          // Load MediaWiki text content into converter
-          toHTML.stdin.write(
-            page
-              .getElementsByTagName('revision')[0]
-              .getElementsByTagName('text')[0].textContent
-          );
-          toHTML.stdin.end();
+          pandoc.stdin.write(await puppet.evaluate(e => e.innerHTML, dom));
+          pandoc.stdin.end();
         });
+        text = text.replace(/<\/?\w+>/g, '');
       } catch (err) {
         pageErrors++;
         continue;
       }
-
-      // Free up some memory eventually
-      delete page[i];
 
       const item = {
         title,
@@ -196,6 +171,8 @@ module.exports = async function(yargs) {
         itemErrors++;
       }
     }
+
+    await browser.close();
 
     // Delete items in set that don't exist in dump
     try {
