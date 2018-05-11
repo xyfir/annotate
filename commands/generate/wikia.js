@@ -63,6 +63,13 @@ module.exports = async function(yargs) {
 
     // Load all <page> elements
     console.log('Loading pages');
+    /**
+     * @typedef {object} Page
+     * @prop {string} [redirect]
+     * @prop {string} title
+     * @prop {number} id
+     */
+    /** @type {Page[]} */
     const pages = Array.from(
       new DOMParser()
         .parseFromString(await readFile(config.dump))
@@ -76,11 +83,23 @@ module.exports = async function(yargs) {
             +p.getElementsByTagName('ns')[0].textContent
           ) > -1
       )
-      // Convert pages to array of titles and ids
-      .map(p => ({
-        title: p.getElementsByTagName('title')[0].textContent,
-        id: +p.getElementsByTagName('id')[0].textContent
-      }))
+      // Convert pages to an array of simple objects
+      .map(p => {
+        const page = {
+          title: p.getElementsByTagName('title')[0].textContent,
+          id: +p.getElementsByTagName('id')[0].textContent
+        };
+
+        let match;
+        if (
+          (match = p
+            .getElementsByTagName('text')[0]
+            .textContent.match(/^#redirect\s*\[\[(.+)\]\]/i))
+        )
+          page.redirect = match[1];
+
+        return page;
+      })
       // Ignore by title
       .filter(p => {
         for (let t of config.ignore.titles) {
@@ -121,6 +140,9 @@ module.exports = async function(yargs) {
       const page = pages[i];
       logStats(i + 1);
 
+      // Skip redirects
+      if (page.redirect) continue;
+
       // Load simple JSON for page
       try {
         res = await request
@@ -131,16 +153,6 @@ module.exports = async function(yargs) {
         continue;
       }
       const { sections } = res.body;
-
-      // Page redirects to another
-      if (
-        sections.length == 1 &&
-        sections[0].content.length == 1 &&
-        sections[0].content[0].type == 'list' &&
-        sections[0].content[0].elements.length == 1 &&
-        sections[0].content[0].elements[0].text.startsWith('REDIRECT: ')
-      )
-        continue;
 
       let text = '';
       sectionloop: for (let section of sections) {
@@ -178,7 +190,11 @@ module.exports = async function(yargs) {
 
       const item = {
         title: page.title,
-        searches: [page.title],
+        searches: [page.title].concat(
+          // Pages that redirect to this page will have their titles used as
+          // searches for this page
+          pages.filter(p => p.redirect == page.title).map(p => p.title)
+        ),
         annotations: [
           {
             type: 1,
