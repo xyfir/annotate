@@ -190,67 +190,97 @@ module.exports = async function(yargs) {
       // Skip non-main distinction
       if (page.distinction && !page.distinction.main) continue;
 
-      // Load simple JSON for page
-      try {
-        res = await request
-          .get(`${config.url}/api/v1/Articles/AsSimpleJson`)
-          .query({ id: page.id });
-      } catch (err) {
-        pageErrors++;
-        continue;
-      }
-      const { sections } = res.body;
-
-      let text = '';
-      sectionloop: for (let section of sections) {
-        // Ignore sections by their title
-        for (let s of config.ignore.sections) {
-          // Regex
-          if (s.startsWith('/') && s.endsWith('/')) {
-            if (new RegExp(s.substr(1, s.length - 2)).test(section.title))
-              continue sectionloop;
-          }
-          // Contains
-          else if (section.title.indexOf(s) > -1) continue sectionloop;
-        }
-
-        // Build # Heading
-        text += `${'#'.repeat(section.level)} ${section.title}\n\n`;
-
-        // Build images
-        for (let img of section.images) {
-          text += `![${img.caption}](${img.src})\n\n`;
-        }
-
-        // Build paragraphs or lists
-        for (let content of section.content) {
-          switch (content.type) {
-            case 'paragraph':
-              text += `${content.text}\n\n`;
-              break;
-            case 'list':
-              text += LIST(content.elements, 0);
-              text += '\n';
-          }
-        }
-      }
+      // Load all distinctions of the current page
+      const distinctions = [page].concat(
+        pages.filter(
+          p =>
+            // Other page IS a distinction
+            p.distinction &&
+            // This page IS the target of that distinction
+            (page.title == p.distinction.target ||
+              // This page IS a (main) distinction
+              (page.distinction &&
+                // This page's target IS the same as the other distinction's
+                page.distinction.target == p.distinction.target &&
+                // That page is NOT a main distinction (that's this one)
+                !p.distinction.main))
+        )
+      );
+      // The full, original titles of all of the distinctions of the current page
+      const titles = distinctions.map(p => p.title);
 
       const item = {
-        title: page.title,
-        searches: [page.title].concat(
-          // Pages that redirect to this page will have their titles used as
-          // searches for this page
-          pages.filter(p => p.redirect == page.title).map(p => p.title)
+        title: page.distinction ? page.distinction.target : page.title,
+        searches: [
+          page.distinction ? page.distinction.target : page.title
+        ].concat(
+          // Pages that redirect to this page or any of its distinctions will
+          // have their titles used as searches for this item
+          pages.filter(p => titles.indexOf(p.redirect) > -1).map(p => p.title)
         ),
-        annotations: [
-          {
-            type: 1,
-            name: 'Wikia',
-            value: text
-          }
-        ]
+        annotations: []
       };
-      delete page[i];
+
+      // Download contents of pages and build annotations
+      for (let p of distinctions) {
+        // Load simple JSON for page
+        try {
+          res = await request
+            .get(`${config.url}/api/v1/Articles/AsSimpleJson`)
+            .query({ id: p.id });
+        } catch (err) {
+          pageErrors++;
+          continue;
+        }
+        const { sections } = res.body;
+
+        let text = '';
+        sectionloop: for (let section of sections) {
+          // Ignore sections by their title
+          for (let s of config.ignore.sections) {
+            // Regex
+            if (s.startsWith('/') && s.endsWith('/')) {
+              if (new RegExp(s.substr(1, s.length - 2)).test(section.title))
+                continue sectionloop;
+            }
+            // Contains
+            else if (section.title.indexOf(s) > -1) continue sectionloop;
+          }
+
+          // Build # Heading
+          text += `${'#'.repeat(section.level)} ${section.title}\n\n`;
+
+          // Build images
+          for (let img of section.images) {
+            text += `![${img.caption}](${img.src})\n\n`;
+          }
+
+          // Build paragraphs or lists
+          for (let content of section.content) {
+            switch (content.type) {
+              case 'paragraph':
+                text += `${content.text}\n\n`;
+                break;
+              case 'list':
+                text += LIST(content.elements, 0);
+                text += '\n';
+            }
+          }
+        }
+
+        const annotation = {
+          type: 1,
+          name: p.distinction
+            ? `Wikia: (${p.distinction.type}) ${p.distinction.target}`
+            : `Wikia: ${p.title}`,
+          value: text
+        };
+        annotation.name =
+          annotation.name.length > 50
+            ? `${annotation.name.substr(0, 47)}...`
+            : annotation.name;
+        item.annotations.push(annotation);
+      }
 
       // Create or update items
       try {
