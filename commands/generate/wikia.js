@@ -64,7 +64,14 @@ module.exports = async function(yargs) {
     // Load all <page> elements
     console.log('Loading pages');
     /**
+     * @typedef {object} Distinction
+     * @prop {boolean} [main]
+     * @prop {string} target
+     * @prop {string} type
+     */
+    /**
      * @typedef {object} Page
+     * @prop {Distinction} [distinction]
      * @prop {string} [redirect]
      * @prop {string} title
      * @prop {number} id
@@ -85,11 +92,13 @@ module.exports = async function(yargs) {
       )
       // Convert pages to an array of simple objects
       .map(p => {
+        // Get page title and id
         const page = {
           title: p.getElementsByTagName('title')[0].textContent,
           id: +p.getElementsByTagName('id')[0].textContent
         };
 
+        // Determine if page redirects elsewhere
         let match;
         if (
           (match = p
@@ -98,23 +107,58 @@ module.exports = async function(yargs) {
         )
           page.redirect = match[1];
 
+        // Determine if page is a distinction of another [(movie), (book), etc]
+        if ((match = page.title.match(/(.+)\((.+)\)$/)))
+          page.distinction = { target: match[1].trim(), type: match[2].trim() };
+
         return page;
       })
       // Ignore by title
-      .filter(p => {
-        for (let t of config.ignore.titles) {
-          // Regex
-          if (t.startsWith('/') && t.endsWith('/')) {
-            if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
-              return false;
-          }
-          // Contains
-          else if (p.title.indexOf(t) > -1) return false;
-        }
+      .filter(
+        /** @param {Page} p */
+        p => {
+          if (p.distinction) {
+            // Pages that are both redirects *and* distinctions will not be used
+            if (p.redirect) return false;
 
-        return true;
-      });
+            // Remove disambiguation pages
+            if (/^disamb/i.test(p.distinction.type)) return false;
+          }
+
+          for (let t of config.ignore.titles) {
+            // Regex
+            if (t.startsWith('/') && t.endsWith('/')) {
+              if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
+                return false;
+            }
+            // Contains
+            else if (p.title.indexOf(t) > -1) return false;
+          }
+
+          return true;
+        }
+      );
     console.log(`Loaded ${pages.length} pages`);
+
+    // Ensure all distinct pages have a main page to attach to
+    pages.filter(p => p.distinction).forEach(p => {
+      // A main page for this distinction exists, no further processing needed
+      if (
+        pages.findIndex(
+          _p =>
+            _p.title == p.distinction.target ||
+            (_p.distinction &&
+              _p.distinction.target == p.distinction.target &&
+              _p.distinction.main)
+        ) > -1
+      )
+        return;
+
+      // Turn this distinct page into a main page since pages are in order of
+      // oldest to newest and hopefully the oldest distinction is the most
+      // important one
+      p.distinction.main = true;
+    });
 
     let nextStats = Date.now() + 20 * 1000,
       pageErrors = 0,
@@ -142,6 +186,9 @@ module.exports = async function(yargs) {
 
       // Skip redirects
       if (page.redirect) continue;
+
+      // Skip non-main distinction
+      if (page.distinction && !page.distinction.main) continue;
 
       // Load simple JSON for page
       try {
