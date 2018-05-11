@@ -103,7 +103,7 @@ module.exports = async function(yargs) {
         if (
           (match = p
             .getElementsByTagName('text')[0]
-            .textContent.match(/^#redirect\s*\[\[(.+)\]\]/i))
+            .textContent.match(/^#redirect:?\s*\[\[(.+)(#.+)?\]\]/i))
         )
           page.redirect = match[1];
 
