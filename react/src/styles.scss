@@ -4,7 +4,14 @@ div.xyfir-annotate-react.view-annotations {
   overflow: hidden;
   flex-direction: column;
 
-  >div.content, >div.content > div {
+  > header > h2.md-title--toolbar {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  > div.content,
+  > div.content > div {
     flex-flow: column;
     display: flex;
     height: 100%;
@@ -13,14 +20,14 @@ div.xyfir-annotate-react.view-annotations {
     -webkit-overflow-scrolling: touch;
     overflow-y: auto;
 
-    >iframe {
+    > iframe {
       flex: 1 1 auto;
       border: none;
     }
   }
 
-  >div.content {
-    >div.document-annotation {
+  > div.content {
+    > div.document-annotation {
       padding: 1em;
 
       p {
@@ -28,14 +35,14 @@ div.xyfir-annotate-react.view-annotations {
       }
     }
 
-    >div.audio-annotation > audio {
+    > div.audio-annotation > audio {
       width: 100%;
     }
 
-    >div.image-annotation > a {
+    > div.image-annotation > a {
       padding: 1em;
 
-      >img {
+      > img {
         max-height: 100%;
         max-width: 100%;
       }
