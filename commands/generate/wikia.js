@@ -113,31 +113,30 @@ module.exports = async function(yargs) {
 
         return page;
       })
+      // Ensure page has a title
+      .filter(p => p.title)
       // Ignore by title
-      .filter(
-        /** @param {Page} p */
-        p => {
-          if (p.distinction) {
-            // Pages that are both redirects *and* distinctions will not be used
-            if (p.redirect) return false;
+      .filter(p => {
+        if (p.distinction) {
+          // Pages that are both redirects *and* distinctions will not be used
+          if (p.redirect) return false;
 
-            // Remove disambiguation pages
-            if (/^disamb/i.test(p.distinction.type)) return false;
-          }
-
-          for (let t of config.ignore.titles) {
-            // Regex
-            if (t.startsWith('/') && t.endsWith('/')) {
-              if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
-                return false;
-            }
-            // Contains
-            else if (p.title.indexOf(t) > -1) return false;
-          }
-
-          return true;
+          // Remove disambiguation pages
+          if (/^disamb/i.test(p.distinction.type)) return false;
         }
-      );
+
+        for (let t of config.ignore.titles) {
+          // Regex
+          if (t.startsWith('/') && t.endsWith('/')) {
+            if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
+              return false;
+          }
+          // Contains
+          else if (p.title.indexOf(t) > -1) return false;
+        }
+
+        return true;
+      });
     console.log(`Loaded ${pages.length} pages`);
 
     // Ensure all distinct pages have a main page to attach to
@@ -169,7 +168,13 @@ module.exports = async function(yargs) {
     const logStats = /** @param {number} page */ page => {
       if (Date.now() < nextStats) return;
 
-      console.log(`${page} / ${pages.length} pages (${page / pages.length}%)`);
+      console.log(
+        `${page} / ${pages.length} pages (${(
+          page /
+          pages.length *
+          100
+        ).toFixed()}%)`
+      );
       console.log(`Created ${created} items`);
       console.log(`Deleted ${deleted} items`);
       console.log(`Updated ${updated} items`);
@@ -310,7 +315,7 @@ module.exports = async function(yargs) {
           set.items = set.items.filter(i => i.id != ogItem.id);
         }
       } catch (err) {
-        return console.log(err);
+        console.log(err);
         itemErrors++;
       }
     }
