@@ -287,6 +287,14 @@ module.exports = async function(yargs) {
         item.annotations.push(annotation);
       }
 
+      if (
+        !item.searches.filter(s => s).length ||
+        !item.annotations.filter(a => a).length
+      ) {
+        console.error('Missing searches/annotations', item);
+        continue;
+      }
+
       // Create or update items
       try {
         // Find item in set that matches item generated from dump
@@ -315,7 +323,7 @@ module.exports = async function(yargs) {
           set.items = set.items.filter(i => i.id != ogItem.id);
         }
       } catch (err) {
-        console.log(err);
+        console.error(err, item);
         itemErrors++;
       }
     }
@@ -331,12 +339,12 @@ module.exports = async function(yargs) {
         deleted++;
       }
     } catch (err) {
+      console.error(err);
       itemErrors++;
     }
 
     logStats(pages.length);
   } catch (e) {
-    console.error(e.toString().red);
     console.error(e);
   }
 };
