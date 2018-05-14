@@ -165,9 +165,14 @@ module.exports = async function(yargs) {
       deleted = 0,
       created = 0,
       updated = 0;
-    const logStats = /** @param {number} page */ page => {
-      if (Date.now() < nextStats) return;
+    /**
+     * @param {number} page
+     * @param {boolean} [force]
+     */
+    function logStats(page, force) {
+      if (Date.now() < nextStats && !force) return;
 
+      console.log('\n');
       console.log(
         `${page} / ${pages.length} pages (${(
           page /
@@ -180,10 +185,10 @@ module.exports = async function(yargs) {
       console.log(`Updated ${updated} items`);
       console.log(`${pageErrors} page errors`);
       console.log(`${itemErrors} item errors`);
-      console.log('\n\n=====');
+      console.log('\n');
 
       nextStats = Date.now() + 20 * 1000;
-    };
+    }
 
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
@@ -234,6 +239,7 @@ module.exports = async function(yargs) {
             .get(`${config.url}/api/v1/Articles/AsSimpleJson`)
             .query({ id: p.id });
         } catch (err) {
+          console.error(err, p);
           pageErrors++;
           continue;
         }
@@ -343,7 +349,7 @@ module.exports = async function(yargs) {
       itemErrors++;
     }
 
-    logStats(pages.length);
+    logStats(pages.length, true);
   } catch (e) {
     console.error(e);
   }
