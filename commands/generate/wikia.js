@@ -317,13 +317,6 @@ module.exports = async function(yargs) {
       try {
         // Find item in set that matches item generated from dump
         const ogItem = set.items.find(i => i.title == item.title);
-        let id = 0;
-
-        // Need to take id out so it doesn't screw up the comparison
-        if (ogItem) {
-          id = ogItem.id;
-          delete ogItem.id;
-        }
 
         // Create new item if it has no match in `set.items`
         if (ogItem === undefined) {
@@ -333,16 +326,23 @@ module.exports = async function(yargs) {
             .send({ ...item });
           created++;
         }
-        // Update item in set with new item from dump
-        else if (JSON.stringify(ogItem) != JSON.stringify(item)) {
-          await request
-            .put(`${constants.XYANNOTATIONS}sets/${config.set}/items/${id}`)
-            .auth('access', xyfirAnnotationsAccessKey)
-            .send({ ...item });
-          updated++;
+        // Item already exists in set
+        else {
+          // Need to take id out so it doesn't screw up the comparison
+          const id = +ogItem.id;
+          delete ogItem.id;
+
+          // Update item in set with new content from dump/API
+          if (JSON.stringify(ogItem) != JSON.stringify(item)) {
+            await request
+              .put(`${constants.XYANNOTATIONS}sets/${config.set}/items/${id}`)
+              .auth('access', xyfirAnnotationsAccessKey)
+              .send({ ...item });
+            updated++;
+          }
 
           // Any items remaining in `set.items` after all pages are parsed will
-          // be deleted from the set
+          // be deleted from the set since they no longer exist in Wiki
           set.items = set.items.filter(i => i.id != id);
         }
       } catch (err) {
