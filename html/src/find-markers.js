@@ -33,7 +33,8 @@ export default function(html, chapter, items) {
     // Loop through all search queries in item
     item.searches.forEach((search, searchIndex) => {
       // If search query is global, it doesn't have a before or after
-      if (!search.before && !search.after) return;
+      if (typeof search == 'string' || (!search.before && !search.after))
+        return;
 
       if (search.before) {
         // Before subsearches are assumed unique with only a single match

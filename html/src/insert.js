@@ -40,19 +40,22 @@ export default function(opt) {
   searchOrder.forEach(o => {
     const item = set.items[o.item];
     const search = item.searches[o.search];
+    const isObj = typeof search == 'object';
 
     /** @type {RegExp} */
     let needle;
-    if (search.regex) {
+    if (isObj && search.regex) {
       needle = new RegExp(search.main, 'g');
     } else {
+      const main = isObj ? search.main : search;
+
       // If not regex, escape regex characters and wrap in \b
       // Add \b to start/end of regex if start/end is a non-word character
       // Prevents words from being highlighted within longer words
       needle = new RegExp(
-        (wordChar.test(search.main[0]) ? '\\b' : '') +
-          AnnotateCore.escapeRegex(search.main) +
-          (wordChar.test(search.main[search.main.length - 1]) ? '\\b' : ''),
+        (wordChar.test(main[0]) ? '\\b' : '') +
+          AnnotateCore.escapeRegex(main) +
+          (wordChar.test(main[main.length - 1]) ? '\\b' : ''),
         'g'
       );
     }
@@ -60,7 +63,7 @@ export default function(opt) {
     // Get start/end string indexes for each match
     let matches = findMatchIndexes(needle, html);
 
-    if (search.before || search.after) {
+    if (isObj && (search.before || search.after)) {
       // Filter out invalid matches based on before|after
       matches = matches.filter(match => {
         // Get before/after marker objects
