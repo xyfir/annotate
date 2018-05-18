@@ -219,14 +219,26 @@ module.exports = async function(yargs) {
       // The full, original titles of all of the distinctions of the current page
       const titles = distinctions.map(p => p.title);
 
+      // For code-simplicity, build full, unminified item which will be
+      // compared against unminified items downloaded from set
       const item = {
         title: page.distinction ? page.distinction.target : page.title,
         searches: [
-          page.distinction ? page.distinction.target : page.title
+          {
+            main: page.distinction ? page.distinction.target : page.title,
+            regex: false,
+            after: '',
+            before: ''
+          }
         ].concat(
           // Pages that redirect to this page or any of its distinctions will
           // have their titles used as searches for this item
-          pages.filter(p => titles.indexOf(p.redirect) > -1).map(p => p.title)
+          pages.filter(p => titles.indexOf(p.redirect) > -1).map(p => ({
+            main: p.title,
+            regex: false,
+            after: '',
+            before: ''
+          }))
         ),
         annotations: []
       };
@@ -305,6 +317,13 @@ module.exports = async function(yargs) {
       try {
         // Find item in set that matches item generated from dump
         const ogItem = set.items.find(i => i.title == item.title);
+        let id = 0;
+
+        // Need to take id out so it doesn't screw up the comparison
+        if (ogItem) {
+          id = ogItem.id;
+          delete ogItem.id;
+        }
 
         // Create new item if it has no match in `set.items`
         if (ogItem === undefined) {
@@ -317,16 +336,14 @@ module.exports = async function(yargs) {
         // Update item in set with new item from dump
         else if (JSON.stringify(ogItem) != JSON.stringify(item)) {
           await request
-            .put(
-              `${constants.XYANNOTATIONS}sets/${config.set}/items/${ogItem.id}`
-            )
+            .put(`${constants.XYANNOTATIONS}sets/${config.set}/items/${id}`)
             .auth('access', xyfirAnnotationsAccessKey)
             .send({ ...item });
           updated++;
 
           // Any items remaining in `set.items` after all pages are parsed will
           // be deleted from the set
-          set.items = set.items.filter(i => i.id != ogItem.id);
+          set.items = set.items.filter(i => i.id != id);
         }
       } catch (err) {
         console.error(err, item);
