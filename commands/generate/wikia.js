@@ -58,7 +58,7 @@ module.exports = async function(yargs) {
     console.log('Downloading set');
     let res = await request
       .get(`${constants.XYANNOTATIONS}sets/${config.set}/download`)
-      .query({ subscriptionKey: xyfirAnnotationsSubscriptionKey });
+      .auth('subscription', xyfirAnnotationsSubscriptionKey);
     const { set } = res.body;
 
     // Load all <page> elements
@@ -310,7 +310,7 @@ module.exports = async function(yargs) {
         if (ogItem === undefined) {
           await request
             .post(`${constants.XYANNOTATIONS}sets/${config.set}/items`)
-            .query({ accessKey: xyfirAnnotationsAccessKey })
+            .auth('access', xyfirAnnotationsAccessKey)
             .send({ ...item });
           created++;
         }
@@ -320,7 +320,7 @@ module.exports = async function(yargs) {
             .put(
               `${constants.XYANNOTATIONS}sets/${config.set}/items/${ogItem.id}`
             )
-            .query({ accessKey: xyfirAnnotationsAccessKey })
+            .auth('access', xyfirAnnotationsAccessKey)
             .send({ ...item });
           updated++;
 
@@ -341,7 +341,7 @@ module.exports = async function(yargs) {
           .delete(
             `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
           )
-          .query({ accessKey: xyfirAnnotationsAccessKey });
+          .auth('access', xyfirAnnotationsAccessKey);
         deleted++;
       }
     } catch (err) {

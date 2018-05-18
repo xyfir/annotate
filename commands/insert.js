@@ -52,7 +52,7 @@ module.exports = async function(yargs) {
     // Download annotation set
     const res = await request
       .get(`${constants.XYANNOTATIONS}sets/${setId}/download`)
-      .query({ subscriptionKey: config.xyfirAnnotationsSubscriptionKey });
+      .auth('subscription', config.xyfirAnnotationsSubscriptionKey);
     const { set } = res.body;
 
     // Build extract path
