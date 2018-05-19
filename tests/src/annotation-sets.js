@@ -17,6 +17,12 @@ export default [
             name: 'Search',
             value: 'Benjamin Franklin',
             context: 'Autobiography'
+          },
+          {
+            type: 1,
+            name: 'Document',
+            value:
+              'Check out [Benjamin Franklin](https://www.google.com/search?q=benjamin+franklin) on Google.'
           }
         ]
       }
