@@ -52,19 +52,19 @@ export default class ViewAnnotations extends React.Component {
     const view = (() => {
       switch (annotation.type) {
         case 1:
-          return <Document annotation={annotation} />;
+          return <Document annotation={annotation} {...this.props} />;
         case 2:
-          return <Link annotation={annotation} />;
+          return <Link annotation={annotation} {...this.props} />;
         case 3:
-          return <Search annotation={annotation} book={this.props.book} />;
+          return <Search annotation={annotation} {...this.props} />;
         case 4:
-          return <Image annotation={annotation} />;
+          return <Image annotation={annotation} {...this.props} />;
         case 5:
-          return <Video annotation={annotation} />;
+          return <Video annotation={annotation} {...this.props} />;
         case 6:
-          return <Audio annotation={annotation} />;
+          return <Audio annotation={annotation} {...this.props} />;
         case 7:
-          return <Map annotation={annotation} />;
+          return <Map annotation={annotation} {...this.props} />;
       }
     })();
 

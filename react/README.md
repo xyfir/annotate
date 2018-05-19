@@ -12,12 +12,27 @@ This is the main one you should be concerned with. If this is the component you 
 
 **Props:**
 
-* `annotations: object[]` _required_ - An annotation set item's annotations
-* `book: { title: string, authors: string }` _optional_ - Information for the book being viewed
+* `annotations`: `object[]` _required_ - An annotation set item's annotations
+* `onGoToLink`: `function` _required_ - Called whenever the user clicks a link, either to go to the source of an annotation, or to go to a link within a Document. The function should accept a single parameter that is the link (`string`) that you should navigate the user to.
+* `book`: `{ title: string, authors: string }` _optional_ - Information for the book being viewed
 
-## Others
+## `<Document>`, `<Link>`, `<Search>`, `<Image>`, `<Video>`, `<Audio>`, `<Map>`
 
-All of the other exported components (`Document`, `Link`, `Search`, `Image`, `Video`, `Audio`, and `Map`) render a single annotation of the appropriate type. They all accept a single `annotation` prop that is a single annotation within an annotation set item. `<Search>` also accepts the same `book` prop as `<ViewAnnotations>`.
+**Props:**
+
+* `annotation`: `object` _required_ - A single annotation set item annotation (`set.items[i].annotations[j]`).
+
+## `<Search>`
+
+**Props:**
+
+* `book`: described above
+
+## `<Document>`, `<Link>`, `<Video>`, `<Map>`
+
+**Props:**
+
+* `onGoToLink`: described above
 
 # Examples
 
