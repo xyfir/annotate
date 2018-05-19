@@ -181,6 +181,7 @@ class AnnotateTests extends React.Component {
           {item ? (
             <AnnotateReact.ViewAnnotations
               annotations={item.annotations}
+              onGoToLink={window.open}
               book={{
                 title: 'The Autobiography of Benjamin Franklin',
                 authors: 'Benjamin Franklin'
