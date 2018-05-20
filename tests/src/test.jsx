@@ -182,23 +182,13 @@ class AnnotateTests extends React.Component {
             <AnnotateReact.ViewAnnotations
               annotations={item.annotations}
               onGoToLink={window.open}
+              onClose={() => this.setState({ item: null })}
               book={{
                 title: 'The Autobiography of Benjamin Franklin',
                 authors: 'Benjamin Franklin'
               }}
             />
           ) : null}
-
-          <Button
-            floating
-            fixed
-            primary
-            tooltipPosition="left"
-            fixedPosition="br"
-            tooltipLabel="Close"
-            iconChildren="close"
-            onClick={() => this.setState({ item: null })}
-          />
         </DialogContainer>
       </React.Fragment>
     );
