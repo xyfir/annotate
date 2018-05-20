@@ -72,6 +72,17 @@ export default class ViewAnnotations extends React.Component {
       <div className="xyfir-annotate-react view-annotations">
         <Toolbar
           colored
+          actions={
+            this.props.onClose
+              ? [
+                  <Button
+                    icon
+                    onClick={() => this.props.onClose()}
+                    iconChildren="close"
+                  />
+                ]
+              : null
+          }
           title={annotation.name}
           nav={
             <Button
