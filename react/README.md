@@ -13,7 +13,8 @@ This is the main one you should be concerned with. If this is the component you 
 **Props:**
 
 * `annotations`: `object[]` _required_ - An annotation set item's annotations
-* `onGoToLink`: `function` _required_ - Called whenever the user clicks a link, either to go to the source of an annotation, or to go to a link within a Document. The function should accept a single parameter that is the link (`string`) that you should navigate the user to.
+* `onGoToLink`: `function` _required_ - Called whenever the user clicks a link, either to go to the source of an annotation, or to go to a link within a Document. The function should accept a single parameter that is the link (`string`) that you should navigate the user to. Pass `window.open` if you don't need any custom link handling.
+* `onClose`: `function` _optional_ - When present, a 'close' action button will be added to the toolbar that will call this function on click.
 * `book`: `{ title: string, authors: string }` _optional_ - Information for the book being viewed
 
 ## `<Document>`, `<Link>`, `<Search>`, `<Image>`, `<Video>`, `<Audio>`, `<Map>`
