@@ -1,5 +1,5 @@
 {
-  "name": "auto-annotator",
+  "name": "@xyfir/annotate-cli",
   "version": "4.4.1",
   "description": "Automatically generate and insert ebook annotations using xyAnnotations.",
   "main": "index.js",
@@ -7,16 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "auto-annotator": "./index.js"
+    "annotate": "./index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Xyfir/auto-annotator.git"
+    "url": "git+https://github.com/Xyfir/annotate.git"
   },
   "keywords": [
     "xyfir",
     "annotations",
     "annotator",
+    "annotate",
     "calibre",
     "ebooks",
     "library",
@@ -25,9 +26,9 @@
   "author": "Xyfir, LLC <contact@xyfir.com> (https://xyfir.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Xyfir/auto-annotator/issues"
+    "url": "https://github.com/Xyfir/annotate/issues"
   },
-  "homepage": "https://github.com/Xyfir/auto-annotator#readme",
+  "homepage": "https://github.com/Xyfir/annotate",
   "prettier": {
     "singleQuote": true
   },

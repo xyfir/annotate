@@ -11,7 +11,7 @@ module.exports = function(file) {
   return path.resolve(
     process.env.APPDATA || process.env.HOME,
     `${process.env.HOME ? '.' : ''}xyfir/`,
-    'auto-annotator/',
+    'annotate/',
     file
   );
 };

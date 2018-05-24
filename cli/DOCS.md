@@ -3,7 +3,7 @@
 ## `insert file`
 
 ```
-auto-annotator insert file --file /path/to/file.epub --set 1234
+annotate insert file --file /path/to/file.epub --set 1234
 ```
 
 Creates a copy of the epub file and inserts links to view annotations for matches of searches within items in the provided annotation set. This should allow you to view annotations from within any ebook reader that supports epub, regardless of whether that reader supports xyAnnotations.
@@ -20,7 +20,7 @@ Creates a copy of the epub file and inserts links to view annotations for matche
 ## `generate calibre`
 
 ```
-auto-annotator generate calibre
+annotate generate calibre
 ```
 
 This command loads your Calibre library, loops through the books, and creates annotation sets and annotation set items for each book that shouldn't be ignored.
@@ -32,12 +32,12 @@ This command loads your Calibre library, loops through the books, and creates an
 * `--limit: number` - Stop after the specified number of annotation sets are created. Ignored or skipped books do not count.
 * `--ids: number|string` - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
 * `--start-at: number` - Skip all books before the book with the provided id. Defaults to `0`.
-* `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent auto-annotator from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
+* `--stop-at: number` - Stop generating after the book with the provided id. You should provide this value if possible to prevent annotate-cli from quitting if it assumes that it has reached the end of the library. Defaults to `99999999`, and may quit before.
 
 ## `generate libgen`
 
 ```
-auto-annotator generate libgen
+annotate generate libgen
 ```
 
 This command can most likely be ignored. It is used by the AutoAnnotator bot account on xyAnnotations.
@@ -57,7 +57,7 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 ## `generate wikia`
 
 ```
-auto-annotator generate wikia --config /path/to/config.json
+annotate generate wikia --config /path/to/config.json
 ```
 
 Creates, updates, and deletes items in the specified annotation set using the pages in the Wikia dump file. Dumps can be found at [http://community.wikia.com/wiki/Special:Statistics](http://community.wikia.com/wiki/Special:Statistics) where `community` is replaced with the name of the Wikia site you wish to download data from.
@@ -100,7 +100,7 @@ Note that there are no default values. You must provide all of the config keys.
 ## `config`
 
 ```
-auto-annotator config [--key keyName [--value keyValue]]
+annotate config [--key keyName [--value keyValue]]
 ```
 
 The config command has three different actions based on what options you provide.
@@ -113,14 +113,14 @@ Attempting to read or write to a non-existent key will result in an error.
 
 ## Ignore Commands
 
-The `ignore` command has multiple sub-commands that allow you to work with auto-annotator's ignore list. The ignore list is a list of your Calibre library's book IDs that auto-annotator will skip annotation generation for. The IDs have either been added to the ignore list via `auto-annotator ignore add` or automatically because an annotation set was created for that book.
+The `ignore` command has multiple sub-commands that allow you to work with annotate-cli's ignore list. The ignore list is a list of your Calibre library's book IDs that annotate-cli will skip annotation generation for. The IDs have either been added to the ignore list via `annotate ignore add` or automatically because an annotation set was created for that book.
 
-The ignore list is global, and not specific to a certain library. If you change your library path or replace the library at the same location with another, you should run `auto-annotator ignore reset` so that you're not unknowingly ignoring books that you shouldn't be.
+The ignore list is global, and not specific to a certain library. If you change your library path or replace the library at the same location with another, you should run `annotate ignore reset` so that you're not unknowingly ignoring books that you shouldn't be.
 
 ### `ignore add`
 
 ```
-auto-annotator ignore add --ids ids
+annotate ignore add --ids ids
 ```
 
 Adds a single or multiple book IDs to the ignore list.
@@ -130,19 +130,19 @@ Adds a single or multiple book IDs to the ignore list.
 Add book id 55 to the ignore list
 
 ```
-auto-annotator ignore add --ids 55
+annotate ignore add --ids 55
 ```
 
 Add books 1, 400, and 2 to the ignore list
 
 ```
-auto-annotator ignore add --ids 1,400,2
+annotate ignore add --ids 1,400,2
 ```
 
 ### `ignore remove`
 
 ```
-auto-annotator ignore remove --ids ids
+annotate ignore remove --ids ids
 ```
 
 Removes a single or multiple book IDs from the ignore list.
@@ -152,19 +152,19 @@ Removes a single or multiple book IDs from the ignore list.
 Remove book 55 from ignore list
 
 ```
-auto-annotator ignore remove --ids 55
+annotate ignore remove --ids 55
 ```
 
 Remove books 1, 400, and 2 from the ignore list
 
 ```
-auto-annotator ignore remove --ids 1,400,2
+annotate ignore remove --ids 1,400,2
 ```
 
 ### `ignore reset`
 
 ```
-auto-annotator ignore reset
+annotate ignore reset
 ```
 
 Removes all IDs from the ignore list.
@@ -172,7 +172,7 @@ Removes all IDs from the ignore list.
 ### `ignore show`
 
 ```
-auto-annotator ignore show
+annotate ignore show
 ```
 
 Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its own line. The `--sort` option sorts all of the ids in ascending order.
@@ -226,4 +226,4 @@ Outputs all IDs in the ignore list. The `--multiline` option puts each ID on its
 
 # User Data
 
-auto-annotator stores the config file and other data in `/home/<user>/.xyfir/auto-annotator` in Unix environments and `%APPDATA%\xyfir\auto-annotator` on Windows.
+annotate-cli stores the config file and other data in `/home/<user>/.xyfir/annotate` in Unix environments and `%APPDATA%\xyfir\annotate` on Windows.
