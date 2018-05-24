@@ -1,0 +1,52 @@
+{
+  "name": "auto-annotator",
+  "version": "4.4.1",
+  "description": "Automatically generate and insert ebook annotations using xyAnnotations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "auto-annotator": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xyfir/auto-annotator.git"
+  },
+  "keywords": [
+    "xyfir",
+    "annotations",
+    "annotator",
+    "calibre",
+    "ebooks",
+    "library",
+    "cli"
+  ],
+  "author": "Xyfir, LLC <contact@xyfir.com> (https://xyfir.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Xyfir/auto-annotator/issues"
+  },
+  "homepage": "https://github.com/Xyfir/auto-annotator#readme",
+  "prettier": {
+    "singleQuote": true
+  },
+  "dependencies": {
+    "@xyfir/annotate-html": "^1.3.0",
+    "app-module-path": "^2.2.0",
+    "archiver": "^2.1.1",
+    "cli-table": "^0.3.1",
+    "colors": "^1.3.0",
+    "fs-extra": "^6.0.1",
+    "glob": "^7.1.2",
+    "mysql2": "^1.5.3",
+    "node-calibre": "^1.2.0",
+    "superagent": "^3.8.3",
+    "unzipper": "^0.8.14",
+    "xmldom": "^0.1.27",
+    "yargs": "^11.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^1.12.1"
+  }
+}
