@@ -1,33 +1,25 @@
-import { Button } from 'react-md';
 import React from 'react';
 
-export default ({ annotation, onGoToLink }) => {
+export default ({ annotation }) => {
   /** @type {string} */
-  const link = Array.isArray(annotation.value)
+  const id = Array.isArray(annotation.value)
     ? annotation.value[0]
     : annotation.value;
 
   return (
     <div className="video-annotation">
-      {link.indexOf('youtube.com/') > -1 ? (
-        <iframe src={link} className="youtube" />
-      ) : link.indexOf('vimeo.com/') > -1 ? (
-        <iframe src={link} className="vimeo" />
+      {annotation.source == 'youtube' ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${id}`}
+          className="youtube"
+        />
+      ) : annotation.source == 'vimeo' ? (
+        <iframe
+          src={`https://player.vimeo.com/video/${id}`}
+          className="vimeo"
+        />
       ) : (
-        <div className="normal">
-          <Button
-            floating
-            fixed
-            secondary
-            tooltipPosition="right"
-            fixedPosition="bl"
-            tooltipLabel="Go to source"
-            iconChildren="link"
-            onClick={() => onGoToLink(link)}
-          />
-
-          <video src={link} controls />
-        </div>
+        <p>Cannot play videos from this source.</p>
       )}
     </div>
   );
