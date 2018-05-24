@@ -27,13 +27,16 @@ export default [
           {
             type: 5,
             name: 'Video',
-            value: 'LVnMM13qN1E',
+            value: ['LVnMM13qN1E', 'fNTBb1u6UGg'],
             source: 'youtube'
           },
           {
             type: 6,
             name: 'Audio',
-            value: 'tinman77-1/31-puff-daddy-lox-lil-kim-and',
+            value: [
+              'user-873481270/benjamin-franklin',
+              'tinman77-1/31-puff-daddy-lox-lil-kim-and'
+            ],
             source: 'soundcloud'
           }
         ]
