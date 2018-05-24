@@ -1,18 +1,16 @@
-annotate-cli is a command line tool that allows you to automatically generate annotations for an entire library of ebooks via [Xyfir Annotations](https://annotations.xyfir.com/). This tool is compatible with [Calibre](https://calibre-ebook.com/) and [Xyfir Books](https://books.xyfir.com/) libraries.
-
-For now, annotate-cli requires you to have Node and npm installed, and have some familiarity with using the command line. In the future, an optional GUI bundled in an installer may exist.
+Formerly known as auto-annotator, **annotate-cli** is a command line tool that allows you to, among other things, automatically generate annotations for an entire library of ebooks via [xyAnnotations](https://annotations.xyfir.com/). This tool is compatible with [Calibre](https://calibre-ebook.com/) and [xyBooks](https://books.xyfir.com/) libraries.
 
 annotate-cli offers a lot more than the basic, common use-case described below. See the [docs](https://github.com/Xyfir/annotate/blob/master/cli/DOCS.md) for more information.
 
 # Install
 
-```
+```bash
 npm install -g @xyfir/annotate-cli
 ```
 
 or you can clone this repo and then:
 
-```
+```bash
 cd path/to/annotate/cli
 npm install -g
 ```
