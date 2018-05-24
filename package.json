@@ -1,6 +1,6 @@
 {
   "name": "auto-annotator",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Automatically generate and insert ebook annotations using xyAnnotations.",
   "main": "index.js",
   "scripts": {
