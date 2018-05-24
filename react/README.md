@@ -29,7 +29,7 @@ This is the main one you should be concerned with. If this is the component you 
 
 * `book`: described above
 
-## `<Document>`, `<Link>`, `<Video>`, `<Map>`
+## `<Document>`, `<Link>`, `<Map>`
 
 **Props:**
 
