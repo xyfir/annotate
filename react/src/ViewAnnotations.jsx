@@ -95,6 +95,7 @@ export default class ViewAnnotations extends React.Component {
 
         <Drawer
           onVisibilityChange={v => this.setState({ drawer: v })}
+          overlayClassName="xyfir-annotate-react drawer-overlay"
           autoclose={true}
           navItems={annotations.map((a, index) => (
             <ListItem
