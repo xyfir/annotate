@@ -23,6 +23,18 @@ export default [
             name: 'Document',
             value:
               'Check out [Benjamin Franklin](https://www.google.com/search?q=benjamin+franklin) on Google.'
+          },
+          {
+            type: 5,
+            name: 'Video',
+            value: 'LVnMM13qN1E',
+            source: 'youtube'
+          },
+          {
+            type: 6,
+            name: 'Audio',
+            value: 'tinman77-1/31-puff-daddy-lox-lil-kim-and',
+            source: 'soundcloud'
           }
         ]
       }
