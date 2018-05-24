@@ -1,22 +1,37 @@
+import { Button } from 'react-md';
 import React from 'react';
 
 export default class AudioAnnotation extends React.Component {
   constructor(props) {
     super(props);
 
+    const { annotation } = this.props;
+
     this.state = {
       soundcloud: null,
       badSource: false,
-      loading: true
+      loading: true,
+      length: Array.isArray(annotation.value) ? annotation.value.length : 1,
+      index: 0
     };
   }
 
   componentDidMount() {
+    this._load();
+  }
+
+  onNext() {
+    const { index, length } = this.state;
+    this.setState({ index: index == length - 1 ? 0 : index + 1 }, this._load);
+  }
+
+  _load() {
     const { annotation } = this.props;
+    const ids = Array.isArray(annotation.value)
+      ? annotation.value
+      : [annotation.value];
     /** @type {string} */
-    const id = Array.isArray(annotation.value)
-      ? annotation.value[0]
-      : annotation.value;
+    const id = ids[this.state.index];
 
     switch (annotation.source) {
       case 'soundcloud':
@@ -34,16 +49,30 @@ export default class AudioAnnotation extends React.Component {
   }
 
   render() {
-    const { soundcloud, badSource, loading } = this.state;
+    const { soundcloud, badSource, loading, length } = this.state;
     if (loading) return null;
 
     return badSource ? (
       <p>Cannot load audio track from this source.</p>
     ) : (
-      <div
-        className="audio-annotation"
-        dangerouslySetInnerHTML={{ __html: soundcloud.html }}
-      />
+      <React.Fragment>
+        <div
+          className="audio-annotation"
+          dangerouslySetInnerHTML={{ __html: soundcloud.html }}
+        />
+
+        {length > 1 ? (
+          <Button
+            floating
+            fixed
+            secondary
+            mini
+            fixedPosition="br"
+            iconChildren="navigate_next"
+            onClick={() => this.onNext()}
+          />
+        ) : null}
+      </React.Fragment>
     );
   }
 }
