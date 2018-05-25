@@ -1,3 +1,4 @@
+const mediaWikiPagesToAnnotations = require('lib/wiki/mediawiki');
 const wikiaPagesToAnnotations = require('lib/wiki/wikia');
 const { DOMParser } = require('xmldom');
 const getConfig = require('lib/config/get');
@@ -71,12 +72,11 @@ module.exports = async function(yargs) {
         .getElementsByTagName('page')
     )
       // Get pages in provided namespace(s)
-      .filter(
-        p =>
-          config.namespaces.indexOf(
-            +p.getElementsByTagName('ns')[0].textContent
-          ) > -1
-      )
+      .filter(p => {
+        if (!config.namespaces || !config.namespaces.length) return true;
+        const ns = p.getElementsByTagName('ns')[0];
+        return ns ? config.namespaces.indexOf(+ns.textContent) > -1 : false;
+      })
       // Convert pages to an array of simple objects
       .map(p => {
         // Get page title and id
@@ -233,12 +233,23 @@ module.exports = async function(yargs) {
       // Convert pages to annotations
       pageErrors += config.url.endsWith('wikia.com')
         ? await wikiaPagesToAnnotations(config, distinctions, item)
-        : 0;
+        : await mediaWikiPagesToAnnotations(config, distinctions, item);
 
       if (!item.annotations.filter(a => a).length) {
         console.error('Missing annotations', item);
         continue;
       }
+
+      // General annotation post-processing not specific to any one source
+      item.annotations = item.annotations.map(a => {
+        // Find and replace Document annotation content
+        if (a.type == 1 && config.replace && config.replace.markdown) {
+          for (let replace of config.replace.markdown)
+            a.value = a.value.replace(new RegExp(replace[0], 'g'), replace[1]);
+        }
+
+        return a;
+      });
 
       // Create or update items
       try {
