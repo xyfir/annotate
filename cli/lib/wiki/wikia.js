@@ -24,6 +24,7 @@ const LIST = (elements, level) =>
  */
 module.exports = async function(config, distinctions, item) {
   let pageErrors = 0;
+  let res;
 
   // Download contents of pages and build annotations
   for (let p of distinctions) {
@@ -73,6 +74,7 @@ module.exports = async function(config, distinctions, item) {
       }
     }
 
+    // Build annotation for page
     const annotation = {
       type: 1,
       name: p.distinction
