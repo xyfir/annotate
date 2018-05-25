@@ -9,6 +9,11 @@ yargs
   .command('generate', 'Generate annotations', () =>
     yargs
       .command(
+        'mediawiki',
+        'Generate annotations using a MediaWiki XML dump',
+        commands.generateMediaWiki
+      )
+      .command(
         'calibre',
         'Generate annotations using books from your Calibre library',
         commands.generateCalibre
@@ -20,7 +25,8 @@ yargs
       )
       .command(
         'wikia',
-        'Generate annotations using a Wikia.com XML dump',
+        'Generate annotations using a Wikia.com XML dump. ' +
+          'Deprecated: Use `generate mediawiki` instead.',
         commands.generateWikia
       )
   )

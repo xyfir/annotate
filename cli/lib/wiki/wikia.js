@@ -1,0 +1,91 @@
+const request = require('superagent');
+
+/**
+ * @param {object[]} elements
+ * @param {number} level
+ * @return {string}
+ */
+const LIST = (elements, level) =>
+  elements
+    .map(
+      element =>
+        `${'  '.repeat(level)}- ${element.text}\n` +
+        LIST(element.elements, level + 1)
+    )
+    .join('');
+
+/**
+ * Build xyAnnotations annotation set item from a Wikia page.
+ * @async
+ * @param {CommandConfig} config
+ * @param {Distinction[]} distinctions
+ * @param {AnnotationSetItem} item
+ * @return {number} The amount of errors encountered trying to load the pages.
+ */
+module.exports = async function(config, distinctions, item) {
+  let pageErrors = 0;
+
+  // Download contents of pages and build annotations
+  for (let p of distinctions) {
+    // Load simple JSON for page
+    try {
+      res = await request
+        .get(`${config.url}/api/v1/Articles/AsSimpleJson`)
+        .query({ id: p.id });
+    } catch (err) {
+      console.error(err, p);
+      pageErrors++;
+      continue;
+    }
+    const { sections } = res.body;
+
+    let text = '';
+    sectionloop: for (let section of sections) {
+      // Ignore sections by their title
+      for (let s of config.ignore.sections) {
+        // Regex
+        if (s.startsWith('/') && s.endsWith('/')) {
+          if (new RegExp(s.substr(1, s.length - 2)).test(section.title))
+            continue sectionloop;
+        }
+        // Contains
+        else if (section.title.indexOf(s) > -1) continue sectionloop;
+      }
+
+      // Build # Heading
+      text += `${'#'.repeat(section.level)} ${section.title}\n\n`;
+
+      // Build images
+      for (let img of section.images) {
+        text += `![${img.caption}](${img.src})\n\n`;
+      }
+
+      // Build paragraphs or lists
+      for (let content of section.content) {
+        switch (content.type) {
+          case 'paragraph':
+            text += `${content.text}\n\n`;
+            break;
+          case 'list':
+            text += LIST(content.elements, 0);
+            text += '\n';
+        }
+      }
+    }
+
+    const annotation = {
+      type: 1,
+      name: p.distinction
+        ? `Wikia: (${p.distinction.type}) ${p.distinction.target}`
+        : `Wikia: ${p.title}`,
+      value: text
+    };
+    annotation.name =
+      annotation.name.length > 50
+        ? `${annotation.name.substr(0, 47)}...`
+        : annotation.name;
+    item.annotations.push(annotation);
+  }
+
+  return pageErrors;
+};

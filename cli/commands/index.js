@@ -1,5 +1,6 @@
 module.exports = {
   removeFromIgnoreList: require('./ignore-list/remove-from'),
+  generateMediaWiki: require('./generate/mediawiki'),
   addToIgnoreList: require('./ignore-list/add-to'),
   resetIgnoreList: require('./ignore-list/reset'),
   generateCalibre: require('./generate/calibre'),
