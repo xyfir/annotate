@@ -10,6 +10,8 @@ const request = require('superagent');
  * @return {number} The amount of errors encountered trying to load the pages.
  */
 module.exports = async function(config, distinctions, item) {
+  let ignoreUntil = 0;
+
   // Configure HTML to Markdown converter
   const turndown = new Turndown({
     fence: '```',
@@ -19,6 +21,36 @@ module.exports = async function(config, distinctions, item) {
     bulletListMarker: '-'
   })
     .remove(config.ignore.htmlElements)
+    .addRule('ignore', {
+      filter: /** @param {Node} node */ node => {
+        if (!config.ignore.sections) return false;
+
+        if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(node.nodeName) > -1) {
+          const level = +node.nodeName[1];
+
+          // Heading is within an ignored section
+          if (ignoreUntil > level) return true;
+
+          // Determine if section should be ignored
+          for (let ignore of config.ignore.sections) {
+            if (new RegExp(ignore).test(node.textContent)) {
+              ignoreUntil = level;
+              return true;
+            }
+          }
+
+          // Ignored section has been skipped
+          if (ignoreUntil != 0 && ignoreUntil <= level) {
+            ignoreUntil = 0;
+            return false;
+          }
+        }
+        // If element within an ignored section, return true
+        else if (ignoreUntil > 0) return true;
+        else return false;
+      },
+      replacement: () => ''
+    })
     // Make link paths absolute
     .addRule('link', {
       filter: 'a',
@@ -82,6 +114,8 @@ module.exports = async function(config, distinctions, item) {
         ? `${annotation.name.substr(0, 47)}...`
         : annotation.name;
     item.annotations.push(annotation);
+
+    ignoreUntil = 0;
   }
 
   return pageErrors;
