@@ -44,13 +44,7 @@ module.exports = async function(config, distinctions, item) {
     sectionloop: for (let section of sections) {
       // Ignore sections by their title
       for (let s of config.ignore.sections) {
-        // Regex
-        if (s.startsWith('/') && s.endsWith('/')) {
-          if (new RegExp(s.substr(1, s.length - 2)).test(section.title))
-            continue sectionloop;
-        }
-        // Contains
-        else if (section.title.indexOf(s) > -1) continue sectionloop;
+        if (new RegExp(s).test(section.title)) continue sectionloop;
       }
 
       // Build # Heading

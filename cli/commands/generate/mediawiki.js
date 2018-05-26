@@ -112,14 +112,8 @@ module.exports = async function(yargs) {
           if (/^disamb/i.test(p.distinction.type)) return false;
         }
 
-        for (let t of config.ignore.titles) {
-          // Regex
-          if (t.startsWith('/') && t.endsWith('/')) {
-            if (new RegExp(t.substr(1, t.length - 2)).test(p.title))
-              return false;
-          }
-          // Contains
-          else if (p.title.indexOf(t) > -1) return false;
+        for (let t of config.ignore.pages || config.ignore.titles) {
+          if (new RegExp(t).test(p.title)) return false;
         }
 
         return true;
