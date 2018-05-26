@@ -109,10 +109,6 @@ module.exports = async function(config, distinctions, item) {
         : `Wiki: ${p.title}`,
       value: turndown.turndown(html)
     };
-    annotation.name =
-      annotation.name.length > 50
-        ? `${annotation.name.substr(0, 47)}...`
-        : annotation.name;
     item.annotations.push(annotation);
 
     ignoreUntil = 0;

@@ -236,6 +236,9 @@ module.exports = async function(yargs) {
 
       // General annotation post-processing not specific to any one source
       item.annotations = item.annotations.map(a => {
+        // Shorten name if needed
+        a.name = a.name.length > 50 ? `${a.name.substr(0, 47)}...` : a.name;
+
         // Find and replace Document annotation content
         if (a.type == 1 && config.replace && config.replace.markdown) {
           for (let replace of config.replace.markdown)

@@ -76,10 +76,6 @@ module.exports = async function(config, distinctions, item) {
         : `Wikia: ${p.title}`,
       value: text
     };
-    annotation.name =
-      annotation.name.length > 50
-        ? `${annotation.name.substr(0, 47)}...`
-        : annotation.name;
     item.annotations.push(annotation);
   }
 
