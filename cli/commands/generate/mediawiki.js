@@ -117,7 +117,12 @@ module.exports = async function(yargs) {
         }
 
         return true;
-      });
+      })
+      // Ignore pages outside of range
+      .slice(
+        config.range && config.range.start ? config.range.start : 0,
+        config.range && config.range.end
+      );
     console.log(`Loaded ${pages.length} pages`);
 
     // Ensure all distinct pages have a main page to attach to

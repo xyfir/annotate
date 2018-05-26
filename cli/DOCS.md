@@ -78,9 +78,19 @@ This command takes a single option, `--config: string`, that is an absolute path
   // The base url to the MediaWiki site that the dump matches
   // No trailing slash!
   "url": "http://lotr.wikia.com",
-  // A path to the extracted XML dump file for the community
+  // A path to the XML dump file for the wiki
   // Should *not* be the full dump that contains revisions
   "dump": "/path/to/lotr_pages_current.xml",
+  // Optional. Only handle pages within the index range
+  // Remember, these are zero-based indexes!
+  // Good for resuming, specific updates, or splitting large wikis into parts
+  "range": {
+    // Leave out to start at beginning
+    "start": 123,
+    // Up to, but not including
+    // Leave out to go to the end
+    "end": 1234
+  },
   // Ignore pages and their sections
   "ignore": {
     // Regular expressions
