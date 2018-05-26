@@ -54,13 +54,17 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 * This command will not interfere with or use your Calibre library.
 * This command uses both the `ignoreBookIfMatchExists` and `skipBookIfMatchExists` config properties. Both are treated the same (as skip), since books from LibGen are not added to a Calibre library and are not added to the ignore list.
 
-## `generate wikia`
+## `generate mediawiki`
 
 ```
-annotate generate wikia --config /path/to/config.json
+annotate generate mediawiki --config /path/to/config.json
 ```
 
-Creates, updates, and deletes items in the specified annotation set using the pages in the Wikia dump file. Dumps can be found at [http://community.wikia.com/wiki/Special:Statistics](http://community.wikia.com/wiki/Special:Statistics) where `community` is replaced with the name of the Wikia site you wish to download data from.
+Creates, updates, and deletes items in the specified annotation set using the pages in a MediaWiki dump file.
+
+For Wikia, dumps can be found at [http://community.wikia.com/wiki/Special:Statistics](http://community.wikia.com/wiki/Special:Statistics) where `community` is replaced with the name of the Wikia site you wish to download data from.
+
+If the wiki does not have public dumps available for download, you can use the [wikiteam](https://github.com/WikiTeam/wikiteam) tools.
 
 ### Options
 
@@ -71,31 +75,51 @@ This command takes a single option, `--config: string`, that is an absolute path
   // The id of the annotation set
   // Your account should be the creator or have moderator access
   "set": 123,
-  // The base url to the Wikia community the dump matches
+  // The base url to the MediaWiki site that the dump matches
   // No trailing slash!
   "url": "http://lotr.wikia.com",
   // A path to the extracted XML dump file for the community
   // Should *not* be the full dump that contains revisions
   "dump": "/path/to/lotr_pages_current.xml",
   // Ignore pages and their sections
-  // If search is contained within "/" characters it will be treated as a regular expression
   "ignore": {
-    "titles": [
+    // Regular expressions
+    "pages": [
       "Main Page"
     ],
+    // Regular expressions
     "sections": [
       "References",
-      "/\blinks$/"
+      "See (A|a)lso"
+    ],
+    // Normal strings
+    // Not used for Wikia wikis
+    "htmlElements": [
+      "table",
+      "aside"
+    ]
+  },
+  // Optional. Find and replace using regular expressions
+  "replace": {
+    // Find and replace content within a page's HTML before converting to Markdown
+    // Not used for Wikia wikis
+    "html": [
+      ["<a .+>.+</a>", ""]
+    ],
+    // Find and replace content within a Markdown Document annotation
+    "markdown": [
+      ["\\[(.+)\\]\\(.+\\)", "$1"]
     ]
   },
   // The namespaces to pull pages from
+  // Optional. Remove if you want to accept all namespaces
   "namespaces": [
     0
   ]
 }
 ```
 
-Note that there are no default values. You must provide all of the config keys.
+Unless specified otherwise, you must provide all of the config keys.
 
 ## `config`
 
