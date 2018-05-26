@@ -2,9 +2,10 @@ const constants = require('../../constants');
 const request = require('superagent');
 
 const TITLE = (bt, ba) =>
-  `Generated Annotations for ${bt.substr(0, 235)} by ${ba.substr(0, 235)}`;
+  `Generated Annotations for ${bt.substr(0, 135)} by ${ba.substr(0, 135)}`;
 const SUMMARY = (bt, ba) =>
-  `Automatically generated annotations for **${bt}** by **${ba}**.`;
+  `Automatically generated annotations for ` +
+  `${bt.substr(0, 227)} by ${ba.substr(0, 227)}.`;
 
 /**
  * Creates the following objects on xyAnnotations: a book, an annotation set,
