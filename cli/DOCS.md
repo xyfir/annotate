@@ -84,6 +84,8 @@ This command takes a single option, `--config: string`, that is an absolute path
   // Optional. Only handle pages within the index range
   // Remember, these are zero-based indexes!
   // Good for resuming, specific updates, or splitting large wikis into parts
+  // Note that using `range` will prevent items that exist in the set,
+  // but don't have a match in the dump from being deleted from the set
   "range": {
     // Leave out to start at beginning
     "start": 123,
@@ -129,7 +131,7 @@ This command takes a single option, `--config: string`, that is an absolute path
 }
 ```
 
-Unless specified otherwise, you must provide all of the config keys.
+You must provide all of the config keys unless they are marked optional.
 
 ## `config`
 
