@@ -13,13 +13,26 @@ const fs = require('fs-extra');
  * @prop {number} set - Id of an annotation set the user is a moderator of
  * @prop {string} url - The base url for the wiki: `http://name.wikia.com`
  * @prop {string} dump - An absolute path to the XML dump file
+ * @prop {Range} [range]
  * @prop {Ignore} ignore
+ * @prop {Replace} [replace]
  * @prop {number[]} namespaces - A whitelist of namespaces
+ */
+/**
+ * @typedef {object} Range
+ * @prop {number} [start]
+ * @prop {number} [end]
  */
 /**
  * @typedef {object} Ignore
  * @prop {string[]} titles
  * @prop {string[]} sections
+ * @prop {string[]} htmlElements
+ */
+/**
+ * @typedef {object} Replace
+ * @prop {Array.<string[]>} [html]
+ * @prop {Array.<string[]>} [markdown]
  */
 /**
  * @typedef {object} GenerateWikiaArguments
@@ -283,7 +296,7 @@ module.exports = async function(yargs) {
 
           // Any items remaining in `set.items` after all pages are parsed will
           // be deleted from the set since they no longer exist in Wiki
-          set.items = set.items.filter(i => i.id != id);
+          set.items = set.items.filter(i => i.id);
         }
       } catch (err) {
         console.error(err, item);
@@ -292,18 +305,21 @@ module.exports = async function(yargs) {
     }
 
     // Delete items in set that don't exist in dump
-    try {
-      for (let item of set.items) {
-        await request
-          .delete(
-            `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
-          )
-          .auth('access', xyfirAnnotationsAccessKey);
-        deleted++;
+    // Range would cause items to be deleted that shouldn't
+    if (!config.range || (!config.range.start && !config.range.end)) {
+      try {
+        for (let item of set.items) {
+          await request
+            .delete(
+              `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
+            )
+            .auth('access', xyfirAnnotationsAccessKey);
+          deleted++;
+        }
+      } catch (err) {
+        console.error(err);
+        itemErrors++;
       }
-    } catch (err) {
-      console.error(err);
-      itemErrors++;
     }
 
     logStats(pages.length, true);
