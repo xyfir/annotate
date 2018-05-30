@@ -7,6 +7,8 @@ const request = require('superagent');
  */
 const LIST = (elements, level) =>
   elements
+    // For some reason, occasionally `null` elements are returned...
+    .filter(e => e)
     .map(
       element =>
         `${'  '.repeat(level)}- ${element.text}\n` +
