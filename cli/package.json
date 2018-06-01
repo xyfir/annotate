@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-cli",
-  "version": "4.6.2",
+  "version": "4.7.0",
   "description": "Automatically generate and insert ebook annotations using xyAnnotations.",
   "main": "index.js",
   "scripts": {
@@ -49,6 +49,6 @@
     "yargs": "^11.1.0"
   },
   "devDependencies": {
-    "prettier": "^1.13.3"
+    "prettier": "^1.13.4"
   }
 }
