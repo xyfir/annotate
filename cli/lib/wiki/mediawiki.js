@@ -79,7 +79,7 @@ module.exports = async function(config, distinctions, item) {
   for (let p of distinctions) {
     // Load HTML for page
     try {
-      res = await request.get(`${config.url}/w/api.php`).query({
+      res = await request.get(config.api).query({
         action: 'parse',
         format: 'json',
         pageid: p.id,
