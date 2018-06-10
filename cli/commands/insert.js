@@ -113,21 +113,21 @@ module.exports = async function(yargs) {
         html = html.replace(
           '</body>',
           `<footer class="xyannotations-notification">
-          <p>
-            This book has been annotated via
-            <a href="https://annotations.xyfir.com">xyAnnotations</a>,
-            using annotation set
-            <a href="https://annotations.xyfir.com/sets/${setId}">#${setId}</a>
-            on <code>${new Date(set.version).toGMTString()}</code>.
-          </p>
-          <p>
-            You can update or remove this file's annotations
-            <a href="https://annotations.xyfir.com/annotate-my-ebook?set=${
-              set.id
-            }">here</a>.
-          </p>
-        </footer>
-        </body>`
+            <p>
+              This book has been annotated via
+              <a href="https://annotations.xyfir.com">xyAnnotations</a>,
+              using annotation set
+              <a href="https://annotations.xyfir.com/sets/${setId}">#${setId}</a>
+              on <code>${new Date(set.version).toGMTString()}</code>.
+            </p>
+            <p>
+              You can insert the most recent annotations into a non-annotated file
+              <a href="https://annotations.xyfir.com/annotate-my-ebook?set=${
+                set.id
+              }">here</a>.
+            </p>
+          </footer>
+          </body>`
         );
       }
 
