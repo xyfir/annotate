@@ -72,17 +72,17 @@ module.exports = async function(yargs) {
     );
 
     // Get files and directories within zip file
+    /** @todo Use TOC */
     /** @type {string[]} */
-    const files = await glob(path + '/**/*');
+    let files = await glob(path + '/**/*');
+
+    // Ignore non-html files
+    files = files.filter(f => /html$/.test(f));
 
     // Generate markers for main/before set item subsearch matches
     const markers = {};
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-
-      // Ignore non-html files
-      if (!/\html$/.test(file)) continue;
-
       const html = await readFile(file);
 
       // Get markers for chapter
@@ -92,26 +92,46 @@ module.exports = async function(yargs) {
     // Update HTML files
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      let html = await readFile(file);
 
-      // Ignore non-html files
-      if (!/\html$/.test(file)) continue;
+      // Insert annotations into file
+      html = Annotate.insertAnnotations({
+        set,
+        html,
+        mode: 'link',
+        action: (type, key) =>
+          `https://annotations.xyfir.com/sets/${key.split('-')[0]}/items/${
+            key.split('-')[1]
+          }?view=true`,
+        markers,
+        chapter: i
+      });
 
-      const html = await readFile(file);
+      // Add xyAnnotations notification to bottom of first and last file
+      // !! First and last is alphabetical and may not be proper order of book
+      if (i == 0 || i == files.length - 1) {
+        html = html.replace(
+          '</body>',
+          `<footer class="xyannotations-notification">
+          <p>
+            This book has been annotated via
+            <a href="https://annotations.xyfir.com">xyAnnotations</a>,
+            using annotation set
+            <a href="https://annotations.xyfir.com/sets/${setId}">#${setId}</a>
+            on <code>${new Date(set.version).toGMTString()}</code>.
+          </p>
+          <p>
+            You can update or remove this file's annotations
+            <a href="https://annotations.xyfir.com/annotate-my-ebook?set=${
+              set.id
+            }">here</a>.
+          </p>
+        </footer>
+        </body>`
+        );
+      }
 
-      await writeFile(
-        file,
-        Annotate.insertAnnotations({
-          set,
-          mode: 'link',
-          html: html,
-          action: (type, key) =>
-            `https://annotations.xyfir.com/sets/${key.split('-')[0]}/items/${
-              key.split('-')[1]
-            }?view=true`,
-          markers,
-          chapter: i
-        })
-      );
+      await writeFile(file, html);
     }
 
     // Zip directory to file
