@@ -13,7 +13,7 @@ Creates a copy of the epub file and inserts links to view annotations for matche
 ### Options
 
 - `--set: number` - The id of the annotation set to insert into the ebook.
-- `--file: string` - An absolute path to an epub file. A modified copy will be created next to this file.
+- `--file: string` - Path to an epub file. A modified copy will be created next to this file.
 - `--convert: boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
 - `--delete-source: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
 
@@ -68,7 +68,7 @@ If the wiki does not have public dumps available for download, you can use the [
 
 ### Options
 
-This command takes a single option, `--config: string`, that is an absolute path to a JSON file that contains the actual options for the command. The contents of that JSON file will look something like:
+This command takes a single option, `--config: string`, that is a path to a JSON file that contains the actual options for the command. The contents of that JSON file will look something like:
 
 ```js
 {
@@ -83,6 +83,7 @@ This command takes a single option, `--config: string`, that is an absolute path
   "api": "http://tolkiengateway.net/w/api.php",
   // A path to the XML dump file for the wiki
   // Should *not* be the full dump that contains revisions
+  // This can be an absolute path, or relative to the CWD of the terminal
   "dump": "/path/to/dump.xml",
   // Optional. Only handle pages within the index range
   // Remember, these are zero-based indexes!

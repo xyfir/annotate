@@ -6,13 +6,14 @@ const { spawn } = require('child_process');
 const constants = require('../../constants');
 const readFile = require('lib/files/read');
 const request = require('superagent');
+const path = require('path');
 const fs = require('fs-extra');
 
 /**
  * @typedef {object} CommandConfig
  * @prop {number} set - Id of an annotation set the user is a moderator of
  * @prop {string} url - The base url for the wiki: `http://name.wikia.com`
- * @prop {string} dump - An absolute path to the XML dump file
+ * @prop {string} dump - Path to the XML dump file
  * @prop {Range} [range]
  * @prop {Ignore} ignore
  * @prop {Replace} [replace]
@@ -36,7 +37,7 @@ const fs = require('fs-extra');
  */
 /**
  * @typedef {object} GenerateWikiaArguments
- * @prop {string} config - An absolute path to a config file containing the
+ * @prop {string} config - Path to a config file containing the
  *  actual arguments for the command.
  */
 /**
@@ -48,7 +49,13 @@ const fs = require('fs-extra');
 module.exports = async function(yargs) {
   try {
     /** @type {CommandConfig} */
-    const config = JSON.parse(await readFile(yargs.argv.config));
+    const config = JSON.parse(
+      await readFile(
+        path.isAbsolute(yargs.argv.config)
+          ? yargs.argv.config
+          : path.resolve(process.cwd(), yargs.argv.config)
+      )
+    );
 
     const {
       xyfirAnnotationsSubscriptionKey,
@@ -80,7 +87,13 @@ module.exports = async function(yargs) {
     /** @type {Page[]} */
     const pages = Array.from(
       new DOMParser()
-        .parseFromString(await readFile(config.dump))
+        .parseFromString(
+          await readFile(
+            path.isAbsolute(config.dump)
+              ? config.dump
+              : path.resolve(process.cwd(), config.dump)
+          )
+        )
         .getElementsByTagName('mediawiki')[0]
         .getElementsByTagName('page')
     )
@@ -174,8 +187,7 @@ module.exports = async function(yargs) {
       console.log('\n');
       console.log(
         `${page} / ${pages.length} pages (${(
-          page /
-          pages.length *
+          (page / pages.length) *
           100
         ).toFixed()}%)`
       );

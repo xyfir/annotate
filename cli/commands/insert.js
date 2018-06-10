@@ -9,6 +9,7 @@ const Calibre = require('node-calibre');
 const request = require('superagent');
 const util = require('util');
 const glob = util.promisify(require('glob'));
+const path = require('path');
 const fs = require('fs-extra');
 
 /**
@@ -27,6 +28,7 @@ const fs = require('fs-extra');
 module.exports = async function(yargs) {
   const { deleteSource, convert, set: setId } = yargs.argv;
   let { file } = yargs.argv;
+  file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
   try {
     const isEPUB = /\.epub$/.test(file);
