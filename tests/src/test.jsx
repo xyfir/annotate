@@ -41,6 +41,9 @@ class AnnotateTests extends React.Component {
      */
     this.fdocument = null;
 
+    /** Highlighted items clicked within the book's content. */
+    this.clickedItems = [];
+
     this.state = {
       /**
        * @type {object}
@@ -115,11 +118,26 @@ class AnnotateTests extends React.Component {
 
   onHighlightClick(e) {
     if (!e.data.epubjs) return;
+    clearTimeout(this.timeout);
 
     const [setId, itemId] = event.data.key.split('-');
     const set = annotationSets.find(s => s.id == setId);
+    this.clickedItems.push(set.items.find(i => i.id == itemId));
 
-    this.setState({ item: set.items.find(i => i.id == itemId) });
+    this.timeout = setTimeout(() => {
+      // Filter out duplicates
+      this.clickedItems = this.clickedItems.filter(
+        (i1, index, self) => index == self.findIndex(i2 => i2.id === i1.id)
+      );
+
+      this.setState({
+        item:
+          this.clickedItems.length == 1
+            ? this.clickedItems[0]
+            : this.clickedItems
+      });
+      this.clickedItems = [];
+    }, 10);
   }
 
   /**
@@ -170,15 +188,31 @@ class AnnotateTests extends React.Component {
         </div>
 
         <DialogContainer
+          id="pick-item-dialog"
+          onHide={() => this.setState({ item: null })}
+          visible={Array.isArray(item)}
+          className="pick-item-dialog"
+          aria-label="pick-item-dialog"
+          focusOnMount={false}
+        >
+          {Array.isArray(item) ? (
+            <AnnotateReact.ItemPicker
+              items={item}
+              onPick={i => this.setState({ item: i })}
+            />
+          ) : null}
+        </DialogContainer>
+
+        <DialogContainer
           fullPage
           id="view-annotations-dialog"
           onHide={() => this.setState({ item: null })}
-          visible={item !== null}
+          visible={item && !Array.isArray(item)}
           className="view-annotations-dialog"
           aria-label="view-annotations-dialog"
           focusOnMount={false}
         >
-          {item ? (
+          {item && !Array.isArray(item) ? (
             <AnnotateReact.ViewAnnotations
               annotations={item.annotations}
               onGoToLink={window.open}
