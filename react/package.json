@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-react",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "React components for viewing annotations from xyAnnotations.",
   "main": "dist/index.js",
   "scripts": {
@@ -28,12 +28,12 @@
     "css-loader": "^0.28.11",
     "marked": "^0.3.19",
     "node-sass": "^4.9.0",
-    "prettier": "^1.12.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
-    "react-md": "^1.3.2",
-    "sass-loader": "^7.0.1",
+    "prettier": "^1.13.6",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-md": "^1.4.1",
+    "sass-loader": "^7.0.3",
     "style-loader": "^0.21.0",
-    "webpack": "^4.8.3"
+    "webpack": "^4.12.2"
   }
 }
