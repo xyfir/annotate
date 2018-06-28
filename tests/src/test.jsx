@@ -73,7 +73,7 @@ class AnnotateTests extends React.Component {
       // Add styles for highlights within book
       this.book.rendition.themes.default({
         'span.annotation': {
-          'background-color': '#85C1E9',
+          'background-color': 'rgba(133, 193, 233, 0.5)',
           cursor: 'pointer'
         }
       });
