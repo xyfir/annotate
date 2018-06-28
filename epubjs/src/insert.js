@@ -31,8 +31,7 @@ export default async function(book, set) {
     html,
     mode: 'normal',
     action: (t, k) =>
-      `!event.stopPropagation() && ` +
-      `parent.postMessage({type: '${t}', key: '${k}', epubjs: true}, '*')`,
+      `parent.postMessage({type:'${t}',key:'${k}',epubjs:true},'*')`,
     chapter,
     markers
   });
