@@ -131,7 +131,18 @@ This command takes a single option, `--config: string`, that is a path to a JSON
   // Optional. Remove if you want to accept all namespaces
   "namespaces": [
     0
-  ]
+  ],
+  // Optional. Allows you to add searches to created items
+  // This is only needed if the wiki does not have a redirect from the alias to
+  // the main page title
+  // Regex is *not* supported for the page titles or aliases!
+  "aliases": {
+    // The item created from the page titled `Gandalf` will now have an
+    // extra search for `Mithrandir`
+    "Gandalf": [
+      "Mithrandir"
+    ]
+  }
 }
 ```
 
