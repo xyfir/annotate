@@ -16,6 +16,8 @@ const fs = require('fs-extra');
  * @prop {string} dump - Path to the XML dump file
  * @prop {Range} [range]
  * @prop {Ignore} ignore
+ * @prop {object} [aliases] - Used to add searches to pages by title
+ *  `{[pageTitle]: string[]}`
  * @prop {Replace} [replace]
  * @prop {number[]} namespaces - A whitelist of namespaces
  */
@@ -56,6 +58,7 @@ module.exports = async function(yargs) {
           : path.resolve(process.cwd(), yargs.argv.config)
       )
     );
+    config.aliases = config.aliases || {};
 
     const {
       xyfirAnnotationsSubscriptionKey,
@@ -230,27 +233,40 @@ module.exports = async function(yargs) {
       // The full, original titles of all of the distinctions of the current page
       const titles = distinctions.map(p => p.title);
 
+      // This item's title and main search
+      const title = page.distinction ? page.distinction.target : page.title;
+
       // For code-simplicity, build full, unminified item which will be
       // compared against unminified items downloaded from set
       const item = {
-        title: page.distinction ? page.distinction.target : page.title,
+        title,
         searches: [
           {
-            main: page.distinction ? page.distinction.target : page.title,
+            main: title,
             regex: false,
             after: '',
             before: ''
           }
-        ].concat(
-          // Pages that redirect to this page or any of its distinctions will
-          // have their titles used as searches for this item
-          pages.filter(p => titles.indexOf(p.redirect) > -1).map(p => ({
-            main: p.title,
-            regex: false,
-            after: '',
-            before: ''
-          }))
-        ),
+        ]
+          .concat(
+            // Pages that redirect to this page or any of its distinctions will
+            // have their titles used as searches for this item
+            pages.filter(p => titles.indexOf(p.redirect) > -1).map(p => ({
+              main: p.title,
+              regex: false,
+              after: '',
+              before: ''
+            }))
+          )
+          .concat(
+            // Add searches from page's aliases
+            (config.aliases[title] || []).map(alias => ({
+              main: alias,
+              regex: false,
+              after: '',
+              before: ''
+            }))
+          ),
         annotations: []
       };
 
