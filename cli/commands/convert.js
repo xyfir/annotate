@@ -61,17 +61,21 @@ module.exports = async function(yargs) {
           <dc-metadata xmlns:dc="http://purl.org/metadata/dublin_core" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
             <dc:Title>Dictionary from xyAnnotations Set #${set.id}</dc:Title>
             <dc:Language>${'en'}</dc:Language>
-            <dc:Creator>xyAnnotations & others</dc:Creator>
+            <dc:Creator>xyAnnotations</dc:Creator>
             <dc:Description>
               A dictionary created from the xyAnnotations annotation set #${
                 set.id
-              }.
+              }, version ${set.version}. See set for more information.
             </dc:Description>
             <dc:Date>${new Date().toISOString()}</dc:Date>
           </dc-metadata>
           <x-metadata>
             <output encoding="utf-8" content-type="text/x-oeb1-document"></output>
-            <EmbeddedCover>${'dict.png'}</EmbeddedCover>
+            <EmbeddedCover>${path.resolve(
+              path.dirname(require.main.filename),
+              'res',
+              'dictionary_cover.png'
+            )}</EmbeddedCover>
             <DictionaryInLanguage>${'en'}</DictionaryInLanguage>
             <DictionaryOutLanguage>${'en'}</DictionaryOutLanguage>
           </x-metadata>
@@ -162,7 +166,7 @@ module.exports = async function(yargs) {
       console.warn(err);
     }
 
-    // Delete source files
+    // Delete temp files
     await fs.remove(path.resolve(basePath, 'dict.opf'));
     await fs.remove(path.resolve(basePath, 'dict.html'));
   } catch (e) {
