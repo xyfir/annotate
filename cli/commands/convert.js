@@ -106,6 +106,12 @@ module.exports = async function(yargs) {
       // Remove items
       .filter(i => i.searches.length && i.annotations.length);
 
+    const renderer = new marked.Renderer();
+    renderer.image = (href, title, text) =>
+      `<a href="${href}">View Image${
+        title || text ? `: ${title || text}` : ''
+      }</a>`;
+
     // Build HTML
     await writeFile(
       path.resolve(basePath, 'dict.html'),
@@ -136,7 +142,7 @@ module.exports = async function(yargs) {
                   .map(
                     (a, i) =>
                       `<h1>Entry #${i + 1}: ${a.name}</h1>\n\n` +
-                      marked(a.value, { sanitize: true })
+                      marked(a.value, { sanitize: true, renderer })
                   )
                   .join('\n\n<hr /><hr /><hr />')}
               </idx:entry>`
