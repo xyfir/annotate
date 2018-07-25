@@ -162,6 +162,26 @@ The config command has three different actions based on what options you provide
 
 Attempting to read or write to a non-existent key will result in an error.
 
+## `convert`
+
+```
+annotate convert --source /path/to/source --formats source,target
+```
+
+**Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
+
+### Options
+
+- `--source`: `string` - The source file or content to convert.
+- `--from`: `string` - The format to convert `--source` from.
+- `--to`: `string` - The format to convert `--source` to.
+
+### Possible Conversions
+
+- `xyannotations` -> `kindle_dictionary`
+  - xyAnnotations annotation set -> Kindle-supported `.mobi` dictionary file
+  - `--source` must be a path to a JSON file or an annotation set id (requires subscription)
+
 ## Ignore Commands
 
 The `ignore` command has multiple sub-commands that allow you to work with annotate-cli's ignore list. The ignore list is a list of your Calibre library's book IDs that annotate-cli will skip annotation generation for. The IDs have either been added to the ignore list via `annotate ignore add` or automatically because an annotation set was created for that book.
