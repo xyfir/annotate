@@ -30,6 +30,7 @@ yargs
         commands.generateWikia
       )
   )
+  .command('convert', 'Convert files', commands.convert)
   .command('config', 'Sets or gets config property values', commands.config)
   .command('insert', 'Insert annotations into ebooks', () =>
     yargs.command(

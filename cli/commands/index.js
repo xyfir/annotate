@@ -7,6 +7,7 @@ module.exports = {
   showIgnoreList: require('./ignore-list/show'),
   generateLibGen: require('./generate/libgen'),
   generateWikia: require('./generate/wikia'),
+  convert: require('./convert'),
   config: require('./config'),
   insert: require('./insert')
 };
