@@ -155,11 +155,17 @@ exports.DICT_OPF = set => `
   </metadata>
   <manifest>
     <item id="toc" properties="nav" href="toc.html" media-type="application/xhtml+xml"/>
+    <item id="cimage" media-type="image/png" href="${path.resolve(
+      path.dirname(require.main.filename),
+      'res',
+      'dictionary_cover.png'
+    )}" properties="coverimage"/>
     <item id="title" href="title.html" media-type="application/xhtml+xml"/>
     <item id="dict" href="defs.html" media-type="application/xhtml+xml"/>
   </manifest>
   <spine toc="toc">
     <itemref idref="toc"/>
+    <itemref idref="cimage"/>
     <itemref idref="title"/>
     <itemref idref="dict"/>
   </spine>
