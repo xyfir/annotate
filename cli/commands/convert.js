@@ -7,6 +7,11 @@ const marked = require('marked');
 const path = require('path');
 const fs = require('fs-extra');
 
+// Useful resources:
+// https://gist.github.com/myfreeweb/1731622
+// https://www.mobileread.com/forums/showthread.php?t=256570
+// http://www.fantasycastlebooks.com/resources/AmazonKindlePublishingGuidelines2014.1.pdf
+
 /**
  * @typedef {object} ConvertArguments
  * @prop {string} source
@@ -71,17 +76,20 @@ module.exports = async function(yargs) {
           </dc-metadata>
           <x-metadata>
             <output encoding="utf-8" content-type="text/x-oeb1-document"></output>
-            <EmbeddedCover>${path.resolve(
-              path.dirname(require.main.filename),
-              'res',
-              'dictionary_cover.png'
-            )}</EmbeddedCover>
+            <EmbeddedCover>
+              ${path.resolve(
+                path.dirname(require.main.filename),
+                'res',
+                'dictionary_cover.png'
+              )}
+            </EmbeddedCover>
             <DictionaryInLanguage>${'en'}</DictionaryInLanguage>
             <DictionaryOutLanguage>${'en'}</DictionaryOutLanguage>
+            <DefaultLookupIndex>xy</DefaultLookupIndex>
           </x-metadata>
         </metadata>
         <manifest>
-          <item id="item1" media-type="text/x-oeb1-document" href="dict.html"></item>
+          <item id="item1" href="dict.html" media-type="application/xhtml+xml"></item>
         </manifest>
         <spine toc="toc">
           <itemref idref="item1"/>
@@ -117,37 +125,62 @@ module.exports = async function(yargs) {
       path.resolve(basePath, 'dict.html'),
       `
       <!DOCTYPE html>
-      <html lang="${'en'}">
+      <html xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:mbp="http://www.kreutzfeldt.de/mmc/mbp"
+        xmlns:idx="http://www.mobipocket.com/idx"
+        lang="${'en'}">
       <head>
-        <meta charset="UTF-8">
-        <title>Dictionary from xyAnnotations Set #${set.id}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>
+          Kindle Dictionary Generated from xyAnnotations Set #${set.id}
+        </title>
       </head>
       <body>
-        <a name="toc"></a>
-        <mbp:pagebreak />
-
+      <mbp:frameset>
         ${set.items
           .map(
-            item =>
-              `<idx:entry>
-                <idx:orth>
-                  ${item.searches[0]}
-                  <idx:infl>${item.searches
-                    .slice(1)
-                    .map(s => `<idx:iform value="${s}"/>`)
-                    .join('\n')}</idx:infl>
-                </idx:orth>
+            i =>
+              `<idx:entry id="${i.id}" name="xy" spell="yes" scriptable="yes">
+                <a id="${i.id}" name="${i.id}"/>
 
-                ${item.annotations
-                  .map(
-                    (a, i) =>
-                      `<h1>Entry #${i + 1}: ${a.name}</h1>\n\n` +
-                      marked(a.value, { sanitize: true, renderer })
-                  )
-                  .join('\n\n<hr /><hr /><hr />')}
+                <div class="orth">
+                <idx:orth value="${i.searches[0]}">
+                  <span><b>${i.searches[0]}</b></span>
+
+                  <idx:infl>
+                    ${i.searches
+                      .slice(1)
+                      .map(s => `<idx:iform value="${s}"/>`)
+                      .join('')}
+                  </idx:infl>
+                </idx:orth>
+                </div>
+
+                ${
+                  i.annotations.length > 1
+                    ? i.annotations
+                        .map(
+                          (a, index) =>
+                            `<p><a href="#${i.id}-${index}">${a.name}</a></p>`
+                        )
+                        .join('<br/>\n') +
+                      i.annotations
+                        .map(
+                          (a, index) =>
+                            `<a name="${i.id}-${index}"/>` +
+                            `<p>Entry #${index + 1}: ${a.name}</p><br/>\n\n` +
+                            marked(a.value, { sanitize: true, renderer })
+                        )
+                        .join('\n\n<hr/><hr/><hr/>')
+                    : marked(i.annotations[0].value, {
+                        sanitize: true,
+                        renderer
+                      })
+                }
               </idx:entry>`
           )
-          .join('\n\n')}
+          .join('\n\n<hr/>')}
+      </mbp:frameset>
       </body>
       </html>
       `
@@ -158,7 +191,10 @@ module.exports = async function(yargs) {
       console.log(
         await new Promise((resolve, reject) =>
           exec(
-            `kindlegen ${path.resolve(basePath, 'dict.opf')}`,
+            `kindlegen ${path.resolve(
+              basePath,
+              'dict.opf'
+            )} -c2 -verbose -dont_append_source`,
             (err, stdout, stderr) => {
               if (err) reject(err);
               else if (stderr) reject(stderr);
