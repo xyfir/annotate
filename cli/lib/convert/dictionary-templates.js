@@ -1,3 +1,4 @@
+const package = require('package.json');
 const marked = require('marked');
 const path = require('path');
 
@@ -8,10 +9,10 @@ const renderer = new marked.Renderer();
  * @param {string} [text]
  */
 renderer.image = (href, title, text) =>
-  `<a href="${href}">View Image${
+  `<a href="${href}">View Image: ${
     (title || text) && (title || text) != 'undefined'
-      ? `: ${title || text}`
-      : ''
+      ? title || text
+      : '(No Description)'
   }</a>`;
 
 /**
@@ -39,7 +40,7 @@ const HTML = (set, body) => `
  * @param {AnnotationSetItem} item
  */
 const ENTRY = item => `
-<idx:entry id="${item.id}" name="xy" spell="yes" scriptable="yes">
+<idx:entry id="${item.id}" name="${'xy'}" spell="yes" scriptable="yes">
   <a id="${item.id}" name="${item.id}"/>
 
   <div class="orth">
@@ -83,6 +84,43 @@ const DEFINITIONS = item =>
       });
 
 /**
+ * Generate body for `title.html`.
+ * @param {AnnotationSet} set
+ */
+const TITLE_BODY = set => `
+<a id="title" name="title"></a>
+<div class="title-page">
+  <p>
+    This dictionary was generated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">annotate-cli</a> version <code>${
+      package.version
+    }</code> on <code>${new Date().toDateString()}</code> using annotation set <a href="https://annotations.xyfir.com/sets/${
+  set.id
+}">#${set.id}</a> version <code>${set.version}</code>.
+  </p>
+  <p>
+    Please see the original annotation set for license, copyright, sourcing, and other relevant information regarding this dictionary and the contents it was sourced from.
+  </p>
+  <p>
+    This content may be outdated. Check the original annotation set for the latest version.
+  </p>
+</div>`;
+
+/**
+ * Generate body for `toc.html`.
+ * @param {AnnotationSet} set
+ */
+const TOC_BODY = set => `
+<a id="toc" name="toc"></a>
+<nav epub:type="toc">
+  <h1>Table of Contents</h1>
+  <ol>
+    <li><a href="title.html#title">Title</a></li>
+    <li><a href="toc.html#toc">Table of Contents</a></li>
+    <li><a href="dict.html">Definitions A&ndash;Z</a></li>
+  </ol>
+</nav>`;
+
+/**
  * Returns contents for `dict.opf`.
  * @param {AnnotationSet} set
  */
@@ -112,17 +150,21 @@ exports.DICT_OPF = set => `
       </EmbeddedCover>
       <DictionaryInLanguage>${'en'}</DictionaryInLanguage>
       <DictionaryOutLanguage>${'en'}</DictionaryOutLanguage>
-      <DefaultLookupIndex>xy</DefaultLookupIndex>
+      <DefaultLookupIndex>${'xy'}</DefaultLookupIndex>
     </x-metadata>
   </metadata>
   <manifest>
-    <item id="item1" href="dict.html" media-type="application/xhtml+xml"></item>
+    <item id="toc" properties="nav" href="toc.html" media-type="application/xhtml+xml"/>
+    <item id="title" href="title.html" media-type="application/xhtml+xml"/>
+    <item id="dict" href="dict.html" media-type="application/xhtml+xml"/>
   </manifest>
   <spine toc="toc">
-    <itemref idref="item1"/>
+    <itemref idref="toc"/>
+    <itemref idref="title"/>
+    <itemref idref="dict"/>
   </spine>
   <guide>
-    <reference type="toc" title="Table of Contents" href="dict.html#toc"></reference>
+    <reference type="toc" title="Table of Contents" href="toc.html"></reference>
   </guide>
 </package>`;
 
@@ -137,3 +179,15 @@ exports.DICT_HTML = set =>
       .map(i => ENTRY(i))
       .join('\n\n<hr/>')}</mbp:frameset>`
   );
+
+/**
+ * Returns contents for `title.html`.
+ * @param {AnnotationSet} set
+ */
+exports.TITLE_HTML = set => HTML(set, TITLE_BODY(set));
+
+/**
+ * Returns contents for `toc.html`.
+ * @param {AnnotationSet} set
+ */
+exports.TOC_HTML = set => HTML(set, TOC_BODY(set));
