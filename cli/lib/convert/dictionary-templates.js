@@ -88,7 +88,7 @@ const DEFINITIONS = item =>
  * @param {AnnotationSet} set
  */
 const TITLE_BODY = set => `
-<a id="title" name="title"></a>
+<a id="title" name="title"/>
 <div class="title-page">
   <p>
     This dictionary was generated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">annotate-cli</a> version <code>${
@@ -110,13 +110,13 @@ const TITLE_BODY = set => `
  * @param {AnnotationSet} set
  */
 const TOC_BODY = set => `
-<a id="toc" name="toc"></a>
+<a id="toc" name="toc"/>
 <nav epub:type="toc">
   <h1>Table of Contents</h1>
   <ol>
     <li><a href="title.html#title">Title</a></li>
     <li><a href="toc.html#toc">Table of Contents</a></li>
-    <li><a href="dict.html">Definitions A&ndash;Z</a></li>
+    <li><a href="defs.html#defs">Definitions A&ndash;Z</a></li>
   </ol>
 </nav>`;
 
@@ -156,7 +156,7 @@ exports.DICT_OPF = set => `
   <manifest>
     <item id="toc" properties="nav" href="toc.html" media-type="application/xhtml+xml"/>
     <item id="title" href="title.html" media-type="application/xhtml+xml"/>
-    <item id="dict" href="dict.html" media-type="application/xhtml+xml"/>
+    <item id="dict" href="defs.html" media-type="application/xhtml+xml"/>
   </manifest>
   <spine toc="toc">
     <itemref idref="toc"/>
@@ -169,13 +169,13 @@ exports.DICT_OPF = set => `
 </package>`;
 
 /**
- * Returns contents for `dict.html`.
+ * Returns contents for `defs.html`.
  * @param {AnnotationSet} set
  */
-exports.DICT_HTML = set =>
+exports.DEFS_HTML = set =>
   HTML(
     set,
-    `<mbp:frameset>${set.items
+    `<a id="defs" name="defs"/><mbp:frameset>${set.items
       .map(i => ENTRY(i))
       .join('\n\n<hr/>')}</mbp:frameset>`
   );

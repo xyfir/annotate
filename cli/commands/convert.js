@@ -1,7 +1,7 @@
 const {
   TOC_HTML,
   DICT_OPF,
-  DICT_HTML,
+  DEFS_HTML,
   TITLE_HTML
 } = require('lib/convert/dictionary-templates');
 const getConfig = require('lib/config/get');
@@ -76,7 +76,7 @@ module.exports = async function(yargs) {
 
     // Create source files for dictionary
     await writeFile(path.resolve(basePath, 'dict.opf'), DICT_OPF(set));
-    await writeFile(path.resolve(basePath, 'dict.html'), DICT_HTML(set));
+    await writeFile(path.resolve(basePath, 'defs.html'), DEFS_HTML(set));
     await writeFile(path.resolve(basePath, 'title.html'), TITLE_HTML(set));
     await writeFile(path.resolve(basePath, 'toc.html'), TOC_HTML(set));
 
@@ -105,7 +105,7 @@ module.exports = async function(yargs) {
     // Delete temp files
     await fs.remove(path.resolve(basePath, 'toc.html'));
     await fs.remove(path.resolve(basePath, 'dict.opf'));
-    await fs.remove(path.resolve(basePath, 'dict.html'));
+    await fs.remove(path.resolve(basePath, 'defs.html'));
     await fs.remove(path.resolve(basePath, 'title.html'));
   } catch (e) {
     console.error(e);
