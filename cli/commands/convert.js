@@ -6,8 +6,8 @@ const {
 } = require('lib/convert/dictionary-templates');
 const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
+const { spawn } = require('child_process');
 const constants = require('../constants');
-const { exec } = require('child_process');
 const request = require('superagent');
 const path = require('path');
 const fs = require('fs-extra');
@@ -16,6 +16,7 @@ const fs = require('fs-extra');
 // https://gist.github.com/myfreeweb/1731622
 // https://www.mobileread.com/forums/showthread.php?t=256570
 // http://www.fantasycastlebooks.com/resources/AmazonKindlePublishingGuidelines2014.1.pdf
+// https://github.com/wjdp/gotdict
 
 /**
  * @typedef {object} ConvertArguments
@@ -81,26 +82,26 @@ module.exports = async function(yargs) {
     await writeFile(path.resolve(basePath, 'toc.html'), TOC_HTML(set));
 
     // Build MOBI
-    try {
-      console.log(
-        await new Promise((resolve, reject) =>
-          exec(
-            `kindlegen ${path.resolve(
-              basePath,
-              'dict.opf'
-            )} -c2 -verbose -dont_append_source`,
-            (err, stdout, stderr) => {
-              if (err) reject(err);
-              else if (stderr) reject(stderr);
-              else resolve(stdout);
-            }
-          )
-        )
-      );
-    } catch (err) {
-      console.warn('KindleGen errored, but may have still worked');
-      console.warn(err);
-    }
+    await new Promise(resolve => {
+      const kg = spawn('kindlegen', [
+        path.resolve(basePath, 'dict.opf'),
+        '-c2',
+        '-verbose',
+        '-dont_append_source'
+      ]);
+
+      kg.stderr.on('data', d => console.error(`[e][kindlegen]`, d.toString()));
+      kg.stdout.on('data', d => console.log(`[i][kindlegen]`, d.toString()));
+      kg.on('close', code => {
+        if (code == 0) {
+          console.log('KindleGen completed without error');
+          resolve();
+        } else {
+          console.warn('KindleGen errored or completed with warnings');
+          resolve();
+        }
+      });
+    });
 
     // Delete temp files
     await fs.remove(path.resolve(basePath, 'toc.html'));
