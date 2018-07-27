@@ -1,5 +1,6 @@
 module.exports = {
   removeFromIgnoreList: require('./ignore-list/remove-from'),
+  convertToDictionary: require('./convert/dictionary'),
   generateMediaWiki: require('./generate/mediawiki'),
   addToIgnoreList: require('./ignore-list/add-to'),
   resetIgnoreList: require('./ignore-list/reset'),
@@ -7,7 +8,6 @@ module.exports = {
   showIgnoreList: require('./ignore-list/show'),
   generateLibGen: require('./generate/libgen'),
   generateWikia: require('./generate/wikia'),
-  convert: require('./convert'),
   config: require('./config'),
   insert: require('./insert')
 };

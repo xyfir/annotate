@@ -3,11 +3,11 @@ const {
   DICT_OPF,
   DEFS_HTML,
   TITLE_HTML
-} = require('lib/convert/dictionary-templates');
-const getConfig = require('lib/config/get');
+} = require('lib/convert/dictionary/templates');
 const writeFile = require('lib/files/write');
+const constants = require('../../constants');
+const getConfig = require('lib/config/get');
 const { spawn } = require('child_process');
-const constants = require('../constants');
 const request = require('superagent');
 const path = require('path');
 const fs = require('fs-extra');
@@ -19,32 +19,28 @@ const fs = require('fs-extra');
 // https://github.com/wjdp/gotdict
 
 /**
- * @typedef {object} ConvertArguments
- * @prop {string} source
- * @prop {string} from
- * @prop {string} to
+ * @typedef {object} Arguments
+ * @prop {string} [file]
+ * @prop {number} [id]
  */
 /**
- * Convert content from one format to another.
+ * Convert annotation set to dictionary.
  * @param {object} yargs
- * @param {ConvertArguments} yargs.argv
+ * @param {Arguments} yargs.argv
  */
 module.exports = async function(yargs) {
-  const { from, to } = yargs.argv;
-  let { source } = yargs.argv;
+  let { file } = yargs.argv;
+  const { id } = yargs.argv;
 
   try {
-    if (from != 'xyannotations' || to != 'kindle_dictionary')
-      throw 'Invalid conversion, see docs';
-
     const config = await getConfig();
     let basePath = '';
     let set;
 
     // Download annotation set
-    if (typeof source == 'number') {
+    if (id) {
       const res = await request
-        .get(`${constants.XYANNOTATIONS}sets/${source}/download`)
+        .get(`${constants.XYANNOTATIONS}sets/${id}/download`)
         .query({ minify: true })
         .auth('subscription', config.xyfirAnnotationsSubscriptionKey);
       basePath = process.cwd();
@@ -52,14 +48,12 @@ module.exports = async function(yargs) {
     }
     // Load annotation set from file
     else {
-      source = path.isAbsolute(source)
-        ? source
-        : path.resolve(process.cwd(), source);
-      basePath = source
+      file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
+      basePath = file
         .slice(path.sep)
         .slice(0, -1)
         .join(path.sep);
-      set = await fs.readJSON(source);
+      set = await fs.readJSON(file);
     }
 
     set.items = set.items

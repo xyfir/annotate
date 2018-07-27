@@ -162,25 +162,22 @@ The config command has three different actions based on what options you provide
 
 Attempting to read or write to a non-existent key will result in an error.
 
-## `convert`
+## `convert dictionary`
 
-```
-annotate convert --source /path/to/source --formats source,target
+```bash
+annotate convert dictionary --id 123
+# or
+annotate convert dictionary --file /path/to/file
 ```
 
 **Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
 
+Converts an annotation set into a Kindle dictionary (`.mobi`) file.
+
 ### Options
 
-- `--source`: `string` - The source file or content to convert.
-- `--from`: `string` - The format to convert `--source` from.
-- `--to`: `string` - The format to convert `--source` to.
-
-### Possible Conversions
-
-- `xyannotations` -> `kindle_dictionary`
-  - xyAnnotations annotation set -> Kindle-supported `.mobi` dictionary file
-  - `--source` must be a path to a JSON file or an annotation set id (requires subscription)
+- `--file`: `string` - Path to the annotation set's JSON file.
+- `--id`: `number` - ID of the annotation set to download. Requires `xyfirAnnotationsSubscriptionKey`.
 
 ## Ignore Commands
 
