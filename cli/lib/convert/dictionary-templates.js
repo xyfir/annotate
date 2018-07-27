@@ -47,12 +47,14 @@ const ENTRY = item => `
   <idx:orth value="${item.searches[0]}">
     <span><b>${item.searches[0]}</b></span>
 
-    <idx:infl>
-      ${item.searches
-        .slice(1)
-        .map(s => `<idx:iform value="${s}"/>`)
-        .join('')}
-    </idx:infl>
+    ${
+      item.searches.length > 1
+        ? `<idx:infl>${item.searches
+            .slice(1)
+            .map(s => `<idx:iform value="${s}"/>`)
+            .join('')}</idx:infl>`
+        : ''
+    }
   </idx:orth>
   </div>
 
