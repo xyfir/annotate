@@ -2,12 +2,10 @@ const mediaWikiPagesToAnnotations = require('lib/wiki/mediawiki');
 const wikiaPagesToAnnotations = require('lib/wiki/wikia');
 const { DOMParser } = require('xmldom');
 const getConfig = require('lib/config/get');
-const { spawn } = require('child_process');
 const constants = require('../../constants');
 const readFile = require('lib/files/read');
 const request = require('superagent');
 const path = require('path');
-const fs = require('fs-extra');
 
 /**
  * @typedef {object} CommandConfig
