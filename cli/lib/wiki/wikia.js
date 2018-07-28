@@ -54,7 +54,10 @@ module.exports = async function(config, distinctions, item) {
 
       // Build images
       for (let img of section.images) {
-        text += `![${img.caption}](${img.src})\n\n`;
+        // Get original size, plus cut off optional text to save space
+        if (img.src.indexOf('/revision/latest') > -1)
+          img.src = img.src.substr(0, img.src.indexOf('/revision/latest'));
+        text += `![${img.caption || ''}](${img.src})\n\n`;
       }
 
       // Build paragraphs or lists
