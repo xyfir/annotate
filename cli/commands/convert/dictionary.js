@@ -20,6 +20,10 @@ const fs = require('fs-extra');
 
 /**
  * @typedef {object} Arguments
+ * @prop {number} [compress]
+ *  `0` = none
+ *  `1` = standard DOC compression
+ *  `2` = Kindle huffdic compression
  * @prop {string} [file]
  * @prop {number} [id]
  */
@@ -29,8 +33,8 @@ const fs = require('fs-extra');
  * @param {Arguments} yargs.argv
  */
 module.exports = async function(yargs) {
+  const { id, compress } = yargs.argv;
   let { file } = yargs.argv;
-  const { id } = yargs.argv;
 
   try {
     const config = await getConfig();
@@ -103,7 +107,7 @@ module.exports = async function(yargs) {
     await new Promise(resolve => {
       const kg = spawn('kindlegen', [
         path.resolve(basePath, 'dict.opf'),
-        '-c2',
+        `-c${+compress || 0}`,
         '-verbose',
         '-dont_append_source'
       ]);
