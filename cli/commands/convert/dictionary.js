@@ -20,10 +20,11 @@ const fs = require('fs-extra');
 
 /**
  * @typedef {object} Arguments
- * @prop {number} [compress]
+ * @prop {number} [compress] - Compress the dictionary file.
  *  `0` = none
  *  `1` = standard DOC compression
  *  `2` = Kindle huffdic compression
+ * @prop {string} [output] - File path+name for dictionary file.
  * @prop {string} [file]
  * @prop {number} [id]
  */
@@ -34,7 +35,7 @@ const fs = require('fs-extra');
  */
 module.exports = async function(yargs) {
   const { id, compress } = yargs.argv;
-  let { file } = yargs.argv;
+  let { file, output } = yargs.argv;
 
   try {
     const config = await getConfig();
@@ -59,6 +60,9 @@ module.exports = async function(yargs) {
         .join(path.sep);
       set = await fs.readJSON(file);
     }
+
+    basePath = path.resolve(basePath, `temp-${Date.now()}`);
+    await fs.mkdir(basePath);
 
     set.items = set.items
       // Remove non-Document annotations
@@ -125,15 +129,13 @@ module.exports = async function(yargs) {
       });
     });
 
-    // Delete temp files
-    await fs.remove(path.resolve(basePath, 'toc.html'));
-    await fs.remove(path.resolve(basePath, 'dict.opf'));
-    await fs.remove(path.resolve(basePath, 'title.html'));
+    output = output || path.resolve(basePath, '../', `dict-${Date.now()}.mobi`);
 
-    // Delete letter-specific definition files
-    for (let letter of letters) {
-      await fs.remove(path.resolve(basePath, `defs-${letter}.html`));
-    }
+    // Copy .mobi file out of temp
+    await fs.copy(path.resolve(basePath, 'dict.mobi'), output);
+
+    // Delete temp files
+    await fs.remove(basePath);
   } catch (e) {
     console.error(e);
   }
