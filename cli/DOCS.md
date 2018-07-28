@@ -176,7 +176,8 @@ Converts an annotation set into a Kindle dictionary (`.mobi`) file.
 
 ### Options
 
-- `--compress`: `number` - `0` | missing = none; `1` = standard DOC compression; `2` = Kindle huffdic compression, can take hours for large annotation sets.
+- `--compress`: `number` - `0` or missing = none; `1` = standard DOC compression; `2` = Kindle huffdic compression, can take hours for large annotation sets.
+- `--output`: `string` - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `--id`, or put in the same directory as `--file`. Should end with `.mobi`.
 - `--file`: `string` - Path to the annotation set's JSON file.
 - `--id`: `number` - ID of the annotation set to download. Requires `xyfirAnnotationsSubscriptionKey`.
 
