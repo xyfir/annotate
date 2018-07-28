@@ -110,23 +110,32 @@ const TITLE_BODY = set => `
 /**
  * Generate body for `toc.html`.
  * @param {AnnotationSet} set
+ * @param {string[]} letters
  */
-const TOC_BODY = set => `
+const TOC_BODY = (set, letters) => `
 <a id="toc" name="toc"/>
 <nav epub:type="toc">
   <h1>Table of Contents</h1>
   <ol>
     <li><a href="title.html#title">Title</a></li>
     <li><a href="toc.html#toc">Table of Contents</a></li>
-    <li><a href="defs.html#defs">Definitions A&ndash;Z</a></li>
+    ${letters
+      .map(
+        l =>
+          `<li><a href="defs-${l}.html#defs${l}">${
+            l == 'misc' ? 'Misc.' : l.toUpperCase()
+          } Definitions</a></li>`
+      )
+      .join('\n    ')}
   </ol>
 </nav>`;
 
 /**
  * Returns contents for `dict.opf`.
  * @param {AnnotationSet} set
+ * @param {string[]} letters
  */
-exports.DICT_OPF = set => `
+exports.DICT_OPF = (set, letters) => `
 <?xml version="1.0" encoding="utf-8"?>
 <package unique-identifier="uid">
   <metadata>
@@ -163,13 +172,18 @@ exports.DICT_OPF = set => `
       'dictionary_cover.png'
     )}" properties="coverimage"/>
     <item id="title" href="title.html" media-type="application/xhtml+xml"/>
-    <item id="dict" href="defs.html" media-type="application/xhtml+xml"/>
+    ${letters
+      .map(
+        l =>
+          `<item id="defs${l}" href="defs-${l}.html" media-type="application/xhtml+xml"/>`
+      )
+      .join('\n    ')}
   </manifest>
   <spine toc="toc">
     <itemref idref="toc"/>
     <itemref idref="cimage"/>
     <itemref idref="title"/>
-    <itemref idref="dict"/>
+    ${letters.map(l => `<itemref idref="defs${l}"/>`).join('\n    ')}
   </spine>
   <guide>
     <reference type="toc" title="Table of Contents" href="toc.html"></reference>
@@ -179,13 +193,23 @@ exports.DICT_OPF = set => `
 /**
  * Returns contents for `defs.html`.
  * @param {AnnotationSet} set
+ * @param {string} letter
  */
-exports.DEFS_HTML = set =>
+exports.DEFS_HTML = (set, letter) =>
   HTML(
     set,
-    `<a id="defs" name="defs"/><mbp:frameset>${set.items
-      .map(i => ENTRY(i))
-      .join('\n\n<hr/>')}</mbp:frameset>`
+    `<a id="defs${letter}" name="defs${letter}"/>` +
+      `<mbp:frameset>${set.items
+        .filter(i => {
+          /** @type {string} */
+          const l = i.searches[0][0].toLowerCase();
+          return letter == 'misc' &&
+            (l.charCodeAt(0) < 97 || l.charCodeAt(0) > 122)
+            ? true
+            : l == letter;
+        })
+        .map(i => ENTRY(i))
+        .join('\n\n<hr/>')}</mbp:frameset>`
   );
 
 /**
@@ -197,5 +221,6 @@ exports.TITLE_HTML = set => HTML(set, TITLE_BODY(set));
 /**
  * Returns contents for `toc.html`.
  * @param {AnnotationSet} set
+ * @param {string[]} letters
  */
-exports.TOC_HTML = set => HTML(set, TOC_BODY(set));
+exports.TOC_HTML = (set, letters) => HTML(set, TOC_BODY(set, letters));

@@ -69,11 +69,35 @@ module.exports = async function(yargs) {
       // Remove items
       .filter(i => i.searches.length && i.annotations.length);
 
+    // Build list of letters for letter-specific definition files
+    /** @type {string[]} */
+    let letters = [];
+    for (let item of set.items) {
+      /** @type {string} */
+      const letter = item.searches[0][0].toLowerCase();
+      const code = letter.charCodeAt(0);
+
+      // Not an A-Z letter
+      if (code < 97 || code > 122) {
+        if (letters.indexOf('misc') == -1) letters.push('misc');
+      }
+      // A-Z
+      else if (letters.indexOf(letter) == -1) letters.push(letter);
+    }
+    letters = letters.sort();
+
+    // Write letter-specific definition files
+    for (let letter of letters) {
+      await writeFile(
+        path.resolve(basePath, `defs-${letter}.html`),
+        DEFS_HTML(set, letter)
+      );
+    }
+
     // Create source files for dictionary
-    await writeFile(path.resolve(basePath, 'dict.opf'), DICT_OPF(set));
-    await writeFile(path.resolve(basePath, 'defs.html'), DEFS_HTML(set));
     await writeFile(path.resolve(basePath, 'title.html'), TITLE_HTML(set));
-    await writeFile(path.resolve(basePath, 'toc.html'), TOC_HTML(set));
+    await writeFile(path.resolve(basePath, 'dict.opf'), DICT_OPF(set, letters));
+    await writeFile(path.resolve(basePath, 'toc.html'), TOC_HTML(set, letters));
 
     // Build MOBI
     await new Promise(resolve => {
@@ -100,8 +124,12 @@ module.exports = async function(yargs) {
     // Delete temp files
     await fs.remove(path.resolve(basePath, 'toc.html'));
     await fs.remove(path.resolve(basePath, 'dict.opf'));
-    await fs.remove(path.resolve(basePath, 'defs.html'));
     await fs.remove(path.resolve(basePath, 'title.html'));
+
+    // Delete letter-specific definition files
+    for (let letter of letters) {
+      await fs.remove(path.resolve(basePath, `defs-${letter}.html`));
+    }
   } catch (e) {
     console.error(e);
   }
