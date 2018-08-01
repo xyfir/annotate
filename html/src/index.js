@@ -1,14 +1,6 @@
-import insertAnnotations from './insert';
-import buildSearchOrder from './build-search-order';
-import findMatchIndexes from './find-indexes';
-import AnnotateCore from 'repo/core';
-import findMarkers from './find-markers';
-import wrapMatches from './wrap';
-
-export default Object.assign({}, AnnotateCore, {
-  insertAnnotations,
-  buildSearchOrder,
-  findMatchIndexes,
-  findMarkers,
-  wrapMatches
-});
+export * from 'repo/core';
+export * from './insert';
+export { default as findMarkers } from './find-markers';
+export { default as buildString } from './build-string';
+export { default as findMatchIndexes } from './find-indexes';
+export { default as buildSearchOrder } from './build-search-order';
