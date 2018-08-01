@@ -1,7 +1,11 @@
+const {
+  findMarkers,
+  buildString,
+  INSERT_MODES
+} = require('@xyfir/annotate-html');
 const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
 const constants = require('../constants');
-const Annotate = require('@xyfir/annotate-html').default;
 const readFile = require('lib/files/read');
 const unzipper = require('unzipper');
 const archiver = require('archiver');
@@ -86,7 +90,7 @@ module.exports = async function(yargs) {
       const html = await readFile(file);
 
       // Get markers for chapter
-      Object.assign(markers, Annotate.findMarkers(html, i, set.items));
+      Object.assign(markers, findMarkers(html, i, set.items));
     }
 
     // Update HTML files
@@ -95,10 +99,10 @@ module.exports = async function(yargs) {
       let html = await readFile(file);
 
       // Insert annotations into file
-      html = Annotate.insertAnnotations({
+      html = buildString({
         set,
         html,
-        mode: 'link',
+        mode: INSERT_MODES.REFERENCE.LINK,
         action: (type, key) =>
           `https://annotations.xyfir.com/sets/${key.split('-')[0]}/items/${
             key.split('-')[1]
