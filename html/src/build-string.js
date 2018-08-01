@@ -1,7 +1,7 @@
 import buildSearchOrder from './build-search-order';
 import findMatchIndexes from './find-indexes';
 import AnnotateCore from 'repo/core';
-import wrapMatches from './wrap';
+import { insert } from './insert';
 
 /**
  * @type {object} BuildHTMLStringOptions
@@ -9,13 +9,10 @@ import wrapMatches from './wrap';
  * @prop {AnnotationMarkers} markers - An annotation set
  * @prop {number} chapter - Index of the chapter in the book.
  * @prop {AnnotationSet} set - An annotation set
- * @prop {string} mode - `'normal|link'` - When `normal`, the matches are
- *  wrapped in a `span` element with an `onclick` attribute. When `link`, the
- *  matches are wrapped in a `<a>` element with an `href` attribute.
+ * @prop {number} mode - See the `INSERT_MODES` export.
  * @prop {function} action - This is a template function that takes two
- *  parameters, `type` and `key`, and returns a string that will be used for
- *  the `onclick` attribute if `mode == 'normal'` and the `href` attribute if
- *  `mode == 'link'`.
+ *  parameters, `type` and `key`, and returns a `string` that will be used for
+ *  the `onclick` or `href` attributes of the inserted element based on `mode`.
  */
 /**
  * @typedef {object} AnnotationSet
@@ -98,7 +95,7 @@ export default function(opt) {
       });
     }
 
-    const wrapped = wrapMatches({
+    const inserted = insert({
       key: `${set.id}-${item.id}`,
       html,
       mode,
@@ -106,7 +103,7 @@ export default function(opt) {
       matches
     });
 
-    html = wrapped.html;
+    html = inserted.html;
 
     // Update string indexes for current chapter's markers
     Object.keys(markers)
@@ -114,10 +111,10 @@ export default function(opt) {
       .map(marker =>
         // Increase marker's string index by the wrapper's length every time
         // an annotation was inserted before the marker
-        wrapped.inserts.map(index => {
+        inserted.inserts.map(index => {
           if (markers[marker].end > index) {
-            markers[marker].end += wrapped.wrapLength;
-            markers[marker].start += wrapped.wrapLength;
+            markers[marker].end += inserted.wrapLength;
+            markers[marker].start += inserted.wrapLength;
           }
         })
       );
