@@ -1,9 +1,9 @@
 import 'babel-polyfill';
 
 import * as AnnotateEPUBJS from 'repo/epubjs';
+import * as AnnotateReact from 'repo/react';
 import { DialogContainer } from 'react-md';
 import annotationSets from './annotation-sets';
-import AnnotateReact from 'repo/react';
 import { render } from 'react-dom';
 import React from 'react';
 import EPUB from 'epubjs';

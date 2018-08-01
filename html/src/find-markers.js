@@ -1,5 +1,5 @@
 import findMatchIndexes from './find-indexes';
-import AnnotateCore from 'repo/core';
+import { escapeRegex } from 'repo/core';
 
 /**
  * @typedef {object} AnnotationMarker
@@ -40,9 +40,7 @@ export default function(html, chapter, items) {
         // Before subsearches are assumed unique with only a single match
         const [match] = findMatchIndexes(
           new RegExp(
-            search.regex
-              ? search.before
-              : AnnotateCore.escapeRegex(search.before),
+            search.regex ? search.before : escapeRegex(search.before),
             'g'
           ),
           html
@@ -58,9 +56,7 @@ export default function(html, chapter, items) {
         // After subsearches are assumed unique with only a single match
         const [match] = findMatchIndexes(
           new RegExp(
-            search.regex
-              ? search.after
-              : AnnotateCore.escapeRegex(search.after),
+            search.regex ? search.after : escapeRegex(search.after),
             'g'
           ),
           html

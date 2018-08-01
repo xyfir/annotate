@@ -1,7 +1,4 @@
-import generateWebSearchContext from './generate-web-search-context';
-import escapeRegex from 'escape-string-regexp';
-
-export default {
-  generateWebSearchContext,
-  escapeRegex
-};
+export {
+  default as generateWebSearchContext
+} from './generate-web-search-context';
+export { default as escapeRegex } from 'escape-string-regexp';

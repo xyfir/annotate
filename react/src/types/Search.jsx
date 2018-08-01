@@ -1,5 +1,5 @@
+import { generateWebSearchContext } from 'repo/core';
 import { Button } from 'react-md';
-import Annotate from 'repo/core';
 import React from 'react';
 
 export default class WebSearchAnnotation extends React.Component {
@@ -14,7 +14,7 @@ export default class WebSearchAnnotation extends React.Component {
     const { useContext } = this.state;
     const contextValue =
       book && !annotation.context
-        ? Annotate.generateWebSearchContext(book.title, book.authors)
+        ? generateWebSearchContext(book.title, book.authors)
         : annotation.context;
 
     return (

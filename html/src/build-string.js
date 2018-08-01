@@ -1,6 +1,6 @@
 import buildSearchOrder from './build-search-order';
 import findMatchIndexes from './find-indexes';
-import AnnotateCore from 'repo/core';
+import { escapeRegex } from 'repo/core';
 import { insert } from './insert';
 
 /**
@@ -50,7 +50,7 @@ export default function(opt) {
       // Prevents words from being highlighted within longer words
       needle = new RegExp(
         (wordChar.test(main[0]) ? '\\b' : '') +
-          AnnotateCore.escapeRegex(main) +
+          escapeRegex(main) +
           (wordChar.test(main[main.length - 1]) ? '\\b' : ''),
         'g'
       );
