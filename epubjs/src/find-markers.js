@@ -1,4 +1,4 @@
-import { findMarkers } from 'repo/html';
+import { findMarkers } from '@xyfir/annotate-html';
 
 /**
  * @typedef {object} AnnotationMarker

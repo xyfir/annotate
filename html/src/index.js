@@ -1,4 +1,4 @@
-export * from 'repo/core';
+export * from '@xyfir/annotate-core';
 export * from './insert';
 export { default as findMarkers } from './find-markers';
 export { default as buildString } from './build-string';

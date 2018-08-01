@@ -9,4 +9,4 @@ export { default as Video } from './types/Video';
 export { default as Audio } from './types/Audio';
 export { default as Link } from './types/Link';
 export { default as Map } from './types/Map';
-export * from 'repo/core';
+export * from '@xyfir/annotate-core';

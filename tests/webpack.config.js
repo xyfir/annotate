@@ -15,9 +15,6 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
-    alias: {
-      repo: path.resolve(__dirname, '../')
-    },
     extensions: ['.js', '.jsx']
   },
 

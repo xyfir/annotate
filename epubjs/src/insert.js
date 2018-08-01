@@ -1,4 +1,4 @@
-import { buildString, INSERT_MODES } from 'repo/html';
+import { buildString, INSERT_MODES } from '@xyfir/annotate-html';
 import findMarkers from './find-markers';
 
 /**

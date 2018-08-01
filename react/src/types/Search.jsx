@@ -1,4 +1,4 @@
-import { generateWebSearchContext } from 'repo/core';
+import { generateWebSearchContext } from '@xyfir/annotate-core';
 import { Button } from 'react-md';
 import React from 'react';
 
