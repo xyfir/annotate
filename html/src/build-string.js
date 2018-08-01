@@ -1,6 +1,6 @@
 import buildSearchOrder from './build-search-order';
 import findMatchIndexes from './find-indexes';
-import { escapeRegex } from '@xyfir/annotate-core';
+import escapeRegex from 'escape-string-regexp';
 import { insert } from './insert';
 
 /**

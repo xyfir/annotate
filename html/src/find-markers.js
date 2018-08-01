@@ -1,5 +1,5 @@
 import findMatchIndexes from './find-indexes';
-import { escapeRegex } from '@xyfir/annotate-core';
+import escapeRegex from 'escape-string-regexp';
 
 /**
  * @typedef {object} AnnotationMarker
