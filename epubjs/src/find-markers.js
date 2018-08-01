@@ -1,4 +1,4 @@
-import AnnotateHTML from 'repo/html';
+import { findMarkers } from 'repo/html';
 
 /**
  * @typedef {object} AnnotationMarker
@@ -24,7 +24,6 @@ import AnnotateHTML from 'repo/html';
  * @return {AnnotationMarkers}
  */
 export default async function(book, items) {
-
   /** @type {AnnotationMarkers} */
   const markers = {};
 
@@ -48,18 +47,14 @@ export default async function(book, items) {
     let html = await file.async('string');
 
     // Convert file content into html string
-    iframe.contentDocument.documentElement.innerHTML = html,
+    iframe.contentDocument.documentElement.innerHTML = html;
     html = iframe.contentDocument.body.innerHTML;
 
     // Find markers within the chapter's HTML
-    Object.assign(
-      markers,
-      AnnotateHTML.findMarkers(html, spineItem.index, items)
-    );
+    Object.assign(markers, findMarkers(html, spineItem.index, items));
   }
 
   iframe.remove();
 
   return markers;
-
 }

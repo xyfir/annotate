@@ -1,8 +1,8 @@
 import 'babel-polyfill';
 
-import { DialogContainer, Button } from 'react-md';
+import * as AnnotateEPUBJS from 'repo/epubjs';
+import { DialogContainer } from 'react-md';
 import annotationSets from './annotation-sets';
-import AnnotateEPUBJS from 'repo/epubjs';
 import AnnotateReact from 'repo/react';
 import { render } from 'react-dom';
 import React from 'react';
@@ -72,7 +72,7 @@ class AnnotateTests extends React.Component {
 
       // Add styles for highlights within book
       this.book.rendition.themes.default({
-        'span.annotation': {
+        'span.xy-annotation': {
           'background-color': 'rgba(133, 193, 233, 0.5)',
           cursor: 'pointer'
         }
@@ -153,9 +153,9 @@ class AnnotateTests extends React.Component {
         console.log('Inserting and validating set #', set.id);
         await AnnotateEPUBJS.insertAnnotations(this.book, set);
 
-        const ans = this.fdocument.querySelectorAll('span.annotation');
+        const ans = this.fdocument.querySelectorAll('span.xy-annotation');
 
-        // Validate the number of `span.annotation` elements created
+        // Validate the number of `span.xy-annotation` elements created
         if (ans.length != set.elements) throw `Bad element count ${ans.length}`;
 
         // Validate the text content of all highlights

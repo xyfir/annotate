@@ -1,6 +1,4 @@
-import AnnotateHTML from 'repo/html';
-
-// Modules
+import { buildString, INSERT_MODES } from 'repo/html';
 import findMarkers from './find-markers';
 
 /**
@@ -26,10 +24,10 @@ export default async function(book, set) {
   // Get current chapter index to compare with chapter in markers
   const chapter = +book.rendition.location.start.index;
 
-  document.body.innerHTML = AnnotateHTML.insertAnnotations({
+  document.body.innerHTML = buildString({
     set,
     html,
-    mode: 'normal',
+    mode: INSERT_MODES.WRAP.ONCLICK,
     action: (t, k) =>
       `parent.postMessage({type:'${t}',key:'${k}',epubjs:true},'*')`,
     chapter,
