@@ -3,6 +3,7 @@ const {
   buildString,
   INSERT_MODES
 } = require('@xyfir/annotate-html');
+const { NOTIFICATION_FOOTER } = require('lib/insert/file/templates');
 const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
 const constants = require('../constants');
@@ -112,28 +113,9 @@ module.exports = async function(yargs) {
         chapter: i
       });
 
-      // Add xyAnnotations notification to bottom of first and last file
-      // !! First and last is alphabetical and may not be proper order of book
-      if (i == 0 || i == files.length - 1) {
-        html = html.replace(
-          '</body>',
-          `<footer class="xyannotations-notification">
-            <p>
-              This book has been annotated via
-              <a href="https://annotations.xyfir.com">xyAnnotations</a>,
-              using annotation set
-              <a href="https://annotations.xyfir.com/sets/${setId}">#${setId}</a>
-              on <code>${new Date(set.version).toGMTString()}</code>.
-            </p>
-            <p>
-              You can insert the most recent annotations into a non-annotated file
-              <a href="https://annotations.xyfir.com/annotate-my-ebook?set=${
-                set.id
-              }">here</a>.
-            </p>
-          </footer>
-          </body>`
-        );
+      // Add xyAnnotations notification to titlepage
+      if (/titlepage\.x?html/.test(file)) {
+        html = html.replace('</body>', `${NOTIFICATION_FOOTER(set)}</body>`);
       }
 
       await writeFile(file, html);
