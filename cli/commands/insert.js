@@ -20,6 +20,7 @@ const fs = require('fs-extra');
  * @typedef {object} InsertFileArguments
  * @prop {boolean} [deleteSource]
  * @prop {boolean} [convert]
+ * @prop {string} [mode] - `"wrap" | "reference"`
  * @prop {string} file
  * @prop {number} set
  */
@@ -30,7 +31,7 @@ const fs = require('fs-extra');
  * @param {InsertFileArguments} yargs.argv
  */
 module.exports = async function(yargs) {
-  const { deleteSource, convert, set: setId } = yargs.argv;
+  const { deleteSource, convert, mode = 'REFERENCE', set: setId } = yargs.argv;
   let { file } = yargs.argv;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
@@ -102,7 +103,7 @@ module.exports = async function(yargs) {
       html = buildString({
         set,
         html,
-        mode: INSERT_MODES.REFERENCE.LINK,
+        mode: INSERT_MODES[mode.toUpperCase()].LINK,
         action: (type, key) =>
           `https://annotations.xyfir.com/sets/${key.split('-')[0]}/items/${
             key.split('-')[1]

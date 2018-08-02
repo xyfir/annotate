@@ -8,13 +8,14 @@ annotate insert file --file /path/to/file.epub --set 1234
 
 Creates a copy of the epub file and inserts links to view annotations for matches of searches within items in the provided annotation set. This should allow you to view annotations from within any ebook reader that supports epub, regardless of whether that reader supports xyAnnotations.
 
-**Note**: A xyAnnotations subscription and the `xyfirAnnotationsSubscriptionKey` config key are required. If you don't have a subscription, try out [xyBooks](https://books.xyfir.com/). New users receive a free month subscription. You can find your key in the _Reader Settings_ section.
+**Note**: A xyAnnotations subscription and the `xyfirAnnotationsSubscriptionKey` config key are required.
 
 ### Options
 
-- `--set: number` - The id of the annotation set to insert into the ebook.
-- `--file: string` - Path to an epub file. A modified copy will be created next to this file.
-- `--convert: boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
+- `--set`: `number` - The id of the annotation set to insert into the ebook.
+- `--file`: `string` - Path to an epub file. A modified copy will be created next to this file.
+- `--mode`: `string` - _optional_ - Determines how the annotations are inserted into the file. `reference` (default) adds link at the end of match as `[xy]`; `wrap` puts link around entire match.
+- `--convert`: `boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
 - `--delete-source: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
 
 ## `generate calibre`
