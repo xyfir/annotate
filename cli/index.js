@@ -23,12 +23,6 @@ yargs
         'Generate annotations using books from Library Genesis',
         commands.generateLibGen
       )
-      .command(
-        'wikia',
-        'Generate annotations using a Wikia.com XML dump. ' +
-          'Deprecated: Use `generate mediawiki` instead.',
-        commands.generateWikia
-      )
   )
   .command('convert', 'Convert files', () =>
     yargs.command(
