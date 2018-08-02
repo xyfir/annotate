@@ -3,7 +3,7 @@ const {
   buildString,
   INSERT_MODES
 } = require('@xyfir/annotate-html');
-const { NOTIFICATION_FOOTER } = require('lib/insert/file/templates');
+const TEMPLATES = require('lib/insert/file/templates');
 const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
 const constants = require('../constants');
@@ -20,6 +20,7 @@ const fs = require('fs-extra');
 /**
  * @typedef {object} InsertFileArguments
  * @prop {boolean} [deleteSource]
+ * @prop {boolean} [footnotes]
  * @prop {boolean} [convert]
  * @prop {string} [mode] - `"wrap" | "reference"`
  * @prop {string} file
@@ -33,7 +34,7 @@ const fs = require('fs-extra');
  */
 module.exports = async function(yargs) {
   const { deleteSource, convert, mode = 'REFERENCE', set: setId } = yargs.argv;
-  let { file } = yargs.argv;
+  let { file, footnotes } = yargs.argv;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
   try {
@@ -64,7 +65,7 @@ module.exports = async function(yargs) {
     const { set } = res.body;
 
     // Build extract path
-    const path =
+    const folderpath =
       file.substr(0, file.length - 5) +
       ` - Annotated with xyAnnotations (Set #${set.id} v${set.version})`;
 
@@ -72,18 +73,18 @@ module.exports = async function(yargs) {
     await new Promise((resolve, reject) =>
       fs
         .createReadStream(file)
-        .pipe(unzipper.Extract({ path }))
+        .pipe(unzipper.Extract({ path: folderpath }))
         .on('error', reject)
         .on('finish', resolve)
     );
 
     // Get files and directories within zip file
-    /** @todo Use TOC */
     /** @type {string[]} */
-    let files = await glob(path + '/**/*');
+    let files = await glob(folderpath + '/**/*');
+    const opf = files.find(f => /\.opf$/.test(f));
 
     // Ignore non-html files
-    files = files.filter(f => /html$/.test(f));
+    files = files.filter(f => /html?$/.test(f));
 
     // Generate markers for main/before set item subsearch matches
     const markers = {};
@@ -95,27 +96,73 @@ module.exports = async function(yargs) {
       Object.assign(markers, findMarkers(html, i, set.items));
     }
 
+    // xy folder within the root of the ebook
+    const xypath = path.resolve(folderpath, 'xy');
+
+    // Insert annotations into ebook as an added footnotes file
+    if (!opf) footnotes = false;
+    if (footnotes) {
+      // Filter out items without Document annotations
+      set.items = set.items.filter(i => {
+        i.annotations = i.annotations.filter(a => a.type == 1);
+        return i.annotations.length;
+      });
+
+      // Footnotes will go in xy/
+      await fs.ensureDir(xypath);
+
+      // Write footnotes.html
+      await writeFile(
+        path.resolve(xypath, 'footnotes.html'),
+        TEMPLATES.FOOTNOTES(set)
+      );
+
+      // Link file in opf
+      let html = await readFile(opf);
+      html = html.replace(
+        '</manifest>',
+        `${TEMPLATES.FOOTNOTES_OPF_MANIFEST(
+          path.relative(path.dirname(opf), xypath).replace(/\\/g, '/')
+        )}</manifest>`
+      );
+      html = html.replace(
+        '</spine>',
+        `${TEMPLATES.FOOTNOTES_OPF_SPINE()}</spine>`
+      );
+      await writeFile(opf, html);
+    }
+
     // Update HTML files
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       let html = await readFile(file);
 
-      // Insert annotations into file
+      // Insert links to annotations into file
       html = buildString({
         set,
         html,
         mode: INSERT_MODES[mode.toUpperCase()].LINK,
-        action: (type, key) =>
-          `https://annotations.xyfir.com/sets/${key.split('-')[0]}/items/${
-            key.split('-')[1]
-          }?view=true`,
+        action: (type, key) => {
+          const item = key.split('-')[1];
+
+          return footnotes
+            ? `${path
+                .relative(path.dirname(file), xypath)
+                .replace(/\\/g, '/')}/footnotes.html#item_${item}`
+            : `https://annotations.xyfir.com/sets/${
+                set.id
+              }/items/${item}?view=true`;
+        },
         markers,
         chapter: i
       });
 
       // Add xyAnnotations notification to titlepage
-      if (/titlepage\.x?html/.test(file)) {
-        html = html.replace('</body>', `${NOTIFICATION_FOOTER(set)}</body>`);
+      if (/title(page)?\.x?html?$/.test(file)) {
+        html = html.replace(
+          '</body>',
+          `${TEMPLATES.NOTIFICATION_FOOTER(set)}</body>`
+        );
       }
 
       await writeFile(file, html);
@@ -123,20 +170,20 @@ module.exports = async function(yargs) {
 
     // Zip directory to file
     await new Promise((resolve, reject) => {
-      const output = fs.createWriteStream(path + '.epub');
+      const output = fs.createWriteStream(folderpath + '.epub');
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       output.on('close', resolve);
       archive.on('error', reject);
 
       archive.pipe(output);
-      archive.directory(path, false);
+      archive.directory(folderpath, false);
 
       archive.finalize();
     });
 
     // Delete directory
-    await fs.remove(path);
+    await fs.remove(folderpath);
 
     // Delete source files
     if (deleteSource) {
@@ -144,7 +191,7 @@ module.exports = async function(yargs) {
       !isEPUB && (await fs.remove(ogFile));
     }
 
-    console.log(path + '.epub');
+    console.log(folderpath + '.epub');
   } catch (e) {
     console.error(e.toString().red);
     console.error(e);
