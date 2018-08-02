@@ -1,5 +1,5 @@
-const mediaWikiPagesToAnnotations = require('lib/wiki/mediawiki');
-const wikiaPagesToAnnotations = require('lib/wiki/wikia');
+const wikiaPagesToAnnotations = require('lib/generate/mediawiki/wikia');
+const mwPagesToAnnotations = require('lib/generate/mediawiki/normal');
 const { DOMParser } = require('xmldom');
 const getConfig = require('lib/config/get');
 const constants = require('../../constants');
@@ -271,7 +271,7 @@ module.exports = async function(yargs) {
       // Convert pages to annotations
       pageErrors += config.url.endsWith('wikia.com')
         ? await wikiaPagesToAnnotations(config, distinctions, item)
-        : await mediaWikiPagesToAnnotations(config, distinctions, item);
+        : await mwPagesToAnnotations(config, distinctions, item);
 
       if (!item.annotations.filter(a => a).length) {
         console.error('Missing annotations', item);
