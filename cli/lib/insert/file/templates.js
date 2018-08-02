@@ -37,8 +37,13 @@ exports.NOTIFICATION_FOOTER = set => `
   </p>
 </footer>`;
 
-/** @param {AnnotationSet} set */
-exports.FOOTNOTES = set => `<?xml version='1.0' encoding='utf-8'?>
+/**
+ * @param {AnnotationSet} set
+ * @param {string} body
+ */
+exports.FOOTNOTES_CONTAINER = (set, body) =>
+  `
+<?xml version='1.0' encoding='utf-8'?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${'en'}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -46,34 +51,56 @@ exports.FOOTNOTES = set => `<?xml version='1.0' encoding='utf-8'?>
     Footnotes Generated from xyAnnotations Set #${set.id}
   </title>
 </head>
-<body>
-${set.items
-  .map(
-    item => `<div class="xy-footnote">
-      <a name="item_${item.id}" id="item_${item.id}"/>${
-      item.annotations.length > 1
-        ? item.annotations
-            .map((a, i) => `<p><a href="#${item.id}_${i}">${a.name}</a></p>`)
-            .join('<br/>\n') +
-          item.annotations
-            .map(
-              (a, i) =>
-                `<a name="${item.id}_${i}" id="${item.id}_${i}"/>` +
-                `<p>Annotation #${i + 1}: ${a.name}</p><br/>\n\n` +
-                marked(a.value, { sanitize: true, renderer })
-            )
-            .join('\n\n<hr/><hr/><hr/>')
-        : marked(item.annotations[0].value, { sanitize: true, renderer })
-    }
-    </div>`
-  )
-  .join('\n\n<hr/><hr/><hr/>')}
-</body>
-</html>`;
+<body>${body}</body>
+</html>`.trim();
 
-/** @param {string} path */
-exports.FOOTNOTES_OPF_MANIFEST = path => `
-<item href="${path}/footnotes.html" id="xy_footnotes" media-type="application/xhtml+xml"/>
-`;
+/** @param {AnnotationSetItem} item */
+exports.FOOTNOTES_ENTRY = item =>
+  `
+<div class="xy-footnote">
+  <a name="item_${item.id}" id="item_${item.id}">
+    <b>Annotations from item #${item.id}:</b>
+  </a>
+  <br/>
+  ${
+    item.annotations.length > 1
+      ? item.annotations
+          .map(
+            (a, i) =>
+              `<p><a href="#${item.id}_${i}">
+                Annotation #${i + 1}: ${a.name}
+               </a></p>`
+          )
+          .join('<br/>\n') +
+        item.annotations
+          .map(
+            (a, i) =>
+              `<a name="${item.id}_${i}" id="${item.id}_${i}">
+                <b>Annotation #${i + 1}: ${a.name}</b>
+               </a>
+               <br/>\n\n` + marked(a.value, { sanitize: true, renderer })
+          )
+          .join('\n\n<hr/><hr/><hr/>')
+      : marked(item.annotations[0].value, { sanitize: true, renderer })
+  }
+</div>`.trim();
 
-exports.FOOTNOTES_OPF_SPINE = () => `<itemref idref="xy_footnotes"/>`;
+/**
+ * @param {string} path
+ * @param {number} count
+ */
+exports.FOOTNOTES_OPF_MANIFEST = (path, count) =>
+  Array(count)
+    .fill(0)
+    .map(
+      (e, i) =>
+        `<item href="${path}/footnotes-${i}.html" id="xy_footnotes_${i}" media-type="application/xhtml+xml"/>`
+    )
+    .join('\n');
+
+/** @param {number} count */
+exports.FOOTNOTES_OPF_SPINE = count =>
+  Array(count)
+    .fill(0)
+    .map((e, i) => `<itemref idref="xy_footnotes_${i}"/>`)
+    .join('\n');

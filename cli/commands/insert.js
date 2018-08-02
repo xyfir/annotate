@@ -111,23 +111,37 @@ module.exports = async function(yargs) {
       // Footnotes will go in xy/
       await fs.ensureDir(xypath);
 
-      // Write footnotes.html
-      await writeFile(
-        path.resolve(xypath, 'footnotes.html'),
-        TEMPLATES.FOOTNOTES(set)
-      );
+      // Split footnote files every ~300KB for performance reasons
+      let entries = '';
+      let footnotes = 0;
+      for (let i = 0; i < set.items.length; i++) {
+        const item = set.items[i];
+        item.footnote = footnotes;
+        entries += TEMPLATES.FOOTNOTES_ENTRY(item) + '\n\n<hr/><hr/><hr/>';
 
-      // Link file in opf
+        // Write file if entries are too big or if there are none left
+        if (entries.length >= 300000 || i == set.items.length - 1) {
+          await writeFile(
+            path.resolve(xypath, `footnotes-${footnotes}.html`),
+            TEMPLATES.FOOTNOTES_CONTAINER(set, entries)
+          );
+          footnotes++;
+          entries = '';
+        }
+      }
+
+      // Link footnote files in OPF
       let html = await readFile(opf);
       html = html.replace(
         '</manifest>',
         `${TEMPLATES.FOOTNOTES_OPF_MANIFEST(
-          path.relative(path.dirname(opf), xypath).replace(/\\/g, '/')
+          path.relative(path.dirname(opf), xypath).replace(/\\/g, '/'),
+          footnotes
         )}</manifest>`
       );
       html = html.replace(
         '</spine>',
-        `${TEMPLATES.FOOTNOTES_OPF_SPINE()}</spine>`
+        `${TEMPLATES.FOOTNOTES_OPF_SPINE(footnotes)}</spine>`
       );
       await writeFile(opf, html);
     }
@@ -143,15 +157,19 @@ module.exports = async function(yargs) {
         html,
         mode: INSERT_MODES[mode.toUpperCase()].LINK,
         action: (type, key) => {
-          const item = key.split('-')[1];
+          // Get item object for footnote index
+          const id = +key.split('-')[1];
+          const item = set.items.find(item => item.id == id);
 
           return footnotes
             ? `${path
                 .relative(path.dirname(file), xypath)
-                .replace(/\\/g, '/')}/footnotes.html#item_${item}`
-            : `https://annotations.xyfir.com/sets/${
-                set.id
-              }/items/${item}?view=true`;
+                .replace(/\\/g, '/')}/footnotes-${item.footnote}.html#item_${
+                item.id
+              }`
+            : `https://annotations.xyfir.com/sets/${set.id}/items/${
+                item.id
+              }?view=true`;
         },
         markers,
         chapter: i
