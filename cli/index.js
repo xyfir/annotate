@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 require('app-module-path').addPath(__dirname);
-require('colors');
 
 const commands = require('commands/commands');
 const yargs = require('yargs');

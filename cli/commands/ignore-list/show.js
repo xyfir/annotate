@@ -23,6 +23,6 @@ module.exports = async function(yargs) {
     else if (argv.multiline) list.forEach(id => console.log(id));
     else console.log(list.join(', '));
   } catch (e) {
-    console.log(e.toString().red);
+    console.error(e.toString());
   }
 };

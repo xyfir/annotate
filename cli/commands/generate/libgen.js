@@ -41,7 +41,7 @@ module.exports = async function(yargs) {
   try {
     const config = await getConfig();
 
-    const log = msg => config.logGenerationEvents && console.log(msg.cyan);
+    const log = msg => config.logGenerationEvents && console.log(msg);
 
     const calibre = new Calibre({
       execOptions: { cwd: config.calibreBinPath || null }
@@ -123,6 +123,6 @@ module.exports = async function(yargs) {
       }
     }
   } catch (e) {
-    console.error(e.toString().red);
+    console.error(e.toString());
   }
 };

@@ -23,8 +23,8 @@ module.exports = async function(yargs) {
     list = list.concat(ids);
 
     await setIgnoreList(list);
-    console.log('Success'.green);
+    console.log('Success');
   } catch (e) {
-    console.error(e.toString().red);
+    console.error(e.toString());
   }
 };

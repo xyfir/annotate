@@ -17,8 +17,8 @@ module.exports = async function(yargs) {
     list = list.filter(id => ids.indexOf(id) == -1);
 
     await setIgnoreList(list);
-    console.log('Success'.green);
+    console.log('Success');
   } catch (e) {
-    console.error(e.toString().red);
+    console.error(e.toString());
   }
 };

@@ -27,19 +27,19 @@ module.exports = async function(yargs) {
         await setConfig(config);
         console.log('Success');
       } else {
-        console.error('Invalid key'.red);
+        console.error('Invalid key');
       }
     }
     // Return value for key
     else if (argv.key) {
       if (config[argv.key] !== undefined) console.log(config[argv.key]);
-      else console.error('Invalid key'.red);
+      else console.error('Invalid key');
     }
     // Return all keys/values
     else {
       console.log(config);
     }
   } catch (e) {
-    console.log(e.toString().red);
+    console.error(e.toString());
   }
 };

@@ -8,7 +8,7 @@ module.exports = async function(data) {
   try {
     await writeFile('config.json', JSON.stringify(data));
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw 'Could not save config file';
   }
 };

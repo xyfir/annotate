@@ -10,8 +10,8 @@ module.exports = async function(yargs) {
 
   try {
     await setIgnoreList([]);
-    console.log('Success'.green);
+    console.log('Success');
   } catch (e) {
-    console.error(e.toString().red);
+    console.error(e.toString());
   }
 };

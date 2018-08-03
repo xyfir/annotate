@@ -209,7 +209,6 @@ module.exports = async function(yargs) {
 
     console.log(folderpath + '.epub');
   } catch (e) {
-    console.error(e.toString().red);
     console.error(e);
   }
 };

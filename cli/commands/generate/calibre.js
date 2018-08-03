@@ -17,7 +17,7 @@ module.exports = async function(yargs) {
     const ignoreList = await getIgnoreList();
     const config = await getConfig();
 
-    const log = msg => config.logGenerationEvents && console.log(msg.cyan);
+    const log = msg => config.logGenerationEvents && console.log(msg);
 
     const calibre = new Calibre({
       library: config.calibreLibraryPath,
@@ -143,6 +143,6 @@ module.exports = async function(yargs) {
       )} seconds.`
     );
   } catch (e) {
-    console.error(e.toString().red);
+    console.error(e.toString());
   }
 };
