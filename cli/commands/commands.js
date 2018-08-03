@@ -6,8 +6,8 @@ const COMMANDS = {
   generateMediaWiki: require('./generate/mediawiki'),
   generateCalibre: require('./generate/calibre'),
   generateLibGen: require('./generate/libgen'),
-  config: require('./config'),
-  insert: require('./insert')
+  insertFile: require('./insert/file'),
+  config: require('./config')
 };
 
 module.exports = command => async ({ argv }) => {

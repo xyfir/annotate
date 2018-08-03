@@ -35,7 +35,7 @@ yargs
     yargs.command(
       'file',
       'Insert annotations into local epub files',
-      command('insert')
+      command('insertFile')
     )
   )
   .help('h')
