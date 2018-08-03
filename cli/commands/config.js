@@ -1,7 +1,5 @@
 const getConfig = require('../lib/config/get');
 const setConfig = require('../lib/config/set');
-const cliTable = require('cli-table');
-const fs = require('fs');
 
 /**
  * Based on the options provided, gets or sets config values.
@@ -39,16 +37,7 @@ module.exports = async function(yargs) {
     }
     // Return all keys/values
     else {
-      const output = new cliTable({
-        head: ['Key', 'Value'],
-        colWidths: [35, 75]
-      });
-
-      Object.entries(config).forEach(e => {
-        output.push([e[0], e[1]]);
-      });
-
-      console.log(output.toString());
+      console.log(config);
     }
   } catch (e) {
     console.log(e.toString().red);
