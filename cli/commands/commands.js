@@ -15,12 +15,12 @@ module.exports = command => async ({ argv }) => {
 
   // Load arguments from config file
   if (argv.config) {
-    const config = await fs.readJSON(
-      path.isAbsolute(argv.config)
-        ? argv.config
-        : path.resolve(process.cwd(), argv.config)
-    );
-    Object.assign(args, config);
+    // Ensure absolute path
+    argv.config = path.isAbsolute(argv.config)
+      ? argv.config
+      : path.resolve(process.cwd(), argv.config);
+
+    Object.assign(args, await fs.readJSON(argv.config));
   }
   // Parse JSON string
   if (argv.jsonconfig) {
