@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 require('app-module-path').addPath(__dirname);
 
-const commands = require('commands/commands');
+const command = require('commands/commands');
 const yargs = require('yargs');
 
 yargs
@@ -10,43 +10,43 @@ yargs
       .command(
         'mediawiki',
         'Generate annotations using a MediaWiki XML dump',
-        commands.generateMediaWiki
+        command('generateMediaWiki')
       )
       .command(
         'calibre',
         'Generate annotations using books from your Calibre library',
-        commands.generateCalibre
+        command('generateCalibre')
       )
       .command(
         'libgen',
         'Generate annotations using books from Library Genesis',
-        commands.generateLibGen
+        command('generateLibGen')
       )
   )
   .command('convert', 'Convert files', () =>
     yargs.command(
       'dictionary',
       'Convert annotation set to a dictionary file',
-      commands.convertToDictionary
+      command('convertToDictionary')
     )
   )
-  .command('config', 'Sets or gets config property values', commands.config)
+  .command('config', 'Sets or gets config property values', command('config'))
   .command('insert', 'Insert annotations into ebooks', () =>
     yargs.command(
       'file',
       'Insert annotations into local epub files',
-      commands.insert
+      command('insert')
     )
   )
   .command('ignore', 'Manipulate ignore list', () =>
     yargs
-      .command('add', 'Add books to ignore list', commands.addToIgnoreList)
-      .command('show', 'Shows contents of list', commands.showIgnoreList)
-      .command('reset', 'Clear ignore list', commands.resetIgnoreList)
+      .command('add', 'Add books to ignore list', command('addToIgnoreList'))
+      .command('show', 'Shows contents of list', command('showIgnoreList'))
+      .command('reset', 'Clear ignore list', command('resetIgnoreList'))
       .command(
         'remove',
         'Remove book id(s) from ignore list',
-        commands.removeFromIgnoreList
+        command('removeFromIgnoreList')
       )
   )
   .help('h')
