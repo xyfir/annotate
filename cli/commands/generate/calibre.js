@@ -5,33 +5,48 @@ const setIgnoreList = require('lib/ignore-list/set');
 const getIgnoreList = require('lib/ignore-list/get');
 const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
-const util = require('util');
-const fs = require('fs');
+const fs = require('fs-extra');
 
-fs.unlink = util.promisify(fs.unlink);
-
+/**
+ * Generate annotations from a Calibre library.
+ * @param {GenerateCalibreArguments} args
+ */
+/**
+ * @typedef {object} GenerateCalibreArguments
+ * @prop {string|number[]} [ids]
+ * @prop {number} [limit]
+ * @prop {number} [stopAt]
+ * @prop {number} [startAt]
+ * @prop {string} [library]
+ * @prop {number} [bin]
+ * @prop {boolean} [deleteGeneratedFormat]
+ * @prop {boolean} [addGeneratedFormat]
+ * @prop {boolean} [ignoreBookIfMatchExists]
+ * @prop {boolean} [skipBookIfMatchExists]
+ */
 module.exports = async function(args) {
   try {
     const ignoreList = await getIgnoreList();
     const config = await getConfig();
 
-    const log = msg => config.logGenerationEvents && console.log(msg);
-
     const calibre = new Calibre({
-      library: config.calibreLibraryPath,
+      library: args.library,
       execOptions: {
-        cwd: config.calibreBinPath || null,
+        cwd: args.bin || null,
         maxBuffer: 1000000 * 1024
       }
     });
 
     const lastBookId = +args.stopAt || 99999999;
 
-    const start = Date.now(),
-      limit = args.limit;
-    const ids = args.ids ? args.ids.split(',') : [];
-    let loops = 0,
-      misses = 0;
+    const start = Date.now();
+    const limit = args.limit;
+    const ids =
+      typeof args.ids == 'string'
+        ? args.ids.split(',').map(Number)
+        : args.ids || [];
+    let misses = 0;
+    let loops = 0;
 
     // Loop through books
     for (let i = +args.startAt || 0; i < lastBookId + 1; i++) {
@@ -41,7 +56,7 @@ module.exports = async function(args) {
 
       // Check if book is ignored
       if (ignoreList.indexOf(i.toString()) > -1) {
-        log(`Skipping book in ignore list`);
+        console.log(`Skipping book in ignore list`);
         continue;
       }
 
@@ -69,20 +84,20 @@ module.exports = async function(args) {
         misses = 0;
       }
 
-      log('');
-      log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
+      console.log('');
+      console.log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
       // Check for similar matching book
       if (
-        (config.ignoreBookIfMatchExists || config.skipBookIfMatchExists) &&
+        (args.ignoreBookIfMatchExists || args.skipBookIfMatchExists) &&
         (await similarBooksExist(book, config))
       ) {
-        if (config.ignoreBookIfMatchExists) {
+        if (args.ignoreBookIfMatchExists) {
           ignoreList.push(book.id.toString());
           await setIgnoreList(ignoreList);
-          log(`Ignoring book due to similar matching book(s)`);
+          console.log(`Ignoring book due to similar matching book(s)`);
         } else {
-          log(`Skipping book due to similar matching book(s)`);
+          console.log(`Skipping book due to similar matching book(s)`);
         }
         continue;
       }
@@ -92,7 +107,7 @@ module.exports = async function(args) {
 
       // Generate text format
       if (!format) {
-        log(`Generating text file`);
+        console.log(`Generating text file`);
         format = book.formats[0];
 
         if (!format) continue;
@@ -103,39 +118,39 @@ module.exports = async function(args) {
 
         await calibre.run('ebook-convert', [format, newFormat]);
         (format = newFormat), (formatGenerated = true);
-        log(`Text file generated`);
+        console.log(`Text file generated`);
       }
 
       // Create annotation set with book and config info
       const setId = await createObjects(book, config);
-      log(`Annotation set ${setId} created`);
+      console.log(`Annotation set ${setId} created`);
 
       // Read file content, generate items, create items
-      log(`Generating annotations, this could take a while`);
+      console.log(`Generating annotations, this could take a while`);
       const items = await generateSetItems(setId, book, format, config);
-      log(`${items} annotations generated`);
+      console.log(`${items} annotations generated`);
 
       // Add book to ignore list
       ignoreList.push(book.id.toString());
       await setIgnoreList(ignoreList);
-      log(`Book added to ignore list`);
+      console.log(`Book added to ignore list`);
 
       // Act on generated format
       if (formatGenerated) {
-        if (config.addGeneratedFormat) {
+        if (args.addGeneratedFormat) {
           await calibre.run('calibredb add_format', [book.id, format]);
-          log(`Generated text file added to book as format`);
-        } else if (config.deleteGeneratedFormat) {
-          await fs.unlink(format);
-          log(`Generated text file deleted`);
+          console.log(`Generated text file added to book as format`);
+        } else if (args.deleteGeneratedFormat) {
+          await fs.remove(format);
+          console.log(`Generated text file deleted`);
         }
       }
 
-      log(`Book (${book.id}) finished`);
+      console.log(`Book (${book.id}) finished`);
       loops++;
     }
 
-    log(
+    console.log(
       `Generation for ${loops} books complete in ${Math.round(
         (Date.now() - start) / 1000
       )} seconds.`
