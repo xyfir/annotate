@@ -38,16 +38,5 @@ yargs
       command('insert')
     )
   )
-  .command('ignore', 'Manipulate ignore list', () =>
-    yargs
-      .command('add', 'Add books to ignore list', command('addToIgnoreList'))
-      .command('show', 'Shows contents of list', command('showIgnoreList'))
-      .command('reset', 'Clear ignore list', command('resetIgnoreList'))
-      .command(
-        'remove',
-        'Remove book id(s) from ignore list',
-        command('removeFromIgnoreList')
-      )
-  )
   .help('h')
   .alias('h', 'help').argv;
