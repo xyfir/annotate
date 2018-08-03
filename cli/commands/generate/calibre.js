@@ -3,7 +3,6 @@ const generateSetItems = require('lib/xyannotations/generate-items');
 const createObjects = require('lib/xyannotations/create-objects');
 const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
-const path = require('path');
 const fs = require('fs-extra');
 
 /**
@@ -20,9 +19,6 @@ const fs = require('fs-extra');
  * @prop {number} [bin]
  * @prop {boolean} [deleteGeneratedFormat]
  * @prop {boolean} [addGeneratedFormat]
- * @prop {boolean} [ignoreBookIfMatchExists]
- * @prop {boolean} [skipBookIfMatchExists]
- * @prop {string} [ignore]
  */
 module.exports = async function(args) {
   try {
@@ -37,14 +33,6 @@ module.exports = async function(args) {
     });
 
     const lastBookId = +args.stopAt || 99999999;
-
-    const ignore = args.ignore
-      ? await fs.readJSON(
-          path.isAbsolute(argv.ignore)
-            ? argv.ignore
-            : path.resolve(process.cwd(), argv.ignore)
-        )
-      : [];
     const start = Date.now();
     const limit = args.limit;
     const ids =
@@ -59,12 +47,6 @@ module.exports = async function(args) {
       // Check if we need to exit the loop
       if (ids.length && ids.indexOf(book.id.toString()) == -1) break;
       if (limit && limit <= loops) break;
-
-      // Check if book is ignored
-      if (ignore.indexOf(i) > -1) {
-        console.log(`Skipping book in ignore list`);
-        continue;
-      }
 
       // Load book from Calibre
       const book = JSON.parse(
@@ -81,12 +63,6 @@ module.exports = async function(args) {
       if (!book) {
         // Only allow 20 'misses' if stopAt was not provided
         if (++misses > 20 && !args.stopAt) break;
-
-        if (args.ignore) {
-          ignore.push(i);
-          await fs.writeJSON(args.ignore, ignore);
-        }
-
         continue;
       } else {
         misses = 0;
@@ -96,19 +72,8 @@ module.exports = async function(args) {
       console.log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
       // Check for similar matching book
-      if (
-        (args.ignoreBookIfMatchExists || args.skipBookIfMatchExists) &&
-        (await similarBooksExist(book, config))
-      ) {
-        if (args.ignoreBookIfMatchExists) {
-          if (args.ignore) {
-            ignore.push(+book.id);
-            await fs.writeJSON(args.ignore, ignore);
-          }
-          console.log(`Ignoring book due to similar matching book(s)`);
-        } else {
-          console.log(`Skipping book due to similar matching book(s)`);
-        }
+      if (await similarBooksExist(book, config)) {
+        console.log(`Skipping book due to similar matching book(s)`);
         continue;
       }
 
@@ -139,13 +104,6 @@ module.exports = async function(args) {
       console.log(`Generating annotations, this could take a while`);
       const items = await generateSetItems(setId, book, format, config);
       console.log(`${items} annotations generated`);
-
-      // Add book to ignore list
-      if (args.ignore) {
-        ignore.push(+book.id);
-        await fs.writeJSON(args.ignore, ignore);
-        console.log(`Book added to ignore list`);
-      }
 
       // Act on generated format
       if (formatGenerated) {
