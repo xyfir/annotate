@@ -3,15 +3,13 @@ const {
   buildString,
   INSERT_MODES
 } = require('@xyfir/annotate-html');
+const downloadSet = require('lib/xyannotations/download-set');
 const TEMPLATES = require('lib/insert/file/templates');
-const getConfig = require('lib/config/get');
 const writeFile = require('lib/files/write');
-const constants = require('../constants');
 const readFile = require('lib/files/read');
 const unzipper = require('unzipper');
 const archiver = require('archiver');
 const Calibre = require('node-calibre');
-const request = require('superagent');
 const util = require('util');
 const glob = util.promisify(require('glob'));
 const path = require('path');
@@ -56,13 +54,8 @@ module.exports = async function(yargs) {
       await calibre.run('ebook-convert', [ogFile, file]);
     }
 
-    const config = await getConfig();
-
     // Download annotation set
-    const res = await request
-      .get(`${constants.XYANNOTATIONS}sets/${setId}/download`)
-      .auth('subscription', config.xyfirAnnotationsSubscriptionKey);
-    const { set } = res.body;
+    const set = await downloadSet(setId);
 
     // Build extract path
     const folderpath =

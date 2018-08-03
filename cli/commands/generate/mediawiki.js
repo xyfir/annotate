@@ -1,6 +1,7 @@
 const wikiaPagesToAnnotations = require('lib/generate/mediawiki/wikia');
 const mwPagesToAnnotations = require('lib/generate/mediawiki/normal');
 const { DOMParser } = require('xmldom');
+const downloadSet = require('lib/xyannotations/download-set');
 const getConfig = require('lib/config/get');
 const constants = require('../../constants');
 const readFile = require('lib/files/read');
@@ -58,17 +59,11 @@ module.exports = async function(yargs) {
     );
     config.aliases = config.aliases || {};
 
-    const {
-      xyfirAnnotationsSubscriptionKey,
-      xyfirAnnotationsAccessKey
-    } = await getConfig();
+    const { xyfirAnnotationsAccessKey } = await getConfig();
 
     // Download annotation set
     console.log('Downloading set');
-    let res = await request
-      .get(`${constants.XYANNOTATIONS}sets/${config.set}/download`)
-      .auth('subscription', xyfirAnnotationsSubscriptionKey);
-    const { set } = res.body;
+    const set = await downloadSet(config.set);
 
     // Load all <page> elements
     console.log('Loading pages');
@@ -337,7 +332,7 @@ module.exports = async function(yargs) {
         for (let item of set.items) {
           await request
             .delete(
-              `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
+              `${constants.XYANNOTATIONS}sets/${config.set}/items/${item}`
             )
             .auth('access', xyfirAnnotationsAccessKey);
           deleted++;

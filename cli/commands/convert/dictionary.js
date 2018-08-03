@@ -4,11 +4,9 @@ const {
   DEFS_HTML,
   TITLE_HTML
 } = require('lib/convert/dictionary/templates');
+const downloadSet = require('lib/xyannotations/download-set');
 const writeFile = require('lib/files/write');
-const constants = require('../../constants');
-const getConfig = require('lib/config/get');
 const { spawn } = require('child_process');
-const request = require('superagent');
 const path = require('path');
 const fs = require('fs-extra');
 
@@ -38,18 +36,13 @@ module.exports = async function(yargs) {
   let { file, output } = yargs.argv;
 
   try {
-    const config = await getConfig();
     let basePath = '';
     let set;
 
     // Download annotation set
     if (id) {
-      const res = await request
-        .get(`${constants.XYANNOTATIONS}sets/${id}/download`)
-        .query({ minify: true })
-        .auth('subscription', config.xyfirAnnotationsSubscriptionKey);
       basePath = process.cwd();
-      set = res.body.set;
+      set = await downloadSet(id, true);
     }
     // Load annotation set from file
     else {
