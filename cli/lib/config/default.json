@@ -1,16 +1,4 @@
 {
-  "calibreBinPath": "",
-  "calibreLibraryPath": "",
-  "deleteGeneratedFormat": true,
-  "addGeneratedFormat": false,
-  "ignoreBookIfMatchExists": false,
-  "skipBookIfMatchExists": true,
-  "logGenerationEvents": true,
   "xyfirAnnotationsAccessKey": "",
-  "xyfirAnnotationsSubscriptionKey": "",
-  "libgenDatabaseName": "libgen",
-  "libgenDatabaseHost": "localhost",
-  "libgenDatabaseUser": "root",
-  "libgenDatabasePass": "",
-  "libgenLastId": 0
+  "xyfirAnnotationsSubscriptionKey": ""
 }
