@@ -135,7 +135,7 @@ module.exports = async function(yargs) {
       html = html.replace(
         '</manifest>',
         `${TEMPLATES.FOOTNOTES_OPF_MANIFEST(
-          path.relative(path.dirname(opf), xypath).replace(/\\/g, '/'),
+          TEMPLATES.FOOTNOTES_PATH(opf, xypath),
           footnotes
         )}</manifest>`
       );
@@ -162,11 +162,9 @@ module.exports = async function(yargs) {
           const item = set.items.find(item => item.id == id);
 
           return footnotes
-            ? `${path
-                .relative(path.dirname(file), xypath)
-                .replace(/\\/g, '/')}/footnotes-${item.footnote}.html#item_${
-                item.id
-              }`
+            ? `${TEMPLATES.FOOTNOTES_PATH(file, xypath)}/footnotes-${
+                item.footnote
+              }.html#item_${item.id}`
             : `https://annotations.xyfir.com/sets/${set.id}/items/${
                 item.id
               }?view=true`;

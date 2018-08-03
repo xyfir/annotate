@@ -1,5 +1,6 @@
 const package = require('package.json');
 const marked = require('marked');
+const path = require('path');
 
 const renderer = new marked.Renderer();
 /**
@@ -104,3 +105,11 @@ exports.FOOTNOTES_OPF_SPINE = count =>
     .fill(0)
     .map((e, i) => `<itemref idref="xy_footnotes_${i}"/>`)
     .join('\n');
+
+/**
+ * Get relative path from `file` to `xypath`.
+ * @param {string} file
+ * @param {string} xypath
+ */
+exports.FOOTNOTES_PATH = (file, xypath) =>
+  path.relative(path.dirname(file), xypath).replace(/\\/g, '/');
