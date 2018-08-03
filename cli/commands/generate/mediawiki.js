@@ -13,6 +13,7 @@ const path = require('path');
  * @prop {number} set - Id of an annotation set the user is a moderator of
  * @prop {string} url - The base url for the wiki: `http://name.wikia.com`
  * @prop {string} dump - Path to the XML dump file
+ * @prop {string} [config] - Config file used to load these values
  * @prop {Range} [range]
  * @prop {Ignore} ignore
  * @prop {object} [aliases] - Used to add searches to pages by title
@@ -43,7 +44,6 @@ const path = require('path');
  */
 module.exports = async function(config) {
   try {
-    return console.log(config);
     config.aliases = config.aliases || {};
 
     const { xyfirAnnotationsAccessKey } = await getConfig();
@@ -74,7 +74,7 @@ module.exports = async function(config) {
           await readFile(
             path.isAbsolute(config.dump)
               ? config.dump
-              : path.resolve(process.cwd(), config.dump)
+              : path.resolve(config.config || process.cwd(), config.dump)
           )
         )
         .getElementsByTagName('mediawiki')[0]
