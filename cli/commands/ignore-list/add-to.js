@@ -1,20 +1,17 @@
 const setIgnoreList = require('../../lib/ignore-list/set');
 const getIgnoreList = require('../../lib/ignore-list/get');
-const fs = require('fs');
 
 /**
  * Adds book ids to ignore list.
- * @param {yargs} yargs
+ * @param {object} args
  */
-module.exports = async function(yargs) {
-  const argv = yargs.argv;
-
+module.exports = async function(args) {
   try {
-    if (!argv.ids) throw 'Missing values for --ids';
+    if (!args.ids) throw 'Missing values for --ids';
 
     let list = await getIgnoreList();
 
-    const ids = String(argv.ids)
+    const ids = String(args.ids)
       .split(',')
       .filter(id => {
         return list.indexOf(id) == -1;

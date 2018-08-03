@@ -10,9 +10,7 @@ const fs = require('fs');
 
 fs.unlink = util.promisify(fs.unlink);
 
-module.exports = async function(yargs) {
-  const argv = yargs.argv;
-
+module.exports = async function(args) {
   try {
     const ignoreList = await getIgnoreList();
     const config = await getConfig();
@@ -27,16 +25,16 @@ module.exports = async function(yargs) {
       }
     });
 
-    const lastBookId = +argv.stopAt || 99999999;
+    const lastBookId = +args.stopAt || 99999999;
 
     const start = Date.now(),
-      limit = argv.limit;
-    const ids = argv.ids ? argv.ids.split(',') : [];
+      limit = args.limit;
+    const ids = args.ids ? args.ids.split(',') : [];
     let loops = 0,
       misses = 0;
 
     // Loop through books
-    for (let i = +argv.startAt || 0; i < lastBookId + 1; i++) {
+    for (let i = +args.startAt || 0; i < lastBookId + 1; i++) {
       // Check if we need to exit the loop
       if (ids.length && ids.indexOf(book.id.toString()) == -1) break;
       if (limit && limit <= loops) break;
@@ -61,7 +59,7 @@ module.exports = async function(yargs) {
       // Book does not exist with id
       if (!book) {
         // Only allow 20 'misses' if stopAt was not provided
-        if (++misses > 20 && !argv.stopAt) break;
+        if (++misses > 20 && !args.stopAt) break;
 
         ignoreList.push(i.toString());
         await setIgnoreList(ignoreList);

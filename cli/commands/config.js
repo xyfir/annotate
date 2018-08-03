@@ -3,26 +3,29 @@ const setConfig = require('../lib/config/set');
 
 /**
  * Based on the options provided, gets or sets config values.
- * @param {yargs} yargs
+ * @param {ConfigArguments} args
  */
-module.exports = async function(yargs) {
-  const argv = yargs.argv;
-
+/**
+ * @typedef {object} ConfigArguments
+ * @prop {string} [key]
+ * @prop {string|number|boolean} [value]
+ */
+module.exports = async function(args) {
   try {
     const config = await getConfig();
 
     // Set value for key
-    if (argv.key && argv.value !== undefined) {
-      if (config[argv.key] !== undefined) {
+    if (args.key && args.value !== undefined) {
+      if (config[args.key] !== undefined) {
         // Convert true/false string to Boolean
         const value =
-          argv.value == 'true'
+          args.value == 'true'
             ? true
-            : argv.value == 'false'
+            : args.value == 'false'
               ? false
-              : argv.value;
+              : args.value;
 
-        config[argv.key] = value;
+        config[args.key] = value;
 
         await setConfig(config);
         console.log('Success');
@@ -31,8 +34,8 @@ module.exports = async function(yargs) {
       }
     }
     // Return value for key
-    else if (argv.key) {
-      if (config[argv.key] !== undefined) console.log(config[argv.key]);
+    else if (args.key) {
+      if (config[args.key] !== undefined) console.log(config[args.key]);
       else console.error('Invalid key');
     }
     // Return all keys/values

@@ -16,13 +16,10 @@ fs.unlink = util.promisify(fs.unlink);
  * Using a local Library Genesis database, download books from LibGen.io and
  * generate annotations for the downloaded book.
  * Currently only supports LibGen's fiction database.
- * @param {object} yargs
- * @param {object} yargs.argv
- * @param {number} [yargs.argv.limit]
+ * @param {object} args
+ * @param {number} [args.limit]
  */
-module.exports = async function(yargs) {
-  const argv = yargs.argv;
-
+module.exports = async function(args) {
   const sql = `
     SELECT
       id, title, author AS authors, series, md5, extension AS ext
@@ -63,7 +60,7 @@ module.exports = async function(yargs) {
       if (!books.length) break;
 
       for (let book of books) {
-        if (argv.limit && loops >= argv.limit) throw 'Limit reached';
+        if (args.limit && loops >= args.limit) throw 'Limit reached';
         loops++;
 
         log(``);

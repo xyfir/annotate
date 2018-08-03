@@ -28,12 +28,11 @@ const fs = require('fs-extra');
  */
 /**
  * Convert annotation set to dictionary.
- * @param {object} yargs
- * @param {Arguments} yargs.argv
+ * @param {Arguments} args
  */
-module.exports = async function(yargs) {
-  const { id, compress } = yargs.argv;
-  let { file, output } = yargs.argv;
+module.exports = async function(args) {
+  const { id, compress } = args;
+  let { file, output } = args;
 
   try {
     let basePath = '';

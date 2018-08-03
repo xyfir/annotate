@@ -27,12 +27,11 @@ const fs = require('fs-extra');
 /**
  * Insert annotations into an ebook file using links wrapped around search
  *  matches that point to the xyAnnotations item viewer.
- * @param {object} yargs
- * @param {InsertFileArguments} yargs.argv
+ * @param {InsertFileArguments} args
  */
-module.exports = async function(yargs) {
-  const { deleteSource, convert, mode = 'REFERENCE', set: setId } = yargs.argv;
-  let { file, footnotes } = yargs.argv;
+module.exports = async function(args) {
+  const { deleteSource, convert, mode = 'REFERENCE', set: setId } = args;
+  let { file, footnotes } = args;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
   try {

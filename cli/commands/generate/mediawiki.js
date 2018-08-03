@@ -37,26 +37,13 @@ const path = require('path');
  * @prop {Array.<string[]>} [markdown]
  */
 /**
- * @typedef {object} GenerateWikiaArguments
- * @prop {string} config - Path to a config file containing the
- *  actual arguments for the command.
- */
-/**
  * Add, remove, and update items within an annotation set using data from a
  *  Wikia.com dump.
- * @param {object} yargs
- * @param {GenerateWikiaArguments} yargs.argv
+ * @param {CommandConfig} config
  */
-module.exports = async function(yargs) {
+module.exports = async function(config) {
   try {
-    /** @type {CommandConfig} */
-    const config = JSON.parse(
-      await readFile(
-        path.isAbsolute(yargs.argv.config)
-          ? yargs.argv.config
-          : path.resolve(process.cwd(), yargs.argv.config)
-      )
-    );
+    return console.log(config);
     config.aliases = config.aliases || {};
 
     const { xyfirAnnotationsAccessKey } = await getConfig();

@@ -4,15 +4,13 @@ const fs = require('fs');
 
 /**
  * Removes book ids from list.
- * @param {yargs} yargs
+ * @param {object} args
  */
-module.exports = async function(yargs) {
-  const argv = yargs.argv;
-
+module.exports = async function(args) {
   try {
-    if (!argv.ids) throw 'Missing values for --ids';
+    if (!args.ids) throw 'Missing values for --ids';
 
-    const ids = String(argv.ids).split(',');
+    const ids = String(args.ids).split(',');
     let list = await getIgnoreList();
     list = list.filter(id => ids.indexOf(id) == -1);
 
