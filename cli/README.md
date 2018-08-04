@@ -15,12 +15,12 @@ annotate <command> [options/config]
 
 # Global Config
 
-annotate-cli has an _optional_ global configuration, which is stored locally and whose values are automatically passed to all commands. Its useful because it can save you from entering in the same information for every command, but it's entirely optional.
+annotate-cli has an _optional_ global configuration, which is stored locally and whose values are automatically passed to all commands, which is useful because it can save you from repeatedly passing the same options that are used for almost every command.
 
 - `accessKey`: `string`
-  - Your Xyfir Annotations access key.
+  - Your xyAnnotations access key.
 - `subscriptionKey`: `string`
-  - Your Xyfir Annotations subscription key.
+  - Your xyAnnotations subscription key.
 
 The config file (and potentially other data) is stored at `/home/<user>/.xyfir/annotate` in POSIX environments and `%APPDATA%\xyfir\annotate` on Windows.
 
