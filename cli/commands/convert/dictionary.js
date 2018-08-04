@@ -22,6 +22,7 @@ const fs = require('fs-extra');
  *  `0` = none
  *  `1` = standard DOC compression
  *  `2` = Kindle huffdic compression
+ * @prop {string} [subscriptionKey]
  * @prop {string} [output] - File path+name for dictionary file.
  * @prop {string} [file]
  * @prop {number} [id]
@@ -31,7 +32,7 @@ const fs = require('fs-extra');
  * @param {Arguments} args
  */
 module.exports = async function(args) {
-  const { id, compress } = args;
+  const { id, compress, xyfir } = args;
   let { file, output } = args;
 
   try {
@@ -41,7 +42,7 @@ module.exports = async function(args) {
     // Download annotation set
     if (id) {
       basePath = process.cwd();
-      set = await downloadSet(id, true);
+      set = await downloadSet(id, subscriptionKey, true);
     }
     // Load annotation set from file
     else {

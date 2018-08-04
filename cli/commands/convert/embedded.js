@@ -17,6 +17,7 @@ const fs = require('fs-extra');
 
 /**
  * @typedef {object} Arguments
+ * @prop {string} subscriptionKey
  * @prop {boolean} [deleteSource]
  * @prop {boolean} [footnotes]
  * @prop {boolean} [convert]
@@ -30,7 +31,13 @@ const fs = require('fs-extra');
  * @param {Arguments} args
  */
 module.exports = async function(args) {
-  const { deleteSource, convert, mode = 'REFERENCE', set: setId } = args;
+  const {
+    subscriptionKey,
+    deleteSource,
+    convert,
+    mode = 'REFERENCE',
+    set: setId
+  } = args;
   let { file, footnotes } = args;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
@@ -54,7 +61,7 @@ module.exports = async function(args) {
     }
 
     // Download annotation set
-    const set = await downloadSet(setId);
+    const set = await downloadSet(setId, subscriptionKey);
 
     // Build extract path
     const folderpath =

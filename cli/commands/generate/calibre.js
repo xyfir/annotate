@@ -1,7 +1,6 @@
 const similarBooksExist = require('lib/xyannotations/similar-books-exist');
 const generateSetItems = require('lib/xyannotations/generate-items');
 const createObjects = require('lib/xyannotations/create-objects');
-const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
 const fs = require('fs-extra');
 
@@ -19,11 +18,10 @@ const fs = require('fs-extra');
  * @prop {number} [bin]
  * @prop {boolean} [deleteGeneratedFormat]
  * @prop {boolean} [addGeneratedFormat]
+ * @prop {string} accessKey
  */
 module.exports = async function(args) {
   try {
-    const config = await getConfig();
-
     const calibre = new Calibre({
       library: args.library,
       execOptions: {
@@ -72,7 +70,7 @@ module.exports = async function(args) {
       console.log(`Loading book (${book.id}) ${book.title} - ${book.authors}`);
 
       // Check for similar matching book
-      if (await similarBooksExist(book, config)) {
+      if (await similarBooksExist(book, args.accessKey)) {
         console.log(`Skipping book due to similar matching book(s)`);
         continue;
       }
@@ -96,13 +94,13 @@ module.exports = async function(args) {
         console.log(`Text file generated`);
       }
 
-      // Create annotation set with book and config info
-      const setId = await createObjects(book, config);
+      // Create annotation set with book
+      const setId = await createObjects(book, args.accessKey);
       console.log(`Annotation set ${setId} created`);
 
       // Read file content, generate items, create items
       console.log(`Generating annotations, this could take a while`);
-      const items = await generateSetItems(setId, book, format, config);
+      const items = await generateSetItems(setId, format, args.accessKey);
       console.log(`${items} annotations generated`);
 
       // Act on generated format

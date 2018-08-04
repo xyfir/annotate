@@ -1,3 +1,4 @@
+const getConfig = require('lib/config/get');
 const path = require('path');
 const fs = require('fs-extra');
 
@@ -11,7 +12,8 @@ const COMMANDS = {
 };
 
 module.exports = command => async ({ argv }) => {
-  const args = {};
+  // Put global config into args
+  const args = await getConfig();
 
   // Load arguments from config file
   if (argv.config) {

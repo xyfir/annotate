@@ -12,17 +12,17 @@ const SUMMARY = (bt, ba) =>
  *  and links both using the book's metadata.
  * @async
  * @param {object} book - The book object as retrieved from `calibredb list`.
- * @param {object} config - The config object from `data/config.json`.
+ * @param {string} accessKey
  * @return {number} The id of the newly created annotation set.
  */
-module.exports = async function(book, config) {
+module.exports = async function(book, accessKey) {
   let res;
 
   try {
     // Create book
     res = await request
       .post(constants.XYANNOTATIONS + 'media/books')
-      .auth('access', config.xyfirAnnotationsAccessKey)
+      .auth('access', accessKey)
       .send({
         title: book.title.substr(0, 500),
         series: book.series ? book.series.substr(0, 500) : undefined,
@@ -39,7 +39,7 @@ module.exports = async function(book, config) {
     // Create set + link book and set
     res = await request
       .post(constants.XYANNOTATIONS + 'sets')
-      .auth('access', config.xyfirAnnotationsAccessKey)
+      .auth('access', accessKey)
       .send({
         language: 'eng', // ** Remove this / pull from book
         summary: SUMMARY(book.title, book.authors),

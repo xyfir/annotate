@@ -2,7 +2,6 @@ const wikiaPagesToAnnotations = require('lib/generate/mediawiki/wikia');
 const mwPagesToAnnotations = require('lib/generate/mediawiki/normal');
 const { DOMParser } = require('xmldom');
 const downloadSet = require('lib/xyannotations/download-set');
-const getConfig = require('lib/config/get');
 const constants = require('../../constants');
 const readFile = require('lib/files/read');
 const request = require('superagent');
@@ -16,10 +15,12 @@ const path = require('path');
  * @prop {string} [config] - Config file used to load these values
  * @prop {Range} [range]
  * @prop {Ignore} ignore
+ * @prop {string} accessKey
  * @prop {object} [aliases] - Used to add searches to pages by title
  *  `{[pageTitle]: string[]}`
  * @prop {Replace} [replace]
  * @prop {number[]} namespaces - A whitelist of namespaces
+ * @prop {string} subscriptionKey
  */
 /**
  * @typedef {object} Range
@@ -46,11 +47,9 @@ module.exports = async function(config) {
   try {
     config.aliases = config.aliases || {};
 
-    const { xyfirAnnotationsAccessKey } = await getConfig();
-
     // Download annotation set
     console.log('Downloading set');
-    const set = await downloadSet(config.set);
+    const set = await downloadSet(config.set, config.subscriptionKey);
 
     // Load all <page> elements
     console.log('Loading pages');
@@ -283,7 +282,7 @@ module.exports = async function(config) {
         if (ogItem === undefined) {
           await request
             .post(`${constants.XYANNOTATIONS}sets/${config.set}/items`)
-            .auth('access', xyfirAnnotationsAccessKey)
+            .auth('access', config.accessKey)
             .send({ ...item });
           created++;
         }
@@ -297,7 +296,7 @@ module.exports = async function(config) {
           if (JSON.stringify(ogItem) != JSON.stringify(item)) {
             await request
               .put(`${constants.XYANNOTATIONS}sets/${config.set}/items/${id}`)
-              .auth('access', xyfirAnnotationsAccessKey)
+              .auth('access', config.accessKey)
               .send({ ...item });
             updated++;
           }
@@ -321,7 +320,7 @@ module.exports = async function(config) {
             .delete(
               `${constants.XYANNOTATIONS}sets/${config.set}/items/${item}`
             )
-            .auth('access', xyfirAnnotationsAccessKey);
+            .auth('access', config.accessKey);
           deleted++;
         }
       } catch (err) {

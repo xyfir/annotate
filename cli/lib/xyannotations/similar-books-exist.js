@@ -5,14 +5,14 @@ const request = require('superagent');
  * Checks if books exist that match the book's title and authors.
  * @async
  * @param {object} book - The book object as retrieved from `calibredb list`.
- * @param {object} config - The config object from `data/config.json`.
+ * @param {string} accessKey
  * @return {boolean}
  */
-module.exports = async function(book, config) {
+module.exports = async function(book, accessKey) {
   try {
     const res = await request
       .get(constants.XYANNOTATIONS + 'media/books')
-      .auth('access', config.xyfirAnnotationsAccessKey)
+      .auth('access', accessKey)
       .query({
         title: book.title,
         series: '',

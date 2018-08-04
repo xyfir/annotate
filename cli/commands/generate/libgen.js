@@ -3,7 +3,6 @@ const generateSetItems = require('lib/xyannotations/generate-items');
 const createObjects = require('lib/xyannotations/create-objects');
 const downloadEbook = require('lib/generate/libgen/download');
 const writeFile = require('lib/files/write');
-const getConfig = require('lib/config/get');
 const Calibre = require('node-calibre');
 const mysql = require('mysql2/promise');
 const fs = require('fs-extra');
@@ -19,14 +18,15 @@ const fs = require('fs-extra');
  * @prop {number} [limit]
  * @prop {string} [calibreBinPath]
  * @prop {DatabaseInfo} database
+ * @prop {string} accessKey
+ * @prop {number} [lastId]
  */
 /**
  * @typedef {object} DatabaseInfo
- * @prop {string} [host]
- * @prop {string} [user]
- * @prop {string} [pass]
- * @prop {string} [name]
- * @prop {number} [lastId]
+ * @prop {string} host
+ * @prop {string} user
+ * @prop {string} pass
+ * @prop {string} name
  */
 module.exports = async function(args) {
   const sql = `
@@ -44,7 +44,6 @@ module.exports = async function(args) {
   `;
 
   try {
-    const config = await getConfig();
     const calibre = new Calibre({
       execOptions: { cwd: args.calibreBinPath || null }
     });
@@ -73,7 +72,7 @@ module.exports = async function(args) {
         args.lastId = book.id;
 
         // Check if similar book exists
-        if (await similarBooksExist(book, config)) {
+        if (await similarBooksExist(book, args.accessKey)) {
           console.log(`Skipping book due to similar matching book(s)`);
           continue;
         }
@@ -100,13 +99,13 @@ module.exports = async function(args) {
           continue;
         }
 
-        // Create annotation set with book and config info
-        const setId = await createObjects(book, config);
+        // Create annotation set with book
+        const setId = await createObjects(book, args.accessKey);
         console.log(`Annotation set ${setId} created`);
 
         // Read file content, generate items, create items
         console.log(`Generating annotations, this could take a while`);
-        const items = await generateSetItems(setId, book, file2, config);
+        const items = await generateSetItems(setId, file2, args.accessKey);
         console.log(`${items} annotations generated`);
 
         // Delete files

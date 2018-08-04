@@ -8,17 +8,16 @@ const constants = require('../../constants');
  * then creates those items.
  * @async
  * @param {number} setId
- * @param {object} book
  * @param {string} file
- * @param {object} config
+ * @param {string} accessKey
  * @return {number} The number of items created.
  */
-module.exports = async function(setId, book, file, config) {
+module.exports = async function(setId, file, accessKey) {
   const content = await readFile(file);
 
   const res = await request
     .post(`${constants.XYANNOTATIONS}sets/${setId}/items/generate`)
-    .auth('access', config.xyfirAnnotationsAccessKey)
+    .auth('access', accessKey)
     .send({ content, parser: 'regex', mode: 'create' });
 
   return res.body.items;
