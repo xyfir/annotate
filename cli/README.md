@@ -13,11 +13,24 @@ npm install -g
 annotate <command> [options/config]
 ```
 
+# Global Config
+
+annotate-cli has an _optional_ global configuration, which is stored locally and whose values are automatically passed to all commands. Its useful because it can save you from entering in the same information for every command, but it's entirely optional.
+
+- `accessKey`: `string`
+  - Your Xyfir Annotations access key.
+- `subscriptionKey`: `string`
+  - Your Xyfir Annotations subscription key.
+
+The config file (and potentially other data) is stored at `/home/<user>/.xyfir/annotate` in POSIX environments and `%APPDATA%\xyfir\annotate` on Windows.
+
+See the [config](#config) command for information on how to interact with the global config.
+
 # Commands
 
 Before you get started with using annotate-cli, it's important to know how to properly use it. Due to many of its commands being configuration-heavy, you can either pass in arguments directly via `--[option]` just like you would with any other CLI tool, or through `--config <path>` that points to a JSON file containing an object with all of your configuration properties.
 
-Additionally, for programmatic use, you can pass in the same JSON object stringified via `--jsonconfig <json>`, just make sure to wrap it in `"..."` and then escape the contained double quotes. You can even mix all three methods of passing data to annotate-cli if you wish, and they'll all be merged together, with `--[option]` overwriting values from `--jsonconfig`, which in turn overwrites values from `--config`.
+Additionally, for programmatic use, you can pass in the same JSON object stringified via `--jsonconfig <json>`, just make sure to wrap it in `"..."` and then escape the contained double quotes. You can even mix all four methods of passing data to annotate-cli if you wish, and they'll all be merged together, with `--[option]` overwriting values from `--jsonconfig`, which in turn overwrites values from `--config`, which overwrites data from the [global config](#global-config).
 
 You can still pass options for a nested config value. The two syntaxes are identical in terms of the values annotate-cli receives:
 
@@ -37,11 +50,11 @@ annotate example --foo.bar baz
 
 - [config](#config)
   - Get / set global configuration values.
-- convert \*
+- convert ...
   - Convert commands _convert_ annotation sets into other formats.
   - [convert dictionary](#convert-dictionary)
   - [convert embedded](#convert-embedded)
-- generate \*
+- generate ...
   - Generate commands _generate_ annotation sets from other sources.
   - [generate calibre](#generate-calibre)
   - [generate libgen](#generate-libgen)
@@ -75,10 +88,18 @@ Converts an annotation set into a Kindle dictionary (`.mobi`) file.
 
 ### Options
 
-- `compress`: `number` - `0` or missing = none; `1` = standard DOC compression; `2` = Kindle huffdic compression, can take hours for large annotation sets.
-- `output`: `string` - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`. Should end with `.mobi`.
-- `file`: `string` - Path to the annotation set's JSON file.
-- `id`: `number` - ID of the annotation set to download. Requires `xyfirAnnotationsSubscriptionKey`.
+- `subscriptionKey`: `string` _optional_
+  - xyAnnotations subscription key needed for `id`.
+- `compress`: `number` _optional_
+  - `0` or missing = none
+  - `1` = standard DOC compression
+  - `2` = Kindle huffdic compression, can take hours for large books / annotation sets.
+- `output`: `string` _optional_
+  - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`. Should end with `.mobi`.
+- `file`: `string` _optional_
+  - Path to the annotation set's JSON file.
+- `id`: `number` _optional_
+  - ID of the annotation set to download.
 
 ## `convert embedded`
 
@@ -88,15 +109,24 @@ annotate convert embedded --file /path/to/file.epub --set 1234
 
 Converts an annotation set into embedded annotations directly within a provided ebook file. This should allow you to view most annotations from within most ebook readers, regardless of whether that reader natively supports xyAnnotations.
 
-**Note**: A xyAnnotations subscription and the `xyfirAnnotationsSubscriptionKey` config key are required.
+**Note**: A xyAnnotations subscription and the `` config key are required.
 
 ### Options
 
-- `set`: `number` - The id of the annotation set to embed in the ebook.
-- `file`: `string` - Path to an epub file. A modified copy will be created next to this file.
-- `mode`: `string` - _optional_ - Determines how the annotations are embedded in the file. `reference` (default) adds link at the end of match as `[xy]`; `wrap` puts link around entire match.
-- `convert`: `boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to embedding annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
-- `deleteSource: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
+- `set`: `number`
+  - The id of the annotation set to embed in the ebook.
+- `file`: `string`
+  - Path to an ebook file. A modified copy will be created next to this file.
+- `mode`: `string` - _optional_
+  - Determines how the annotations are embedded in the file.
+  - `reference` (default) adds link at the end of match as `[xy]`.
+  - `wrap` puts link around entire match.
+- `convert`: `boolean` _optional_
+  - Attempts to convert the original source file to EPUB prior to embedding annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
+- `deleteSource: boolean` _optional_
+  - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
+- `subscriptionKey`: `string`
+  - xyAnnotations subscription key
 
 ## `generate calibre`
 
@@ -110,28 +140,30 @@ This command loads your Calibre library, loops through the books, and creates an
 
 ### Options
 
-- `limit`: `number`
-  - Stop after the specified number of annotation sets are created. Ignored or skipped books do not count.
-- `ids`: `number|string`
-  - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
-- `startAt`: `number`
-  - Skip all books before the book with the provided id. Defaults to `0`.
-- `stopAt`: `number`
-  - Stop generating after the book with the provided id. You should provide this value if possible to prevent annotate-cli from quitting if it assumes that it has reached the end of the library.
-  - Defaults to `99999999`, and may quit before.
-- `library`: `string`
-  - The path to the Calibre library you wish to generate annotations for.
-  - Should contain a metadata.db file and folders for each author.
-- `bin`: `string`
+- `bin`: `string` _optional_
   - The path to Calibre's binaries.
   - Can be left empty if its already globally available.
-- `deleteGeneratedFormat`: `boolean`
-  - Default: `true`
-  - xyAnnotations generates annotations from a text file. If a book does not have a text format, one is generated from the first format available. If this is true, that generated file is deleted after it is used.
-- `addGeneratedFormat`: `boolean`
+- `ids`: `number|string` _optional_
+  - Ignore all books other than those with the ids provided. Can be a single id or a list of ids (`1,55,100`).
+- `limit`: `number` _optional_
+  - Stop after the specified number of annotation sets are created. Ignored or skipped books do not count.
+- `stopAt`: `number` _optional_
+  - Stop generating after the book with the provided id. You should provide this value if possible to prevent annotate-cli from quitting if it assumes that it has reached the end of the library.
+  - Defaults to `99999999`, and may quit before.
+- `startAt`: `number` _optional_
+  - Skip all books before the book with the provided id. Defaults to `0`.
+- `library`: `string` _optional_
+  - The path to the Calibre library you wish to generate annotations for.
+  - Should contain a metadata.db file and folders for each author.
+- `accessKey`: `string`
+  - xyAnnotations access key
+- `addGeneratedFormat`: `boolean` _optional_
   - Default: `false`
   - If true, the generated text file is added to the book as another format.
   - If true, deleteGeneratedFormat is ignored.
+- `deleteGeneratedFormat`: `boolean` _optional_
+  - Default: `true`
+  - xyAnnotations generates annotations from a text file. If a book does not have a text format, one is generated from the first format available. If this is true, that generated file is deleted after it is used.
 
 ## `generate libgen`
 
@@ -145,8 +177,7 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
 
 ### Options
 
-- `limit: number` - Stop after the specified number of books are pulled from the database. Unlike the `generate calibre` command, books that were skipped are counted towards the limit.
-- `calibreBinPath`: `string`
+- `calibreBinPath`: `string` _optional_
   - The path to Calibre's binaries.
   - Can be left empty if its already globally available.
 - `database.name`: `string`
@@ -160,10 +191,14 @@ This command requires a local copy of the Library Genesis database (libgen_YYYY-
   - Username for the local LibGen database.
 - `database.pass`: `string`
   - Password for the local LibGen database.
-- `lastId`: `number`
+- `accessKey`: `string`
+  - xyAnnotations access key
+- `lastId`: `number` _optional_
   - Default `0`
   - The id of the last book in the LibGen database that was handled in the `generate libgen` command.
   - Will be updated on its own should be left alone unless you want the command to start at a specific location.
+- `limit: number` _optional_
+  - Stop after the specified number of books are pulled from the database. Unlike the `generate calibre` command, books that were skipped are counted towards the limit.
 
 ### Notes
 
@@ -256,19 +291,12 @@ If the wiki does not have public dumps available for download, you can use the [
     "Gandalf": [
       "Mithrandir"
     ]
-  }
+  },
+  // xyAnnotations subscription key
+  "subscriptionKey": "...",
+  // xyAnnotations access key
+  "accessKey": "..."
 }
 ```
 
 You must provide all of the config keys unless they are marked optional.
-
-# Global Config
-
-- `xyfirAnnotationsAccessKey`: `string`
-  - Your Xyfir Annotations access key.
-- `xyfirAnnotationsSubscriptionKey`: `string`
-  - Your Xyfir Annotations subscription key.
-
-# User Data
-
-annotate-cli stores the config file and other data in `/home/<user>/.xyfir/annotate` in Unix environments and `%APPDATA%\xyfir\annotate` on Windows.
