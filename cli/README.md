@@ -1,4 +1,4 @@
-Formerly known as auto-annotator, **annotate-cli** is a set of command line tools that allow you to that allows you to work with [xyAnnotations](https://annotations.xyfir.com/) in various ways, like creating or inserting annotations from/into ebooks.
+**annotate-cli** is a set of command line tools that allows you to work with [xyAnnotations](https://annotations.xyfir.com/) in various ways, mainly generating annotations from different sources or converting already-created annotations into more reader-friendly formats.
 
 # Install
 
@@ -15,24 +15,87 @@ annotate <command> [options/config]
 
 # Commands
 
-Before you get started with using annotate-cli, it's important to know how to properly use it. Due to many of its commands being configuration-heavy, you can either pass in arguments directly via options or through `--config <path>` that points to a JSON file containing an object with all of your configuration properties. Additionally, for programmatic use, you can pass in the same JSON object stringified via `--jsonconfig <json>`, just make sure to wrap it in `"{...}"` and then escape the contained double quotes. You can mix all three methods of passing data to annotate-cli if you wish, and they'll all be merged together, with `--[option]` overwriting values from `--jsonconfig` which overwrites values from `--config`.
+Before you get started with using annotate-cli, it's important to know how to properly use it. Due to many of its commands being configuration-heavy, you can either pass in arguments directly via `--[option]` just like you would with any other CLI tool, or through `--config <path>` that points to a JSON file containing an object with all of your configuration properties.
 
-## `insert file`
+Additionally, for programmatic use, you can pass in the same JSON object stringified via `--jsonconfig <json>`, just make sure to wrap it in `"..."` and then escape the contained double quotes. You can even mix all three methods of passing data to annotate-cli if you wish, and they'll all be merged together, with `--[option]` overwriting values from `--jsonconfig`, which in turn overwrites values from `--config`.
+
+You can still pass options for a nested config value. The two syntaxes are identical in terms of the values annotate-cli receives:
+
+```bash
+annotate example --foo.bar baz
+```
+
+```json
+{
+  "foo": {
+    "bar": "baz"
+  }
+}
+```
+
+## Overview
+
+- [config](#config)
+  - Get / set global configuration values.
+- convert \*
+  - Convert commands _convert_ annotation sets into other formats.
+  - [convert dictionary](#convert-dictionary)
+  - [convert embedded](#convert-embedded)
+- generate \*
+  - Generate commands _generate_ annotation sets from other sources.
+  - [generate calibre](#generate-calibre)
+  - [generate libgen](#generate-libgen)
+  - [generate mediawiki](#generate-mediawiki)
+
+## `config`
 
 ```
-annotate insert file --file /path/to/file.epub --set 1234
+annotate config [--key <key> [--value <value>]]
 ```
 
-Creates a copy of the epub file and inserts links to view annotations for matches of searches within items in the provided annotation set. This should allow you to view annotations from within any ebook reader that supports epub, regardless of whether that reader supports xyAnnotations.
+The config command has three different actions based on what options you provide.
+
+- If you ignore all options, this command will output a table with all of the config keys and a (possibly) shortened version of their values.
+- If you provide only `key`, the full value for that key will be output to console.
+- If you provide `key` _and_ `value` a new value will be set for the key.
+
+Attempting to read or write to a non-existent key will result in an error.
+
+## `convert dictionary`
+
+```bash
+annotate convert dictionary --id 123
+# or
+annotate convert dictionary --file /path/to/file
+```
+
+**Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
+
+Converts an annotation set into a Kindle dictionary (`.mobi`) file.
+
+### Options
+
+- `compress`: `number` - `0` or missing = none; `1` = standard DOC compression; `2` = Kindle huffdic compression, can take hours for large annotation sets.
+- `output`: `string` - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`. Should end with `.mobi`.
+- `file`: `string` - Path to the annotation set's JSON file.
+- `id`: `number` - ID of the annotation set to download. Requires `xyfirAnnotationsSubscriptionKey`.
+
+## `convert embedded`
+
+```
+annotate convert embedded --file /path/to/file.epub --set 1234
+```
+
+Converts an annotation set into embedded annotations directly within a provided ebook file. This should allow you to view most annotations from within most ebook readers, regardless of whether that reader natively supports xyAnnotations.
 
 **Note**: A xyAnnotations subscription and the `xyfirAnnotationsSubscriptionKey` config key are required.
 
 ### Options
 
-- `set`: `number` - The id of the annotation set to insert into the ebook.
+- `set`: `number` - The id of the annotation set to embed in the ebook.
 - `file`: `string` - Path to an epub file. A modified copy will be created next to this file.
-- `mode`: `string` - _optional_ - Determines how the annotations are inserted into the file. `reference` (default) adds link at the end of match as `[xy]`; `wrap` puts link around entire match.
-- `convert`: `boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to inserting annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
+- `mode`: `string` - _optional_ - Determines how the annotations are embedded in the file. `reference` (default) adds link at the end of match as `[xy]`; `wrap` puts link around entire match.
+- `convert`: `boolean` - _optional_ - Attempts to convert the original source file to EPUB prior to embedding annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
 - `deleteSource: boolean` - _optional_ - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
 
 ## `generate calibre`
@@ -198,39 +261,6 @@ If the wiki does not have public dumps available for download, you can use the [
 ```
 
 You must provide all of the config keys unless they are marked optional.
-
-## `config`
-
-```
-annotate config [--key <key> [--value <value>]]
-```
-
-The config command has three different actions based on what options you provide.
-
-- If you ignore all options, this command will output a table with all of the config keys and a (possibly) shortened version of their values.
-- If you provide only `key`, the full value for that key will be output to console.
-- If you provide `key` _and_ `value` a new value will be set for the key.
-
-Attempting to read or write to a non-existent key will result in an error.
-
-## `convert dictionary`
-
-```bash
-annotate convert dictionary --id 123
-# or
-annotate convert dictionary --file /path/to/file
-```
-
-**Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
-
-Converts an annotation set into a Kindle dictionary (`.mobi`) file.
-
-### Options
-
-- `compress`: `number` - `0` or missing = none; `1` = standard DOC compression; `2` = Kindle huffdic compression, can take hours for large annotation sets.
-- `output`: `string` - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`. Should end with `.mobi`.
-- `file`: `string` - Path to the annotation set's JSON file.
-- `id`: `number` - ID of the annotation set to download. Requires `xyfirAnnotationsSubscriptionKey`.
 
 # Global Config
 
