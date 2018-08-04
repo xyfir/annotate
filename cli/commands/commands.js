@@ -2,11 +2,11 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const COMMANDS = {
-  convertToDictionary: require('./convert/dictionary'),
+  convertDictionary: require('./convert/dictionary'),
   generateMediaWiki: require('./generate/mediawiki'),
+  convertEmbedded: require('./convert/embedded'),
   generateCalibre: require('./generate/calibre'),
   generateLibGen: require('./generate/libgen'),
-  insertFile: require('./insert/file'),
   config: require('./config')
 };
 

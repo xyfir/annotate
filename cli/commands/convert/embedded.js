@@ -4,7 +4,7 @@ const {
   INSERT_MODES
 } = require('@xyfir/annotate-html');
 const downloadSet = require('lib/xyannotations/download-set');
-const TEMPLATES = require('lib/insert/file/templates');
+const TEMPLATES = require('lib/convert/embedded/templates');
 const writeFile = require('lib/files/write');
 const readFile = require('lib/files/read');
 const unzipper = require('unzipper');
@@ -16,7 +16,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 /**
- * @typedef {object} InsertFileArguments
+ * @typedef {object} Arguments
  * @prop {boolean} [deleteSource]
  * @prop {boolean} [footnotes]
  * @prop {boolean} [convert]
@@ -27,7 +27,7 @@ const fs = require('fs-extra');
 /**
  * Insert annotations into an ebook file using links wrapped around search
  *  matches that point to the xyAnnotations item viewer.
- * @param {InsertFileArguments} args
+ * @param {Arguments} args
  */
 module.exports = async function(args) {
   const { deleteSource, convert, mode = 'REFERENCE', set: setId } = args;

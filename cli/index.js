@@ -5,7 +5,7 @@ const command = require('commands/commands');
 const yargs = require('yargs');
 
 yargs
-  .command('generate', 'Generate annotations', () =>
+  .command('generate', 'Generate annotations from sources', () =>
     yargs
       .command(
         'mediawiki',
@@ -23,20 +23,19 @@ yargs
         command('generateLibGen')
       )
   )
-  .command('convert', 'Convert files', () =>
-    yargs.command(
-      'dictionary',
-      'Convert annotation set to a dictionary file',
-      command('convertToDictionary')
-    )
+  .command('convert', 'Convert annotations to new formats', () =>
+    yargs
+      .command(
+        'dictionary',
+        'Convert annotation set to a dictionary file',
+        command('convertDictionary')
+      )
+      .command(
+        'embedded',
+        'Convert annotation set to embedded annotations in an ebook',
+        command('convertEmbedded')
+      )
   )
-  .command('config', 'Sets or gets config property values', command('config'))
-  .command('insert', 'Insert annotations into ebooks', () =>
-    yargs.command(
-      'file',
-      'Insert annotations into local epub files',
-      command('insertFile')
-    )
-  )
+  .command('config', 'Set/get global config values', command('config'))
   .help('h')
   .alias('h', 'help').argv;
