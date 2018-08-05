@@ -68,7 +68,6 @@ exports.FOOTNOTES_ENTRY = item =>
       ? FOOTNOTES_ANNOTATIONS(item)
       : FOOTNOTES_ANNOTATION(item.annotations[0])
   }
-  <hr/><hr/><hr/>
 </div>`.trim();
 
 /** @param {AnnotationSetItem} item */
@@ -107,12 +106,14 @@ const FOOTNOTES_ANNOTATION = a => {
     case 1:
       return marked(a.value, { sanitize: true, renderer });
     case 2:
-      return `<a href="${a.value}">View Link: <i>${a.value}</i></a>`;
+      return `<a href="${a.value}">View Link</a>`;
     case 3:
       return `
         <ul>
           <li>
-            <a href="https://www.google.com/?q=${encodeURIComponent(a.value)}">
+            <a href="https://www.google.com/search?q=${encodeURIComponent(
+              a.value
+            )}">
               Google Search: <i>${a.value}</i>
             </a>
           </li>
@@ -120,7 +121,7 @@ const FOOTNOTES_ANNOTATION = a => {
             a.context
               ? `
                 <li>
-                  <a href="https://www.google.com/?q=${encodeURIComponent(
+                  <a href="https://www.google.com/search?q=${encodeURIComponent(
                     `${a.context} ${a.value}`
                   )}">
                     With Context: <i>${a.context} ${a.value}</i>
@@ -135,7 +136,7 @@ const FOOTNOTES_ANNOTATION = a => {
         .map(link =>
           `
             <li>
-              <a href="${link}">View Image: <i>${link}</i></a>
+              <a href="${link}">View Image</a>
               <br />
               <img src="${link}"/>
             </li>
@@ -168,7 +169,7 @@ const FOOTNOTES_ANNOTATION = a => {
         .join('\n')}</ul>`;
     case 7:
       return /^https?:\/\//.test(a.value)
-        ? `<a href="${a.value}">View Map: <i>${a.value}</i></a>`
+        ? `<a href="${a.value}">View Map</a>`
         : `<a href="https://www.google.com/maps?q=${encodeURIComponent(
             a.value
           )}">Google Maps: <i>${a.value}</i></a>`;
