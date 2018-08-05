@@ -5,8 +5,8 @@ const {
   TITLE_HTML
 } = require('lib/convert/dictionary/templates');
 const downloadSet = require('lib/xyannotations/download-set');
+const kindlegen = require('lib/convert/kindlegen');
 const writeFile = require('lib/files/write');
-const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs-extra');
 
@@ -98,26 +98,7 @@ module.exports = async function(args) {
     await writeFile(path.resolve(basePath, 'toc.html'), TOC_HTML(set, letters));
 
     // Build MOBI
-    await new Promise(resolve => {
-      const kg = spawn('kindlegen', [
-        path.resolve(basePath, 'dict.opf'),
-        `-c${+compress || 0}`,
-        '-verbose',
-        '-dont_append_source'
-      ]);
-
-      kg.stderr.on('data', d => console.error(`[e][kindlegen]`, d.toString()));
-      kg.stdout.on('data', d => console.log(`[i][kindlegen]`, d.toString()));
-      kg.on('close', code => {
-        if (code == 0) {
-          console.log('KindleGen completed without error');
-          resolve();
-        } else {
-          console.warn('KindleGen errored or completed with warnings');
-          resolve();
-        }
-      });
-    });
+    await kindlegen(path.resolve(basePath, 'dict.opf'), compress);
 
     output = output || path.resolve(basePath, '../', `dict-${Date.now()}.mobi`);
 
