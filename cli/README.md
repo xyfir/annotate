@@ -82,9 +82,9 @@ annotate convert dictionary --id 123
 annotate convert dictionary --file /path/to/file
 ```
 
-**Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
-
 Converts an annotation set into a Kindle dictionary (`.mobi`) file.
+
+**Note:** You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line for this to work.
 
 ### Options
 
@@ -95,7 +95,9 @@ Converts an annotation set into a Kindle dictionary (`.mobi`) file.
   - `1` = standard DOC compression
   - `2` = Kindle huffdic compression, can take hours for large books / annotation sets.
 - `output`: `string` _optional_
-  - An absolute path (including file name) for the output file. If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`. Should end with `.mobi`.
+  - An absolute path (including file name) for the output file.
+  - If not provided, the output will go to either the current working directory if `id`, or put in the same directory as `file`.
+  - Should end with `.mobi`.
 - `file`: `string` _optional_
   - Path to the annotation set's JSON file.
 - `id`: `number` _optional_
@@ -109,8 +111,6 @@ annotate convert embedded --file /path/to/file.epub --set 1234
 
 Converts an annotation set into embedded annotations directly within a provided ebook file. This should allow you to view most annotations from within most ebook readers, regardless of whether that reader natively supports xyAnnotations.
 
-**Note**: A xyAnnotations subscription and the `` config key are required.
-
 ### Options
 
 - `set`: `number`
@@ -121,12 +121,17 @@ Converts an annotation set into embedded annotations directly within a provided 
   - Determines how the annotations are embedded in the file.
   - `reference` (default) adds link at the end of match as `[xy]`.
   - `wrap` puts link around entire match.
-- `convert`: `boolean` _optional_
-  - Attempts to convert the original source file to EPUB prior to embedding annotations into it. **Note:** You will need Calibre installed and its binaries available to the command line for this to work.
-- `deleteSource: boolean` _optional_
-  - Deletes the source file on success. If `--convert` is provided it also deletes the converted file.
+- `output`: `string` - _optional_
+  - Absolute or relative (to the CWD) path (including file name) for the output.
+  - If ignored, the output will be next to the original `file`.
+  - Should usually end with `.epub` or `.mobi`.
 - `subscriptionKey`: `string`
   - xyAnnotations subscription key
+
+### Notes
+
+- You will need [KindleGen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) installed and its binary available to the command line if you're working with `.mobi` files.
+- You will need Calibre installed and its binaries available to the command line if you're working with non-`.epub` files.
 
 ## `generate calibre`
 
