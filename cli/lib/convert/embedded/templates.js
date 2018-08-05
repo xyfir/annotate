@@ -65,26 +65,115 @@ exports.FOOTNOTES_ENTRY = item =>
   <br/>
   ${
     item.annotations.length > 1
-      ? item.annotations
-          .map(
-            (a, i) =>
-              `<p><a href="#${item.id}_${i}">
-                Annotation #${i + 1}: ${a.name}
-               </a></p>`
-          )
-          .join('<br/>\n') +
-        item.annotations
-          .map(
-            (a, i) =>
-              `<a name="${item.id}_${i}" id="${item.id}_${i}">
-                <b>Annotation #${i + 1}: ${a.name}</b>
-               </a>
-               <br/>\n\n` + marked(a.value, { sanitize: true, renderer })
-          )
-          .join('\n\n<hr/><hr/><hr/>')
-      : marked(item.annotations[0].value, { sanitize: true, renderer })
+      ? FOOTNOTES_ANNOTATIONS(item)
+      : FOOTNOTES_ANNOTATION(item.annotations[0])
   }
+  <hr/><hr/><hr/>
 </div>`.trim();
+
+/** @param {AnnotationSetItem} item */
+const FOOTNOTES_ANNOTATIONS = item =>
+  `
+  <ul>${item.annotations
+    .map((a, i) =>
+      `
+        <li>
+          <a href="#${item.id}_${i}">
+            Annotation #${i + 1} for item #${item.id}: ${a.name}
+          </a>
+        </li>
+      `.trim()
+    )
+    .join('\n')}</ul>
+
+  ${item.annotations
+    .map((a, i) =>
+      `
+        <div>
+          <a name="${item.id}_${i}" id="${item.id}_${i}">
+            <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
+          </a>
+          <br/>
+          ${FOOTNOTES_ANNOTATION(a)}
+        </div>
+      `.trim()
+    )
+    .join('\n\n')}
+`;
+
+/** @param {Annotation} a */
+const FOOTNOTES_ANNOTATION = a => {
+  switch (a.type) {
+    case 1:
+      return marked(a.value, { sanitize: true, renderer });
+    case 2:
+      return `<a href="${a.value}">View Link: <i>${a.value}</i></a>`;
+    case 3:
+      return `
+        <ul>
+          <li>
+            <a href="https://www.google.com/?q=${encodeURIComponent(a.value)}">
+              Google Search: <i>${a.value}</i>
+            </a>
+          </li>
+          ${
+            a.context
+              ? `
+                <li>
+                  <a href="https://www.google.com/?q=${encodeURIComponent(
+                    `${a.context} ${a.value}`
+                  )}">
+                    With Context: <i>${a.context} ${a.value}</i>
+                  </a>
+                </li>
+                `.trim()
+              : ''
+          }
+        </ul>`.trim();
+    case 4:
+      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
+        .map(link =>
+          `
+            <li>
+              <a href="${link}">View Image: <i>${link}</i></a>
+              <br />
+              <img src="${link}"/>
+            </li>
+          `.trim()
+        )
+        .join('\n')}</ul>`;
+    case 5:
+      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
+        .map(id => {
+          switch (a.source) {
+            case 'youtube':
+              return `<li><a href="https://youtu.be/${id}">YouTube Video</a></li>`;
+            case 'vimeo':
+              return `<li><a href="https://vimeo.com/${id}">Viemo Video</a></li>`;
+            default:
+              return '';
+          }
+        })
+        .join('\n')}</ul>`;
+    case 6:
+      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
+        .map(id => {
+          switch (a.source) {
+            case 'soundcloud':
+              return `<li><a href="https://soundcloud.com/${id}">Soundcloud Track</a></li>`;
+            default:
+              return '';
+          }
+        })
+        .join('\n')}</ul>`;
+    case 7:
+      return /^https?:\/\//.test(a.value)
+        ? `<a href="${a.value}">View Map: <i>${a.value}</i></a>`
+        : `<a href="https://www.google.com/maps?q=${encodeURIComponent(
+            a.value
+          )}">Google Maps: <i>${a.value}</i></a>`;
+  }
+};
 
 /**
  * @param {string} path

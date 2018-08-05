@@ -101,12 +101,6 @@ module.exports = async function(args) {
     // Insert annotations into ebook as an added footnotes file
     if (!opf) footnotes = false;
     if (footnotes) {
-      // Filter out items without Document annotations
-      set.items = set.items.filter(i => {
-        i.annotations = i.annotations.filter(a => a.type == 1);
-        return i.annotations.length;
-      });
-
       // Footnotes will go in xy/
       await fs.ensureDir(xypath);
 
@@ -118,7 +112,7 @@ module.exports = async function(args) {
         item.footnote = footnotes;
         entries += TEMPLATES.FOOTNOTES_ENTRY(item) + '\n\n<hr/><hr/><hr/>';
 
-        // Write file if entries are too big or if there are none left
+        // Write file if entries are too big or if there are no items left
         if (entries.length >= 300000 || i == set.items.length - 1) {
           await writeFile(
             path.resolve(xypath, `footnotes-${footnotes}.html`),
