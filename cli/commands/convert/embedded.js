@@ -5,6 +5,7 @@ const {
 } = require('@xyfir/annotate-html');
 const downloadSet = require('lib/xyannotations/download-set');
 const TEMPLATES = require('lib/convert/embedded/templates');
+const kindlegen = require('lib/convert/kindlegen');
 const writeFile = require('lib/files/write');
 const readFile = require('lib/files/read');
 const unzipper = require('unzipper');
@@ -40,14 +41,14 @@ module.exports = async function(args) {
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
   try {
-    const isEPUB = /\.epub$/.test(file);
+    const ext = path.extname(file).substr(1);
 
     if (!setId) throw 'Missing `--set <id>`';
     if (!file) throw 'Missing `--file <path>`';
 
     // Convert non-epub file to epub
     let ogFile = '';
-    if (!isEPUB) {
+    if (ext != 'epub') {
       const calibre = new Calibre({});
 
       ogFile = file;
@@ -173,9 +174,10 @@ module.exports = async function(args) {
       await writeFile(file, html);
     }
 
-    // Zip directory to file
+    // Build ZIP/EPUB file
+    const epub = folderpath + '.epub';
     await new Promise((resolve, reject) => {
-      const output = fs.createWriteStream(folderpath + '.epub');
+      const output = fs.createWriteStream(epub);
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       output.on('close', resolve);
@@ -190,13 +192,16 @@ module.exports = async function(args) {
     // Delete directory
     await fs.remove(folderpath);
 
+    // Build MOBI file via KindleGen
+    if (ext == 'mobi') await kindlegen(epub, 1);
+
     // Delete source files
     if (deleteSource) {
       await fs.remove(file);
-      !isEPUB && (await fs.remove(ogFile));
+      if (ext != 'epub') await fs.remove(ogFile);
     }
 
-    console.log(folderpath + '.epub');
+    console.log(epub);
   } catch (e) {
     console.error(e);
   }
