@@ -19,8 +19,8 @@ const fs = require('fs-extra');
 /**
  * @typedef {object} Arguments
  * @prop {string} subscriptionKey
- * @prop {boolean} [deleteSource]
  * @prop {boolean} [footnotes]
+ * @prop {string} [output]
  * @prop {string} [mode] - `"wrap" | "reference"`
  * @prop {string} file
  * @prop {number} set
@@ -31,12 +31,7 @@ const fs = require('fs-extra');
  * @param {Arguments} args
  */
 module.exports = async function(args) {
-  const {
-    subscriptionKey,
-    deleteSource,
-    mode = 'REFERENCE',
-    set: setId
-  } = args;
+  const { subscriptionKey, output, mode = 'REFERENCE', set: setId } = args;
   let { file, footnotes } = args;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
@@ -193,15 +188,23 @@ module.exports = async function(args) {
     await fs.remove(folderpath);
 
     // Build MOBI file via KindleGen
-    if (ext == 'mobi') await kindlegen(epub, 1);
+    if (ext == 'mobi') {
+      await kindlegen(epub, 1);
 
-    // Delete source files
-    if (deleteSource) {
-      await fs.remove(file);
-      if (ext != 'epub') await fs.remove(ogFile);
+      // Delete temp file
+      await fs.remove(epub);
     }
 
-    console.log(epub);
+    // Move final file to output
+    if (output) {
+      await fs.move(
+        ext == 'mobi' ? folderpath + '.mobi' : epub,
+        path.isAbsolute(output) ? output : path.resolve(process.cwd(), output)
+      );
+    }
+
+    // Delete temp file
+    if (ogFile) await fs.remove(file);
   } catch (e) {
     console.error(e);
   }
