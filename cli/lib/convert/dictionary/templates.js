@@ -1,4 +1,7 @@
-const { ANNOTATION_TO_XHTML } = require('lib/convert/templates');
+const {
+  ANNOTATION_TO_XHTML,
+  ANNOTATIONS_TO_XHTML
+} = require('lib/convert/templates');
 const package = require('package.json');
 const path = require('path');
 
@@ -54,19 +57,7 @@ const ENTRY = item => `
  */
 const DEFINITIONS = item =>
   item.annotations.length > 1
-    ? item.annotations
-        .map(
-          (a, index) => `<p><a href="#${item.id}-${index}">${a.name}</a></p>`
-        )
-        .join('<br/>\n') +
-      item.annotations
-        .map(
-          (a, index) =>
-            `<a name="${item.id}-${index}"/>` +
-            `<p>Entry #${index + 1}: ${a.name}</p><br/>\n\n` +
-            ANNOTATION_TO_XHTML(a, true)
-        )
-        .join('\n\n<hr/><hr/><hr/>')
+    ? ANNOTATIONS_TO_XHTML(item, true)
     : ANNOTATION_TO_XHTML(item.annotations[0], true);
 
 /**

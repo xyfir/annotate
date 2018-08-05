@@ -1,4 +1,7 @@
-const { ANNOTATION_TO_XHTML } = require('lib/convert/templates');
+const {
+  ANNOTATION_TO_XHTML,
+  ANNOTATIONS_TO_XHTML
+} = require('lib/convert/templates');
 const package = require('package.json');
 const path = require('path');
 
@@ -53,34 +56,10 @@ exports.FOOTNOTES_ENTRY = item => `<div class="xy-footnote">
   <br/>
   ${
     item.annotations.length > 1
-      ? FOOTNOTES_ANNOTATIONS(item)
+      ? ANNOTATIONS_TO_XHTML(item)
       : ANNOTATION_TO_XHTML(item.annotations[0])
   }
 </div>`;
-
-/** @param {AnnotationSetItem} item */
-const FOOTNOTES_ANNOTATIONS = item => `
-<ul>${item.annotations
-  .map(
-    (a, i) => `<li>
-      <a href="#${item.id}_${i}">
-        Annotation #${i + 1} for item #${item.id}: ${a.name}
-      </a>
-    </li>`
-  )
-  .join('\n')}</ul>
-
-${item.annotations
-  .map(
-    (a, i) => `<div>
-      <a name="${item.id}_${i}" id="${item.id}_${i}">
-        <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
-      </a>
-      <br/>
-      ${ANNOTATION_TO_XHTML(a)}
-    </div>`
-  )
-  .join('\n\n')}`;
 
 /**
  * @param {string} path

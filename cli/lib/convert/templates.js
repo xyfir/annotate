@@ -30,7 +30,7 @@ linkOnlyRenderer.image = (href, title, text) =>
  * @param {boolean} [linkOnly]
  * @return {string}
  */
-exports.ANNOTATION_TO_XHTML = (a, linkOnly) => {
+const ANNOTATION_TO_XHTML = (a, linkOnly) => {
   switch (a.type) {
     case 1:
       return marked(a.value, {
@@ -102,3 +102,33 @@ exports.ANNOTATION_TO_XHTML = (a, linkOnly) => {
           )}">Google Maps: <i>${a.value}</i></a>`;
   }
 };
+exports.ANNOTATION_TO_XHTML = ANNOTATION_TO_XHTML;
+
+/**
+ * Convert multiple annotation set item annotations to XHTML.
+ * @param {AnnotationSetItem} item
+ * @param {boolean} [linkOnly]
+ * @return {string}
+ */
+const ANNOTATIONS_TO_XHTML = (item, linkOnly) =>
+  `<ul>${item.annotations
+    .map(
+      (a, i) => `<li>
+        <a href="#${item.id}_${i}">
+          Annotation #${i + 1} for item #${item.id}: ${a.name}
+        </a>
+      </li>`
+    )
+    .join('\n')}</ul>` +
+  item.annotations
+    .map(
+      (a, i) => `<div>
+        <a name="${item.id}_${i}" id="${item.id}_${i}">
+          <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
+        </a>
+        <br/>
+        ${ANNOTATION_TO_XHTML(a, linkOnly)}
+      </div>`
+    )
+    .join('\n\n');
+exports.ANNOTATIONS_TO_XHTML = ANNOTATIONS_TO_XHTML;
