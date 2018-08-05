@@ -32,7 +32,7 @@ const fs = require('fs-extra');
  * @param {Arguments} args
  */
 module.exports = async function(args) {
-  const { id, compress, xyfir } = args;
+  const { id, compress, subscriptionKey } = args;
   let { file, output } = args;
 
   try {
@@ -57,18 +57,15 @@ module.exports = async function(args) {
     basePath = path.resolve(basePath, `temp-${Date.now()}`);
     await fs.mkdir(basePath);
 
+    // Remove items with only regex, specific, and '"'-containing searches
     set.items = set.items
-      // Remove non-Document annotations
-      // Remove regex, specific, and '"'-containing searches
       .map(i => {
-        i.annotations = i.annotations.filter(a => a.type == 1);
         i.searches = i.searches.filter(
           s => !s.regex && !s.before && !s.after && s.indexOf('"') == -1
         );
         return i;
       })
-      // Remove items
-      .filter(i => i.searches.length && i.annotations.length);
+      .filter(i => i.searches.length);
 
     // Build list of letters for letter-specific definition files
     /** @type {string[]} */
