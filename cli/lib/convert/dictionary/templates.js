@@ -1,19 +1,6 @@
+const { ANNOTATION_TO_XHTML } = require('lib/convert/templates');
 const package = require('package.json');
-const marked = require('marked');
 const path = require('path');
-
-const renderer = new marked.Renderer();
-/**
- * @param {string} href
- * @param {string} [title]
- * @param {string} [text]
- */
-renderer.image = (href, title, text) =>
-  `<a href="${href}">View Image: ${
-    (title || text) && (title || text) != 'undefined'
-      ? title || text
-      : '(No Description)'
-  }</a>`;
 
 /**
  * Basic HTML file template.
@@ -77,13 +64,10 @@ const DEFINITIONS = item =>
           (a, index) =>
             `<a name="${item.id}-${index}"/>` +
             `<p>Entry #${index + 1}: ${a.name}</p><br/>\n\n` +
-            marked(a.value, { sanitize: true, renderer })
+            ANNOTATION_TO_XHTML(a, true)
         )
         .join('\n\n<hr/><hr/><hr/>')
-    : marked(item.annotations[0].value, {
-        sanitize: true,
-        renderer
-      });
+    : ANNOTATION_TO_XHTML(item.annotations[0], true);
 
 /**
  * Generate body for `title.html`.

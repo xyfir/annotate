@@ -1,16 +1,6 @@
+const { ANNOTATION_TO_XHTML } = require('lib/convert/templates');
 const package = require('package.json');
-const marked = require('marked');
 const path = require('path');
-
-const renderer = new marked.Renderer();
-/**
- * Self-close `img` element for XML.
- * @param {string} href
- * @param {string} [title]
- * @param {string} [text]
- */
-renderer.image = (href, title, text) =>
-  `<img src="${href}" alt="${title || text}"/>`;
 
 /** @param {AnnotationSet} set */
 exports.NOTIFICATION_FOOTER = set => `<footer class="xy-notification">
@@ -64,7 +54,7 @@ exports.FOOTNOTES_ENTRY = item => `<div class="xy-footnote">
   ${
     item.annotations.length > 1
       ? FOOTNOTES_ANNOTATIONS(item)
-      : FOOTNOTES_ANNOTATION(item.annotations[0])
+      : ANNOTATION_TO_XHTML(item.annotations[0])
   }
 </div>`;
 
@@ -87,82 +77,10 @@ ${item.annotations
         <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
       </a>
       <br/>
-      ${FOOTNOTES_ANNOTATION(a)}
+      ${ANNOTATION_TO_XHTML(a)}
     </div>`
   )
   .join('\n\n')}`;
-
-/** @param {Annotation} a */
-const FOOTNOTES_ANNOTATION = a => {
-  switch (a.type) {
-    case 1:
-      return marked(a.value, { sanitize: true, renderer });
-    case 2:
-      return `<a href="${a.value}">View Link</a>`;
-    case 3:
-      return `<ul>
-        <li>
-          <a href="https://www.google.com/search?q=${encodeURIComponent(
-            a.value
-          )}">
-            Google Search: <i>${a.value}</i>
-          </a>
-        </li>
-        ${
-          a.context
-            ? `<li>
-                <a href="https://www.google.com/search?q=${encodeURIComponent(
-                  `${a.context} ${a.value}`
-                )}">
-                  With Context: <i>${a.context} ${a.value}</i>
-                </a>
-              </li>`
-            : ''
-        }
-      </ul>`;
-    case 4:
-      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
-        .map(
-          link =>
-            `<li>
-              <a href="${link}">View Image</a>
-              <br />
-              <img src="${link}"/>
-            </li>`
-        )
-        .join('\n')}</ul>`;
-    case 5:
-      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
-        .map(id => {
-          switch (a.source) {
-            case 'youtube':
-              return `<li><a href="https://youtu.be/${id}">YouTube Video</a></li>`;
-            case 'vimeo':
-              return `<li><a href="https://vimeo.com/${id}">Viemo Video</a></li>`;
-            default:
-              return '';
-          }
-        })
-        .join('\n')}</ul>`;
-    case 6:
-      return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
-        .map(id => {
-          switch (a.source) {
-            case 'soundcloud':
-              return `<li><a href="https://soundcloud.com/${id}">Soundcloud Track</a></li>`;
-            default:
-              return '';
-          }
-        })
-        .join('\n')}</ul>`;
-    case 7:
-      return /^https?:\/\//.test(a.value)
-        ? `<a href="${a.value}">View Map</a>`
-        : `<a href="https://www.google.com/maps?q=${encodeURIComponent(
-            a.value
-          )}">Google Maps: <i>${a.value}</i></a>`;
-  }
-};
 
 /**
  * @param {string} path
