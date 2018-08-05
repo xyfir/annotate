@@ -20,7 +20,6 @@ const fs = require('fs-extra');
  * @prop {string} subscriptionKey
  * @prop {boolean} [deleteSource]
  * @prop {boolean} [footnotes]
- * @prop {boolean} [convert]
  * @prop {string} [mode] - `"wrap" | "reference"`
  * @prop {string} file
  * @prop {number} set
@@ -34,7 +33,6 @@ module.exports = async function(args) {
   const {
     subscriptionKey,
     deleteSource,
-    convert,
     mode = 'REFERENCE',
     set: setId
   } = args;
@@ -46,8 +44,6 @@ module.exports = async function(args) {
 
     if (!setId) throw 'Missing `--set <id>`';
     if (!file) throw 'Missing `--file <path>`';
-    if (!isEPUB && !convert)
-      throw 'Only `.epub` files are supported without the `--convert` option';
 
     // Convert non-epub file to epub
     let ogFile = '';
