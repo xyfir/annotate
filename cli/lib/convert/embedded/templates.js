@@ -13,8 +13,7 @@ renderer.image = (href, title, text) =>
   `<img src="${href}" alt="${title || text}"/>`;
 
 /** @param {AnnotationSet} set */
-exports.NOTIFICATION_FOOTER = set => `
-<footer class="xy-notification">
+exports.NOTIFICATION_FOOTER = set => `<footer class="xy-notification">
   <p>
     This book has been annotated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">
       annotate-cli
@@ -42,9 +41,10 @@ exports.NOTIFICATION_FOOTER = set => `
  * @param {AnnotationSet} set
  * @param {string} body
  */
-exports.FOOTNOTES_CONTAINER = (set, body) =>
-  `
-<?xml version='1.0' encoding='utf-8'?>
+exports.FOOTNOTES_CONTAINER = (
+  set,
+  body
+) => `<?xml version='1.0' encoding='utf-8'?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${'en'}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -53,12 +53,10 @@ exports.FOOTNOTES_CONTAINER = (set, body) =>
   </title>
 </head>
 <body>${body}</body>
-</html>`.trim();
+</html>`;
 
 /** @param {AnnotationSetItem} item */
-exports.FOOTNOTES_ENTRY = item =>
-  `
-<div class="xy-footnote">
+exports.FOOTNOTES_ENTRY = item => `<div class="xy-footnote">
   <a name="item_${item.id}" id="item_${item.id}">
     <b>Annotations from item #${item.id}:</b>
   </a>
@@ -68,37 +66,31 @@ exports.FOOTNOTES_ENTRY = item =>
       ? FOOTNOTES_ANNOTATIONS(item)
       : FOOTNOTES_ANNOTATION(item.annotations[0])
   }
-</div>`.trim();
+</div>`;
 
 /** @param {AnnotationSetItem} item */
-const FOOTNOTES_ANNOTATIONS = item =>
-  `
-  <ul>${item.annotations
-    .map((a, i) =>
-      `
-        <li>
-          <a href="#${item.id}_${i}">
-            Annotation #${i + 1} for item #${item.id}: ${a.name}
-          </a>
-        </li>
-      `.trim()
-    )
-    .join('\n')}</ul>
+const FOOTNOTES_ANNOTATIONS = item => `
+<ul>${item.annotations
+  .map(
+    (a, i) => `<li>
+      <a href="#${item.id}_${i}">
+        Annotation #${i + 1} for item #${item.id}: ${a.name}
+      </a>
+    </li>`
+  )
+  .join('\n')}</ul>
 
-  ${item.annotations
-    .map((a, i) =>
-      `
-        <div>
-          <a name="${item.id}_${i}" id="${item.id}_${i}">
-            <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
-          </a>
-          <br/>
-          ${FOOTNOTES_ANNOTATION(a)}
-        </div>
-      `.trim()
-    )
-    .join('\n\n')}
-`;
+${item.annotations
+  .map(
+    (a, i) => `<div>
+      <a name="${item.id}_${i}" id="${item.id}_${i}">
+        <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
+      </a>
+      <br/>
+      ${FOOTNOTES_ANNOTATION(a)}
+    </div>`
+  )
+  .join('\n\n')}`;
 
 /** @param {Annotation} a */
 const FOOTNOTES_ANNOTATION = a => {
@@ -108,39 +100,35 @@ const FOOTNOTES_ANNOTATION = a => {
     case 2:
       return `<a href="${a.value}">View Link</a>`;
     case 3:
-      return `
-        <ul>
-          <li>
-            <a href="https://www.google.com/search?q=${encodeURIComponent(
-              a.value
-            )}">
-              Google Search: <i>${a.value}</i>
-            </a>
-          </li>
-          ${
-            a.context
-              ? `
-                <li>
-                  <a href="https://www.google.com/search?q=${encodeURIComponent(
-                    `${a.context} ${a.value}`
-                  )}">
-                    With Context: <i>${a.context} ${a.value}</i>
-                  </a>
-                </li>
-                `.trim()
-              : ''
-          }
-        </ul>`.trim();
+      return `<ul>
+        <li>
+          <a href="https://www.google.com/search?q=${encodeURIComponent(
+            a.value
+          )}">
+            Google Search: <i>${a.value}</i>
+          </a>
+        </li>
+        ${
+          a.context
+            ? `<li>
+                <a href="https://www.google.com/search?q=${encodeURIComponent(
+                  `${a.context} ${a.value}`
+                )}">
+                  With Context: <i>${a.context} ${a.value}</i>
+                </a>
+              </li>`
+            : ''
+        }
+      </ul>`;
     case 4:
       return `<ul>${(Array.isArray(a.value) ? a.value : a.value.split(','))
-        .map(link =>
-          `
-            <li>
+        .map(
+          link =>
+            `<li>
               <a href="${link}">View Image</a>
               <br />
               <img src="${link}"/>
-            </li>
-          `.trim()
+            </li>`
         )
         .join('\n')}</ul>`;
     case 5:
