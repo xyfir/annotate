@@ -28,8 +28,7 @@ export default async function(book, set) {
     set,
     html,
     mode: INSERT_MODES.WRAP.ONCLICK,
-    action: (k, t) =>
-      `parent.postMessage({type:'${t}',key:'${k}',epubjs:true},'*')`,
+    action: (k, t) => `parent.postMessage({type:'${t}',key:'${k}',xy:!0},'*')`,
     chapter,
     markers
   });
