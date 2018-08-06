@@ -102,7 +102,9 @@ module.exports = async function(args) {
       for (let i = 0; i < set.items.length; i++) {
         const item = set.items[i];
         item.footnote = footnotes;
-        entries += TEMPLATES.FOOTNOTES_ENTRY(item) + '\n\n<hr/><hr/><hr/>';
+        entries +=
+          TEMPLATES.FOOTNOTES_ENTRY(item, ext == 'mobi') +
+          '\n\n<hr/><hr/><hr/>';
 
         // Write file if entries are too big or if there are no items left
         if (entries.length >= 300000 || i == set.items.length - 1) {

@@ -48,16 +48,19 @@ exports.FOOTNOTES_CONTAINER = (
 <body>${body}</body>
 </html>`;
 
-/** @param {AnnotationSetItem} item */
-exports.FOOTNOTES_ENTRY = item => `<div class="xy-footnote">
+/**
+ * @param {AnnotationSetItem} item
+ * @param {boolean} linkedOnly
+ */
+exports.FOOTNOTES_ENTRY = (item, linkedOnly) => `<div class="xy-footnote">
   <a name="item_${item.id}" id="item_${item.id}">
     <b>Annotations from item #${item.id}:</b>
   </a>
   <br/>
   ${
     item.annotations.length > 1
-      ? ANNOTATIONS_TO_XHTML(item)
-      : ANNOTATION_TO_XHTML(item.annotations[0])
+      ? ANNOTATIONS_TO_XHTML(item, linkedOnly)
+      : ANNOTATION_TO_XHTML(item.annotations[0], linkedOnly)
   }
 </div>`;
 
