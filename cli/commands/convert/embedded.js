@@ -143,7 +143,7 @@ module.exports = async function(args) {
         set,
         html,
         mode: INSERT_MODES[mode.toUpperCase()].LINK,
-        action: (type, key) => {
+        action: key => {
           // Get item object for footnote index
           const id = +key.split('-')[1];
           const item = set.items.find(item => item.id == id);

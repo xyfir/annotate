@@ -18,10 +18,10 @@ import * as AnnotateHTML from '@xyfir/annotate-html';
 const markers = AnnotateHTML.findMarkers(html, chapter, items);
 ```
 
-* `html`: _string_ - The HTML string to search for markers in
-* `chapter`: _number_ - The index of the chapter within the book
-* `items`: _object[]_ - The annotation set items to search
-* `markers`: _object_ - Markers that point to matches for Before and After subsearches within the chapter
+- `html`: _string_ - The HTML string to search for markers in
+- `chapter`: _number_ - The index of the chapter within the book
+- `items`: _object[]_ - The annotation set items to search
+- `markers`: _object_ - Markers that point to matches for Before and After subsearches within the chapter
 
 ## `buildString()`
 
@@ -30,18 +30,26 @@ const newHTML = AnnotateHTML.buildString({
   set,
   html,
   mode,
-  action: (type, key) => `...`,
+  action: (key, type) => `...`,
   chapter,
   markers
 });
 ```
 
-* `set`: _object_ - The annotation set to insert
-* `html`: _string_ - The HTML string to insert annotations into
-* `mode`: _number_ - See the `INSERT_MODES` export.
-* `action`: _function_ - This is a template function that takes two parameters, `type` and `key`, and returns a `string` that will be used for the `onclick` or `href` attributes of the inserted element based on `mode`. `type` is the type of highlight (should always be `"annotation"` unless you have some custom setup). `key` identifies the item being clicked with the following format: `'setId-itemId'`.
-* `chapter`: _number_ - The index of the chapter within the book
-* `markers`: _object_ - Markers that point to matches for Before and After subsearches within the book
+- `set`: _object_
+  - The annotation set to insert
+- `html`: _string_
+  - The HTML string to insert annotations into
+- `mode`: _number_
+  - See the `INSERT_MODES` export.
+- `action`: _function_
+  - This is a template function that takes two parameters, `key` and `type`, and returns a `string` that will be used for the `onclick` or `href` attributes of the inserted element based on `mode`.
+  - `key` identifies the item being clicked with the following format: `'setId-itemId'`.
+  - `type` is the type of highlight (should always be `"annotation"` unless you have some custom setup).
+- `chapter`: _number_
+  - The index of the chapter within the book
+- `markers`: _object_
+  - Markers that point to matches for Before and After subsearches within the book
 
 ## `INSERT_MODES`
 

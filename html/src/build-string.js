@@ -11,7 +11,7 @@ import { insert } from './insert';
  * @prop {AnnotationSet} set - An annotation set
  * @prop {number} mode - See the `INSERT_MODES` export.
  * @prop {function} action - This is a template function that takes two
- *  parameters, `type` and `key`, and returns a `string` that will be used for
+ *  parameters, `key` and `type`, and returns a `string` that will be used for
  *  the `onclick` or `href` attributes of the inserted element based on `mode`.
  */
 /**

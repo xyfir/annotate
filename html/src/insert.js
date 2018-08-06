@@ -20,7 +20,7 @@ export const INSERT_MODES = Object.freeze({
  *  clicked.
  * @prop {number} mode - See the `INSERT_MODES` export.
  * @prop {function} action - This is a template function that takes two
- *  parameters, `type` and `key`, and returns a `string` that will be used for
+ *  parameters, `key` and `type`, and returns a `string` that will be used for
  *  the `onclick` or `href` attributes of the inserted element based on `mode`.
  */
 /**
@@ -40,19 +40,18 @@ export function insert(opt) {
   const { action, mode, matches, type = 'annotation', key } = opt;
   let { html } = opt;
 
+  /** @type {string} */
+  const _action = action(key, type);
   const wrap = (() => {
     switch (mode) {
       case INSERT_MODES.WRAP.LINK:
-        return [`<a class="xy-${type}" href="${action(type, key)}">`, `</a>`];
+        return [`<a class="xy-${type}" href="${_action}">`, `</a>`];
       case INSERT_MODES.WRAP.ONCLICK:
-        return [
-          `<span class="xy-${type}" onclick="${action(type, key)}">`,
-          `</span>`
-        ];
+        return [`<span class="xy-${type}" onclick="${_action}">`, `</span>`];
       case INSERT_MODES.REFERENCE.LINK:
         return [
           ``,
-          `<a class="xy-${type}" href="${action(type, key)}"><sup>xy</sup></a>`
+          `<a class="xy-${type}" href="${_action}"><sup>xy</sup></a>`
         ];
       case INSERT_MODES.REFERENCE.ONCLICK:
         return [
