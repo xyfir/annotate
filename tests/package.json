@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-tests",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "For testing @xyfir/annotate-* libraries.",
   "main": "",
   "scripts": {
@@ -20,8 +20,8 @@
     "webpack": "^4.17.1"
   },
   "dependencies": {
-    "@xyfir/annotate-epubjs": "^2.0.0",
-    "@xyfir/annotate-react": "^2.0.0",
+    "@xyfir/annotate-epubjs": "^2.0.1",
+    "@xyfir/annotate-react": "^2.0.1",
     "epubjs": "^0.3.70",
     "express": "^4.16.3",
     "react": "^16.4.2",

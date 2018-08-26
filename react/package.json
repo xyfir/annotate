@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-react",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "React components for viewing annotations from xyAnnotations.",
   "main": "dist/index.js",
   "scripts": {
@@ -36,6 +36,6 @@
     "webpack": "^4.17.1"
   },
   "dependencies": {
-    "@xyfir/annotate-core": "^2.0.0"
+    "@xyfir/annotate-core": "^2.0.1"
   }
 }
