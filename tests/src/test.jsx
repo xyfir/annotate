@@ -117,7 +117,7 @@ class AnnotateTests extends React.Component {
   }
 
   onHighlightClick(e) {
-    if (!e.data.epubjs) return;
+    if (!e.data.xy) return;
     clearTimeout(this.timeout);
 
     const [setId, itemId] = event.data.key.split('-');
