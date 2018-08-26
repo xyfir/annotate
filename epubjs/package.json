@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-epubjs",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Annotate EPUB files using Epub.js and xyAnnotations.",
   "main": "dist/index.js",
   "scripts": {
@@ -22,10 +22,11 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
+    "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
-    "prettier": "^1.13.6",
-    "webpack": "^4.12.2"
+    "webpack": "^4.17.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@xyfir/annotate-html": "^2.0.0"
+  }
 }
