@@ -8,7 +8,7 @@ const path = require('path');
 /** @param {AnnotationSet} set */
 exports.NOTIFICATION_FOOTER = set => `<footer class="xy-notification">
   <p>
-    This book has been annotated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">
+    This book was annotated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">
       annotate-cli
     </a> version <code>
       ${package.version}
