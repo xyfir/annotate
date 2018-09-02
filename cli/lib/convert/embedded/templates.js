@@ -5,22 +5,27 @@ const {
 const package = require('package.json');
 const path = require('path');
 
-/** @param {AnnotationSet} set */
-exports.NOTIFICATION_FOOTER = set => `<footer class="xy-notification">
+/**
+ *
+ * @param {AnnotationSet} set
+ * @param {boolean} [amb]
+ */
+exports.NOTIFICATION = (set, amb) => `<div class="xy-notification">
   <p>
-    This book was annotated via <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">
+    This book was annotated using ${
+      amb
+        ? 'the <a href="https://annotations.xyfir.com/annotate-my-ebook">' +
+          'Annotate My Ebook</a> tool +'
+        : ''
+    } <a href="https://www.npmjs.com/package/@xyfir/annotate-cli">
       annotate-cli
-    </a> version <code>
-      ${package.version}
-    </code> on <code>
-      ${new Date().toDateString()}
-    </code> using the <a href="https://annotations.xyfir.com">
+    </a> version <code>${
+      package.version
+    }</code> on <code>${new Date().toDateString()}</code> with the <a href="https://annotations.xyfir.com">
       xyAnnotations
     </a> annotation set <a href="https://annotations.xyfir.com/sets/${
       set.id
-    }">#${set.id}</a> version <code>
-      ${set.version}
-    </code>.
+    }">#${set.id}</a> version <code>${set.version}</code>.
   </p>
   <p>
     Please see the original annotation set for license, copyright, sourcing, and other relevant information regarding the annotations and the contents they were sourced from.
@@ -28,7 +33,7 @@ exports.NOTIFICATION_FOOTER = set => `<footer class="xy-notification">
   <p>
     This content may be outdated. Check the original annotation set for the latest version.
   </p>
-</footer>`;
+</div>`;
 
 /**
  * @param {AnnotationSet} set
