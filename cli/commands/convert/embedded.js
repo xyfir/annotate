@@ -18,6 +18,8 @@ const fs = require('fs-extra');
 
 /**
  * @typedef {object} Arguments
+ * @prop {boolean} [annotateMyEbook] - @private For use by the xyAnnotations
+ *  Annotate My Ebook tool.
  * @prop {string} subscriptionKey
  * @prop {boolean} [footnotes]
  * @prop {string} [output]
@@ -31,7 +33,13 @@ const fs = require('fs-extra');
  * @param {Arguments} args
  */
 module.exports = async function(args) {
-  const { subscriptionKey, output, mode = 'REFERENCE', set: setId } = args;
+  const {
+    annotateMyEbook,
+    subscriptionKey,
+    output,
+    mode = 'REFERENCE',
+    set: setId
+  } = args;
   let { file, footnotes } = args;
   file = path.isAbsolute(file) ? file : path.resolve(process.cwd(), file);
 
@@ -164,7 +172,7 @@ module.exports = async function(args) {
       if (/title(page)?\.x?html?$/.test(file)) {
         html = html.replace(
           '</body>',
-          `${TEMPLATES.NOTIFICATION_FOOTER(set)}</body>`
+          `${TEMPLATES.NOTIFICATION(set, annotateMyEbook)}</body>`
         );
       }
 
