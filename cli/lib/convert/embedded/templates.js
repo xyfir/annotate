@@ -59,7 +59,9 @@ exports.FOOTNOTES_CONTAINER = (
  */
 exports.FOOTNOTES_ENTRY = (item, linkedOnly) => `<div class="xy-footnote">
   <a name="item_${item.id}" id="item_${item.id}">
-    <b>Annotations from item #${item.id}:</b>
+    <b>Annotations from item #${item.id} &mdash; <i>${item.title ||
+  item.searches[0].main ||
+  item.searches[0]}</i>:</b>
   </a>
   <br/>
   ${

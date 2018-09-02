@@ -115,7 +115,7 @@ const ANNOTATIONS_TO_XHTML = (item, linkOnly) =>
     .map(
       (a, i) => `<li>
         <a href="#${item.id}_${i}">
-          Annotation #${i + 1} for item #${item.id}: ${a.name}
+          Annotation #${i + 1} in item #${item.id}: ${a.name}
         </a>
       </li>`
     )
@@ -124,7 +124,7 @@ const ANNOTATIONS_TO_XHTML = (item, linkOnly) =>
     .map(
       (a, i) => `<div>
         <a name="${item.id}_${i}" id="${item.id}_${i}">
-          <b>Annotation #${i + 1} for item #${item.id}: ${a.name}</b>
+          <b>Annotation #${i + 1} in item #${item.id}: ${a.name}</b>
         </a>
         <br/>
         ${ANNOTATION_TO_XHTML(a, linkOnly)}
