@@ -318,7 +318,7 @@ module.exports = async function(config) {
         for (let item of set.items) {
           await request
             .delete(
-              `${constants.XYANNOTATIONS}sets/${config.set}/items/${item}`
+              `${constants.XYANNOTATIONS}sets/${config.set}/items/${item.id}`
             )
             .auth('access', config.accessKey);
           deleted++;
