@@ -1,6 +1,6 @@
 {
   "name": "@xyfir/annotate-tests",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "For testing @xyfir/annotate-* libraries.",
   "main": "",
   "scripts": {
@@ -12,20 +12,20 @@
     "singleQuote": true
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "webpack": "^4.17.1"
+    "@babel/core": "^7.0.1",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.2",
+    "webpack": "^4.19.0"
   },
   "dependencies": {
-    "@xyfir/annotate-epubjs": "^2.0.1",
-    "@xyfir/annotate-react": "^2.0.1",
-    "epubjs": "^0.3.70",
+    "@xyfir/annotate-epubjs": "^2.0.2",
+    "@xyfir/annotate-react": "^2.0.2",
+    "epubjs": "^0.3.71",
     "express": "^4.16.3",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "react-md": "^1.5.0"
+    "react": "^16.5.1",
+    "react-dom": "^16.5.1",
+    "react-md": "^1.6.1"
   }
 }

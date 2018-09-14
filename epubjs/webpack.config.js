@@ -32,7 +32,7 @@ module.exports = {
         ],
         exclude: /node_modules/,
         options: {
-          presets: ['env']
+          presets: ['@babel/preset-env']
         }
       }
     ]

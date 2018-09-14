@@ -1,4 +1,4 @@
-import 'babel-polyfill';
+import '@babel/polyfill';
 
 import * as AnnotateEPUBJS from '@xyfir/annotate-epubjs';
 import * as AnnotateReact from '@xyfir/annotate-react';
